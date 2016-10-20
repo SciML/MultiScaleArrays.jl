@@ -6,6 +6,7 @@ ndims(m::AbstractMultiScaleModel) = 1
 size(m::AbstractMultiScaleModel,i::Int) = Int((i==1))*length(m)
 size(m::AbstractMultiScaleModel) = (length(m),)
 
+
 function similar(m::AbstractMultiScaleModel)
   m_new = construct(typeof(m),deepcopy(m.x))
   for i in eachindex(m.x)
@@ -45,4 +46,14 @@ end
 
 function ==(m1::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   m1 === m2
+end
+
+function recursivecopy!(b::MultiScaleModelLeaf,a::MultiScaleModelLeaf)
+  @inbounds copy!(b,a)
+end
+
+function recursivecopy!(b::AbstractMultiScaleModel,a::AbstractMultiScaleModel)
+  @inbounds for i in eachindex(a.x)
+    recursivecopy!(b.x[i],a.x[i])
+  end
 end

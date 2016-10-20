@@ -39,6 +39,27 @@ end
 
 linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
 
+# In general, we simply re-index the parent indices by the provided ones
+typealias SlowSubArray{T,N,P,I} SubArray{T,N,P,I,false}
+@inline function getindex{T<:AbstractMultiScaleModel}(V::SlowSubArray{T,1}, I::Vararg{Real,1})
+    @boundscheck checkbounds(V, I...)
+    idxs = Base.reindex(V, V.indexes, Base.to_indexes(I...))
+    @show I
+    @show typeof(I)
+    @show idxs[1]
+    @show V.parent
+    @show typeof(idxs[1])
+    @show @which V.parent[idxs[1]]
+    @inbounds r = V.parent[idxs[1]]
+    r
+end
+@inline function getindex{T<:AbstractMultiScaleModel,N}(V::SlowSubArray{T,N}, I::Tuple{Int64})
+    @boundscheck checkbounds(V, I...)
+    idxs = Base.reindex(V, V.indexes, Base.to_indexes(I...))
+    @inbounds r = V.parent[idxs[1]]
+    r
+end
+
 function getindex(m::AbstractMultiScaleModel,i::Int)
   idx = bisect_search(m.end_idxs,i)+1 # +1 for 1-based indexing
   if idx > 1
@@ -60,7 +81,7 @@ function getindex(m::MultiScaleModelLeaf,i::Int)
 end
 
 function getindex(m::MultiScaleModelLeaf,i::Int...)
-  m.x[i]
+  m.x[i[1]]
 end
 
 function getindex(m::AbstractMultiScaleModel,i...)

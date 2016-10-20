@@ -16,6 +16,30 @@ immutable Embryo{T<:AbstractMultiScaleModel} <: MultiScaleModelHead{Float64}
   x::Vector{T}
   end_idxs::Vector{Int}
 end
+
+Cell(x::Tuple) = Cell(Vector{Float64}(x))
+function Population(x::Tuple)
+  p = Population(Vector{Cell}(x[1]))
+  for i in 1:x[1]
+    p[i] = Cell(x[2:end])
+  end
+end
+function Tissue(x::Tuple)
+  tis = Tissue(Vector{Population}(x[1]))
+  for i in 1:x[1]
+    tis[i] = Population(x[2:end])
+  end
+end
+function Embryo(x::Tuple)
+  tis = Embroy(Vector{Tissue}(x[1]))
+  for i in 1:x[1]
+    tis[i] = Tissue(x[2:end])
+  end
+end
+
+Base.convert(::Type{Vector{Float64}}, em::Embryo) = error("temporarily disabled")
+Base.show(io::IO, x::Embryo) = invoke(show, Tuple{IO, Any}, io, x)
+Base.show(io::IO, ::MIME"text/plain", x::Embryo) = show(io, x)
 a = collect(1:3:30)
 @test MultiScaleModels.bisect_search(a,20) == 7
 @test MultiScaleModels.bisect_search(a,13) == 4
@@ -125,11 +149,28 @@ cell3 = cell1.+2
 @test (p.+2)[1] - p[1] == 2
 cell1./2
 
+size(cell1)
+Cell(size(cell1))
+
+t = 2
+p/zero(t)
+
+size(p)
+
+
+
+
 f = function (t,u,du)
   for i in eachindex(u)
     du[i] = 0.52*u[i]
   end
 end
 
+
+vem = @view [em,em][1:2]
+
 prob = ODEProblem(f,em)
 sol = solve(prob)
+
+em2 = similar(em)
+recursivecopy!(em2,em)
