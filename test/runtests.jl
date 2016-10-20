@@ -157,9 +157,6 @@ p/zero(t)
 
 size(p)
 
-
-
-
 f = function (t,u,du)
   for i in eachindex(u)
     du[i] = 0.52*u[i]

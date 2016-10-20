@@ -16,6 +16,7 @@ function .*(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
+*(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.*y
 *(m::AbstractMultiScaleModel,y::Number) = m.*y
 *(y::Number,m::AbstractMultiScaleModel) = m.*y
 
@@ -35,6 +36,7 @@ function .+(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
++(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.+y
 +(m::AbstractMultiScaleModel,y::Number) = m.+y
 +(y::Number,m::AbstractMultiScaleModel) = m.+y
 
@@ -91,5 +93,6 @@ function .-(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
+-(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.-y
 -(m::AbstractMultiScaleModel,y::Number) = m.-y
 -(y::Number,m::AbstractMultiScaleModel) = y.-m
