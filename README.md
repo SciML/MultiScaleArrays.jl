@@ -2,7 +2,7 @@
 
 
 [![Join the chat at https://gitter.im/JuliaDiffEq/Lobby](https://badges.gitter.im/JuliaDiffEq/Lobby.svg)](https://gitter.im/JuliaDiffEq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/ChrisRackauckas/MultiScaleModels.jl.svg?branch=master)](https://travis-ci.org/ChrisRackauckas/MultiScaleModels.jl)
+[![Build Status](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl.svg?branch=master)](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/vfi59h7s6bva5x0m?svg=true)](https://ci.appveyor.com/project/ChrisRackauckas/multiscalemodels-jl)
 [![Coverage Status](https://coveralls.io/repos/ChrisRackauckas/MultiScaleModels.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChrisRackauckas/MultiScaleModels.jl?branch=master)
 [![codecov.io](http://codecov.io/github/ChrisRackauckas/MultiScaleModels.jl/coverage.svg?branch=master)](http://codecov.io/github/ChrisRackauckas/MultiScaleModels.jl?branch=master)
@@ -28,7 +28,7 @@ You can add extra fields as you please, and even make the types immutable.
 The usage is best described by an example. Here we build a hierarchy where
 Embryos contain Tissues which contain Populations which contain Cells, and the
 cells contain proteins whose concentrations are modeled as simply a vector
-of numbers.
+of numbers (it can be anything linearly indexable).
 
 ```julia
 immutable Cell{T} <: MultiScaleModelLeaf
@@ -74,7 +74,7 @@ mimics a vector in order for usage in DifferentialEquations. So for example
 em[12]
 ```
 
-returns the 12th cell, counting by Embryo > Tissue > Population > Cell in order
+returns the "12th cell", counting by Embryo > Tissue > Population > Cell in order
 of the vectors. The linear indexing exists for every `AbstractMultiScaleModel`.
 These types act as full linear vectors, so standard operations do the sensical
 operations:
@@ -99,4 +99,4 @@ remove_daughter!(em,2,1) # Removes population 1 from tissue 2 of the embryo
 ```
 
 Combined with event handling, this allows for dynamic structures to be derived from
-low level behaviors. 
+low level behaviors.

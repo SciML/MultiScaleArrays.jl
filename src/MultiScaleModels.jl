@@ -1,35 +1,34 @@
 module MultiScaleModels
 
-import Base: length, push!, deleteat!,getindex, setindex!, eachindex
-abstract AbstractMultiScaleModel
-abstract MultiScaleModelLeaf <: AbstractMultiScaleModel
-abstract MultiScaleModelHead <: AbstractMultiScaleModel
-length(m::MultiScaleModelLeaf) = length(m.x)
-length(m::AbstractMultiScaleModel) = m.end_idxs[end]
-num_daughters(m::MultiScaleModelLeaf) = 0
-num_daughters(m::AbstractMultiScaleModel) = size(m.x)[1]
+import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
+       ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
+       linearindexing, .*, .+, *, +,/,./,-,.-
+abstract AbstractMultiScaleModel{T} <: AbstractArray{T,1}
+abstract MultiScaleModelLeaf{T} <: AbstractMultiScaleModel{T}
+abstract MultiScaleModelHead{T} <: AbstractMultiScaleModel{T}
 
-function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel}(::Type{T},x::Vector{T2})
-  end_idxs = Vector{Int}(length(x))
-  end_idxs[1] = length(x[1])
-  for i in 2:length(x)
-    end_idxs[i] = end_idxs[i-1] + length(x[i])
-  end
-  m = T(x,end_idxs)
-end
-
+include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")
+include("math.jl")
 
 # Types
 export AbstractMultiScaleModel, MultiScaleModelLeaf, MultiScaleModelHead
 
 # Constructors
-export construct
+export construct, similar, deepcopy
 
 # Addition Deletion
 export add_daughter!, remove_daughter!
 
 # Indexing
-export getindex, setindex!, eachindex, length, num_daughters
+export getindex, setindex!, eachindex, length, num_daughters,
+       ndims, size, broadcast_getindex, hcat, vcat, linearindexing
+
+# Math and Logic
+export ==, .*, .+, *, +,/,./,-,.-
+
+# Misc
+export print_matrix
+
 end # module

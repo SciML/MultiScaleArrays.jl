@@ -37,6 +37,8 @@ function bisect_search(a,i)
   =#
 end
 
+linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
+
 function getindex(m::AbstractMultiScaleModel,i::Int)
   idx = bisect_search(m.end_idxs,i)+1 # +1 for 1-based indexing
   if idx > 1
@@ -57,8 +59,28 @@ function getindex(m::MultiScaleModelLeaf,i::Int)
   m.x[i]
 end
 
+function getindex(m::MultiScaleModelLeaf,i::Int...)
+  m.x[i]
+end
+
+function getindex(m::AbstractMultiScaleModel,i...)
+  m.x[i[1]][i[2:end]...]
+end
+
+function getindex(m::MultiScaleModelLeaf,i...)
+  m.x[i[1]]
+end
+
 function setindex!(m::MultiScaleModelLeaf,x,i::Int)
   m.x[i] = x
+end
+
+function setindex!(m::MultiScaleModelLeaf,x,i::Int...)
+  m.x[i[1]] = x
+end
+
+function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
+  m.x[i[1]][i[2:end]...] = x
 end
 
 function getindex(m::AbstractMultiScaleModel,::Colon)
@@ -66,3 +88,7 @@ function getindex(m::AbstractMultiScaleModel,::Colon)
 end
 
 eachindex(m::AbstractMultiScaleModel) = 1:length(m)
+
+#broadcast_getindex(m::MultiScaleModelLeaf,i::Int)    =  (println("here");m[i])
+#broadcast_getindex(m::AbstractMultiScaleModel,i::Int)    =  (println("here");m[i])
+#broadcast_getindex(m::AbstractMultiScaleModel,i::Int...) = m[i]
