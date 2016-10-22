@@ -4,8 +4,8 @@
 [![Join the chat at https://gitter.im/JuliaDiffEq/Lobby](https://badges.gitter.im/JuliaDiffEq/Lobby.svg)](https://gitter.im/JuliaDiffEq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl.svg?branch=master)](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/vfi59h7s6bva5x0m?svg=true)](https://ci.appveyor.com/project/ChrisRackauckas/multiscalemodels-jl)
-[![Coverage Status](https://coveralls.io/repos/ChrisRackauckas/MultiScaleModels.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChrisRackauckas/MultiScaleModels.jl?branch=master)
-[![codecov.io](http://codecov.io/github/ChrisRackauckas/MultiScaleModels.jl/coverage.svg?branch=master)](http://codecov.io/github/ChrisRackauckas/MultiScaleModels.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleModels.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleModels.jl)
+[![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl)
 
 MultiScaleModels.jl allows you to easily build multiple scale models which are
 fully compatible with the DifferentialEquations.jl ecosystem. These models utilize
