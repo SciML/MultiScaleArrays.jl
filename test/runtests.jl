@@ -1,5 +1,27 @@
-using MultiScaleModels, DifferentialEquations
+using DifferentialEquations
+using MultiScaleModels
 using Base.Test
+
+macro define_hierarchy(BottomType,names)
+ quote
+   name = $(esc(names))[1]
+   immutable $(esc(name)){$(esc(BottomType))} <: MultiScaleModelLeaf{$(esc(BottomType))}
+     x::Vector{$(esc(BottomType))}
+   end
+   #=
+   $((quote
+     immutable $(esc(names.args[i])){$(esc(BottomType))<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+       x::Vector{T}
+       end_idxs::Vector{Int}
+     end
+      end for i in 2:length(names.args))...)
+      =#
+ end
+end
+
+@show macroexpand(:(@define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])))
+
+@define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])
 
 immutable Cell{T} <: MultiScaleModelLeaf{T}
   x::Vector{T}
@@ -31,15 +53,12 @@ function Tissue(x::Tuple)
   end
 end
 function Embryo(x::Tuple)
-  tis = Embroy(Vector{Tissue}(x[1]))
+  tis = Embryo(Vector{Tissue}(x[1]))
   for i in 1:x[1]
     tis[i] = Tissue(x[2:end])
   end
 end
 
-Base.convert(::Type{Vector{Float64}}, em::Embryo) = error("temporarily disabled")
-Base.show(io::IO, x::Embryo) = invoke(show, Tuple{IO, Any}, io, x)
-Base.show(io::IO, ::MIME"text/plain", x::Embryo) = show(io, x)
 a = collect(1:3:30)
 @test MultiScaleModels.bisect_search(a,20) == 7
 @test MultiScaleModels.bisect_search(a,13) == 4
@@ -171,3 +190,5 @@ sol = solve(prob)
 
 em2 = similar(em)
 recursivecopy!(em2,em)
+@test em[5] == em2[5]
+@test em != em2
