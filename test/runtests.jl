@@ -1,27 +1,29 @@
-using DifferentialEquations
-using MultiScaleModels
+using MultiScaleModels, OrdinaryDiffEq
 using Base.Test
 
+#=
 macro define_hierarchy(BottomType,names)
  quote
    name = $(esc(names))[1]
    immutable $(esc(name)){$(esc(BottomType))} <: MultiScaleModelLeaf{$(esc(BottomType))}
      x::Vector{$(esc(BottomType))}
    end
-   #=
+
    $((quote
      immutable $(esc(names.args[i])){$(esc(BottomType))<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
        x::Vector{T}
        end_idxs::Vector{Int}
      end
       end for i in 2:length(names.args))...)
-      =#
+
  end
 end
-
+      =#
+#=
 @show macroexpand(:(@define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])))
 
 @define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])
+=#
 
 immutable Cell{T} <: MultiScaleModelLeaf{T}
   x::Vector{T}
