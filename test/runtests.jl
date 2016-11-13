@@ -1,4 +1,4 @@
-using MultiScaleModels, OrdinaryDiffEq
+using MultiScaleModels, OrdinaryDiffEq, DiffEqBase
 using Base.Test
 
 #=
@@ -187,7 +187,7 @@ end
 
 vem = @view [em,em][1:2]
 
-prob = ODEProblem(f,em)
+prob = ODEProblem(f,em,(0.0,1.0))
 sol = solve(prob)
 
 em2 = similar(em)

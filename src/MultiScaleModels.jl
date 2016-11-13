@@ -3,7 +3,7 @@ module MultiScaleModels
 import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
        linearindexing, .*, .+, *, +,/,./,-,.-,show
-import DiffEqBase: recursivecopy!
+import RecursiveArrayTools: recursivecopy!
 abstract AbstractMultiScaleModel{T} <: AbstractArray{T,1}
 abstract MultiScaleModelLeaf{T} <: AbstractMultiScaleModel{T}
 abstract MultiScaleModelHead{T} <: AbstractMultiScaleModel{T}
