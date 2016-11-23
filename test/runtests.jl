@@ -188,7 +188,7 @@ end
 vem = @view [em,em][1:2]
 
 prob = ODEProblem(f,em,(0.0,1.0))
-sol = solve(prob)
+sol = solve(prob,Tsit5())
 
 em2 = similar(em)
 recursivecopy!(em2,em)
