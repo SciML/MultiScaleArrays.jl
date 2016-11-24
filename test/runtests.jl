@@ -1,4 +1,4 @@
-using MultiScaleModels, OrdinaryDiffEq, DiffEqBase
+using MultiScaleModels, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
 using Base.Test
 
 #=
@@ -61,11 +61,12 @@ function Embryo(x::Tuple)
   end
 end
 
-a = collect(1:3:30)
+a = collect(3:3:30)
 @test MultiScaleModels.bisect_search(a,20) == 7
-@test MultiScaleModels.bisect_search(a,13) == 4
-for i = 1:28
-  @test MultiScaleModels.bisect_search(a,i) == ((i+1)÷3)
+@test MultiScaleModels.bisect_search(a,13) == 5
+@test MultiScaleModels.bisect_search(a,12) == 4
+for i = 1:30
+  @test MultiScaleModels.bisect_search(a,i) == ((i-1)÷3)+1 #+1 for 1-based indexing
 end
 
 
@@ -183,12 +184,53 @@ f = function (t,u,du)
     du[i] = 0.52*u[i]
   end
 end
-
+g = function (t,u,du)
+  for i in eachindex(u)
+    du[i] = 0.52*u[i]
+  end
+end
 
 vem = @view [em,em][1:2]
 
-prob = ODEProblem(f,em,(0.0,1.0))
-sol = solve(prob,Tsit5())
+prob = ODEProblem(f,em,(0.0,1000.0))
+@time sol1 = solve(prob,Tsit5(),save_timeseries=false)
+
+prob = ODEProblem(f,em[:],(0.0,1000.0))
+@time sol2 = solve(prob,Tsit5(),save_timeseries=false)
+@test sol1.t == sol2.t
+
+# Check stepping behavior matches array
+srand(100)
+prob = SDEProblem(f,g,em,(0.0,5.0))
+@time sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2)
+
+srand(100)
+prob = SDEProblem(f,g,em[:],(0.0,5.0))
+@time sol2 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2)
+@test sol1.t == sol2.t
+
+# Profile
+srand(100)
+prob = SDEProblem(f,g,em,(0.0,100.0))
+@time sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
+#@profile sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
+#ProfileView.view()
+srand(100)
+prob = SDEProblem(f,g,em[:],(0.0,100.0))
+@time sol2 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
+
+function test_loop(a)
+  for i in eachindex(a)
+    a[i] = a[i] + 1
+  end
+end
+@time test_loop(em)
+@time test_loop(em[:])
+@time em[5]
+a = em[:]
+@time a[1]
+
+#sol = solve(prob,EM())
 
 em2 = similar(em)
 recursivecopy!(em2,em)

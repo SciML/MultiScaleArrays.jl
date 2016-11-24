@@ -1,46 +1,25 @@
 function bisect_search(a,i)
-  length(a) - sum(map((x)->x>=i,a))
-
-  ## My bisection sucks... please fix it.
-
-  #=
-  ### Bisection serach for the index closet index s.t. a[idx]<i
-  if a[end]<=i
-    return length(a)
-  end
-  L = 0; R = length(a)-1; M = 0
+  L=1; R=length(a)
   while true
-    M = (L+R)÷2
-    println("$L $M $R")
-    if R-L <= 1
-      break
+    L>R && error("Left > Right in Bisection. Failed")
+    m = floor(Int,.5*(L+R))
+    if a[m] == i
+      return m
+    elseif R==L
+      return L
+    elseif a[m] < i
+      L = m+1
+    elseif a[m] > i
+      R = m
     end
-    if a[M] > i
-      R = M
-    elseif a[M] < i
-      L = M
-    end
   end
-  if R == 1
-    return a[1]>i
-  end
-  if L == R
-    return L
-  end
-  println(a[M])
-  if a[M] == R
-    idx = R
-  else
-    idx = L
-  end
-  idx
-  =#
+  #length(a) - sum(map((x)->x>=i,a))
 end
 
 linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
 
 function getindex(m::AbstractMultiScaleModel,i::Int)
-  idx = bisect_search(m.end_idxs,i)+1 # +1 for 1-based indexing
+  idx = bisect_search(m.end_idxs,i)
   if idx > 1
     i = i-m.end_idxs[idx-1]
   end
@@ -48,7 +27,7 @@ function getindex(m::AbstractMultiScaleModel,i::Int)
 end
 
 function setindex!(m::AbstractMultiScaleModel,x,i::Int)
-  idx = bisect_search(m.end_idxs,i)+1 # +1 for 1-based indexing
+  idx = bisect_search(m.end_idxs,i) # +1 for 1-based indexing
   if idx > 1
     i = i-m.end_idxs[idx-1]
   end
@@ -64,10 +43,15 @@ function getindex(m::MultiScaleModelLeaf,i::Int...)
 end
 
 function getindex(m::AbstractMultiScaleModel,i...)
+  @show i
   m.x[i[1]][i[2:end]...]
 end
 
 function getindex(m::MultiScaleModelLeaf,i...)
+  m.x[i[1]]
+end
+
+function getindex(m::MultiScaleModelLeaf,i::CartesianIndex{1})
   m.x[i[1]]
 end
 
@@ -87,7 +71,16 @@ function getindex(m::AbstractMultiScaleModel,::Colon)
   [m[i] for i in 1:length(m)]
 end
 
+function getindex(m::AbstractMultiScaleModel,i::CartesianIndex{1}) # (i,)
+  m[i[1]]
+end
+
 eachindex(m::AbstractMultiScaleModel) = 1:length(m)
+endof(m::AbstractMultiScaleModel) = length(m)
+
+Base.start(::AbstractMultiScaleModel) = 1
+Base.next(S::AbstractMultiScaleModel, state) = (S[state], state+1)
+Base.done(S::AbstractMultiScaleModel, state) = state > length(S);
 
 #broadcast_getindex(m::MultiScaleModelLeaf,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleModel,i::Int)    =  (println("here");m[i])
