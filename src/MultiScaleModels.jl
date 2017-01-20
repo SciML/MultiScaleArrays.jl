@@ -4,9 +4,9 @@ import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
        linearindexing, .*, .+, *, +,/,./,-,.-,show
 import RecursiveArrayTools: recursivecopy!
-abstract AbstractMultiScaleModel{T} <: AbstractArray{T,1}
-abstract MultiScaleModelLeaf{T} <: AbstractMultiScaleModel{T}
-abstract MultiScaleModelHead{T} <: AbstractMultiScaleModel{T}
+abstract AbstractMultiScaleModel{B} <: AbstractArray{B,1}
+abstract MultiScaleModelLeaf{B} <: AbstractMultiScaleModel{B}
+abstract MultiScaleModelHead{B} <: AbstractMultiScaleModel{B}
 
 Base.show(io::IO, x::AbstractMultiScaleModel) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleModel) = show(io, x)

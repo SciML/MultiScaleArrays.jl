@@ -25,19 +25,24 @@ end
 @define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])
 =#
 
-immutable Cell{T} <: MultiScaleModelLeaf{T}
-  x::Vector{T}
+### Setup a hierarchy
+
+immutable Cell{B} <: MultiScaleModelLeaf{B}
+  x::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+immutable Population{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+immutable Tissue{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleModel} <: MultiScaleModelHead{Float64}
+immutable Embryo{T<:AbstractMultiScaleModel,B<:Number} <: MultiScaleModelHead{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
 
@@ -60,6 +65,8 @@ function Embryo(x::Tuple)
     tis[i] = Tissue(x[2:end])
   end
 end
+
+#### End Setup
 
 a = collect(3:3:30)
 @test MultiScaleModels.bisect_search(a,20) == 7
