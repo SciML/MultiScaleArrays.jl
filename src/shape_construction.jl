@@ -9,9 +9,9 @@ size(m::AbstractMultiScaleModel) = (length(m),)
 
 function similar(m::AbstractMultiScaleModel)
   m_new = construct(typeof(m),deepcopy(m.x),copy(m.y)) # Copy because y is a vector!
-  for i in eachindex(m.x) # Is this necessary?
-    m_new.x[i] = similar(m.x[i])
-  end
+  #for i in eachindex(m.x) # Is this necessary?
+  #  m_new.x[i] = similar(m.x[i])
+  #end
   m_new
 end
 
