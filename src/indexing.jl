@@ -93,10 +93,7 @@ end
 eachindex(m::AbstractMultiScaleModel) = 1:length(m)
 endof(m::AbstractMultiScaleModel) = length(m)
 
-Base.start(::AbstractMultiScaleModel) = 1
-Base.next(S::AbstractMultiScaleModel, state) = (S[state], state+1)
-Base.done(S::AbstractMultiScaleModel, state) = state > length(S);
-
+Base.eltype{B}(S::AbstractMultiScaleModel{B}) = B
 #broadcast_getindex(m::MultiScaleModelLeaf,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleModel,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleModel,i::Int...) = m[i]
