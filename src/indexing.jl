@@ -20,12 +20,10 @@ linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
 
 function getindex(m::AbstractMultiScaleModel,i::Int)
   idx = bisect_search(m.end_idxs,i)
-  @show idx,i
   if idx > 1
     i = i-m.end_idxs[idx-1] # also works with y
   end
-  @show idx,i
-  if idx < length(m.end_idxs)
+  if isempty(m.y) || idx < length(m.end_idxs)
     return m.x[idx][i]
   else
     return m.y[i]
@@ -37,7 +35,7 @@ function setindex!(m::AbstractMultiScaleModel,x,i::Int)
   if idx > 1
     i = i-m.end_idxs[idx-1]
   end
-  if idx < length(m.end_idxs)
+  if isempty(m.y) || idx < length(m.end_idxs)
     m.x[idx][i] = x
   else
     m.y[i] = x
@@ -53,7 +51,7 @@ function getindex(m::MultiScaleModelLeaf,i::Int...)
 end
 
 function getindex(m::AbstractMultiScaleModel,i...)
-  if i[1] < length(m.end_idxs)
+  if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...]
   else
     m.y[i[2:end]...]
@@ -77,7 +75,7 @@ function setindex!(m::MultiScaleModelLeaf,x,i::Int...)
 end
 
 function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
-  if i[1] < length(m.end_idxs)
+  if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...] = x
   else
     m.y[i[2:end]...] = x

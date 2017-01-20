@@ -28,12 +28,14 @@ function construct{T<:MultiScaleModelLeaf,T2}(::Type{T},x::Vector{T2})
 end
 
 function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3})
-  end_idxs = Vector{Int}(length(x)+1)
+  end_idxs = Vector{Int}(length(x))
   end_idxs[1] = length(x[1])
-  for i in 2:length(x)-1
+  for i in 2:length(x)
     end_idxs[i] = end_idxs[i-1] + length(x[i])
   end
-  end_idxs[length(x)] = end_idxs[length(x)-1] + length(y)
+  if !isempty(y)
+    push!(end_idxs,end_idxs[end] + length(y))
+  end
   m = T(x,y,end_idxs)
 end
 
