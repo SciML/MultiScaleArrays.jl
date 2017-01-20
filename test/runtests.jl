@@ -25,19 +25,24 @@ end
 @define_hierarchy(Float64,[:Cell,:Population,:Tissue,:Embryo])
 =#
 
-immutable Cell{T} <: MultiScaleModelLeaf{T}
-  x::Vector{T}
+### Setup a hierarchy
+
+immutable Cell{B} <: MultiScaleModelLeaf{B}
+  x::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+immutable Population{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+immutable Tissue{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleModel} <: MultiScaleModelHead{Float64}
+immutable Embryo{T<:AbstractMultiScaleModel,B<:Number} <: MultiScaleModelHead{B}
   x::Vector{T}
+  y::Vector{B}
   end_idxs::Vector{Int}
 end
 
@@ -60,6 +65,8 @@ function Embryo(x::Tuple)
     tis[i] = Tissue(x[2:end])
   end
 end
+
+#### End Setup
 
 a = collect(3:3:30)
 @test MultiScaleModels.bisect_search(a,20) == 7
@@ -236,3 +243,45 @@ em2 = similar(em)
 recursivecopy!(em2,em)
 @test em[5] == em2[5]
 @test em != em2
+
+### Non-Empty y
+
+p = construct(Population,deepcopy([cell1,cell2]),[1.;2;3])
+
+@test p[1] == 1
+@test p[2] == 2
+@test p[3] == 3
+@test p[4] == 4
+@test p[5] == 5
+@test p[6] == 1
+@test p[7] == 2
+@test p[8] == 3
+
+sim_p  = similar(p)
+@test length(sim_p) == length(p)
+@test length(sim_p.x[1]) == length(p.x[1])
+@test !(sim_p.x[1]===p.x[1])
+
+p2 = construct(Population,deepcopy([cell3,cell4]),[11.;12;13])
+
+tis = construct(Tissue,deepcopy([p,p2]))
+
+@test length(tis) == length(p) + length(p2)
+
+@test tis[1] == 1
+@test tis[2] == 2
+@test tis[3] == 3
+@test tis[4] == 4
+@test tis[5] == 5
+@test tis[6] == 1
+@test tis[7] == 2
+@test tis[8] == 3
+@test tis[9] == p2[1]
+@test tis[10] == p2[2]
+@test tis[11] == p2[3]
+@test tis[11] == p2[3]
+@test tis[12] == p2[4]
+@test tis[13] == p2[5]
+@test tis[14] == p2[6]
+@test tis[15] == p2[7]
+@test tis[16] == p2[8]
