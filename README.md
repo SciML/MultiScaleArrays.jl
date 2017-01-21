@@ -13,6 +13,10 @@ you to describe equations on different levels, using aggregations from lower
 levels to describe complex systems. Their structure allows for complex and dynamic
 models to be developed without losing much performance.
 
+## Idea
+
+The idea behind MultiScaleModels is simple. The `*DiffEq` solvers (OrdinaryDiffEq.jl, StochasticDiffEq.jl, DelayDiffEq.jl, etc.) in their efficient in-place form all work with any Julia-defined `AbstractArray` which has a linear index. Thus, to define our multiscale model, we develop a type which has an efficient linear index. One can think of representing cells with proteins as each being an array with values for each protein. The linear index of the multiscale model would be indexing through each protein of each cell. With proper index overloads, one can define a type such that `a[i]` does just that, and thus it will work in the differential equation solvers. MultiScaleModels.jl takes that further by allowing one to recursively define an arbitrary `n`-level hierarchical model which has efficient indexing structures. The result is a type which models complex behavior, but the standard differential equation solvers will work directly and efficiently on this type, making it easy to develop novel models without having to re-develop advanced adaptive/stiff/stochastic/etc. solving techniques for each new model.
+
 ## Defining A MultiScaleModel: The Interface
 
 The required interface is as follows. Leaf types must extend MultiScaleModelLeaf, the
