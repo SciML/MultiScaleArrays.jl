@@ -18,7 +18,7 @@ end
 
 linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
 
-function getindex(m::AbstractMultiScaleModel,i::Int)
+@inline function getindex(m::AbstractMultiScaleModel,i::Int)
   idx = bisect_search(m.end_idxs,i)
   if idx > 1
     i = i-m.end_idxs[idx-1] # also works with y
@@ -30,7 +30,7 @@ function getindex(m::AbstractMultiScaleModel,i::Int)
   end
 end
 
-function setindex!(m::AbstractMultiScaleModel,x,i::Int)
+@inline function setindex!(m::AbstractMultiScaleModel,x,i::Int)
   idx = bisect_search(m.end_idxs,i) # +1 for 1-based indexing
   if idx > 1
     i = i-m.end_idxs[idx-1]
@@ -42,15 +42,15 @@ function setindex!(m::AbstractMultiScaleModel,x,i::Int)
   end
 end
 
-function getindex(m::MultiScaleModelLeaf,i::Int)
+@inline function getindex(m::MultiScaleModelLeaf,i::Int)
   m.x[i]
 end
 
-function getindex(m::MultiScaleModelLeaf,i::Int...)
+@inline function getindex(m::MultiScaleModelLeaf,i::Int...)
   m.x[i[1]]
 end
 
-function getindex(m::AbstractMultiScaleModel,i...)
+@inline function getindex(m::AbstractMultiScaleModel,i...)
   if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...]
   else
@@ -58,23 +58,23 @@ function getindex(m::AbstractMultiScaleModel,i...)
   end
 end
 
-function getindex(m::MultiScaleModelLeaf,i...)
+@inline function getindex(m::MultiScaleModelLeaf,i...)
   m.x[i[1]]
 end
 
-function getindex(m::MultiScaleModelLeaf,i::CartesianIndex{1})
+@inline function getindex(m::MultiScaleModelLeaf,i::CartesianIndex{1})
   m.x[i[1]]
 end
 
-function setindex!(m::MultiScaleModelLeaf,x,i::Int)
+@inline function setindex!(m::MultiScaleModelLeaf,x,i::Int)
   m.x[i] = x
 end
 
-function setindex!(m::MultiScaleModelLeaf,x,i::Int...)
+@inline function setindex!(m::MultiScaleModelLeaf,x,i::Int...)
   m.x[i[1]] = x
 end
 
-function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
+@inline function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
   if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...] = x
   else
@@ -82,15 +82,15 @@ function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
   end
 end
 
-function getindex(m::AbstractMultiScaleModel,::Colon)
+@inline function getindex(m::AbstractMultiScaleModel,::Colon)
   [m[i] for i in 1:length(m)]
 end
 
-function getindex(m::MultiScaleModelLeaf,::Colon)
+@inline function getindex(m::MultiScaleModelLeaf,::Colon)
   m.x
 end
 
-function getindex(m::AbstractMultiScaleModel,i::CartesianIndex{1}) # (i,)
+@inline function getindex(m::AbstractMultiScaleModel,i::CartesianIndex{1}) # (i,)
   m[i[1]]
 end
 

@@ -101,6 +101,10 @@ p = construct(Population,deepcopy([cell1,cell2]))
 @test p[5] == 5
 
 sim_p  = similar(p)
+sim_p_arr  = similar(p,indices(p))
+
+@test typeof(sim_p) <: Population
+@test typeof(sim_p_arr) <: Vector{Float64}
 @test length(sim_p) == length(p)
 @test length(sim_p.x[1]) == length(p.x[1])
 @test !(sim_p.x[1]===p.x[1])
@@ -190,43 +194,36 @@ size(p)
 
 f = function (t,u,du)
   for i in eachindex(u)
-    du[i] = 0.52*u[i]
+    du[i] = 0.42*u[i]
   end
 end
 g = function (t,u,du)
   for i in eachindex(u)
-    du[i] = 0.52*u[i]
+    du[i] = 0.42*u[i]
   end
 end
 
 vem = @view [em,em][1:2]
 
-prob = ODEProblem(f,em,(0.0,1000.0))
+prob = ODEProblem(f,em,(0.0,1500.0))
 @time sol1 = solve(prob,Tsit5(),save_timeseries=false)
 
-prob = ODEProblem(f,em[:],(0.0,1000.0))
+prob = ODEProblem(f,em[:],(0.0,1500.0))
 @time sol2 = solve(prob,Tsit5(),save_timeseries=false)
 @test sol1.t == sol2.t
 
+prob = ODEProblem(f,em,(0.0,1500.0))
+sol1 = solve(prob,Tsit5())
+
 # Check stepping behavior matches array
 srand(100)
-prob = SDEProblem(f,g,em,(0.0,5.0))
-@time sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2)
+prob = SDEProblem(f,g,em,(0.0,1000.0))
+@time sol1 = solve(prob,SRIW1(),progress=false,abstol=1e-2,reltol=1e-2,save_timeseries=false)
 
 srand(100)
-prob = SDEProblem(f,g,em[:],(0.0,5.0))
-@time sol2 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2)
+prob = SDEProblem(f,g,em[:],(0.0,1000.0))
+@time sol2 = solve(prob,SRIW1(),progress=false,abstol=1e-2,reltol=1e-2,save_timeseries=false)
 @test sol1.t == sol2.t
-
-# Profile
-srand(100)
-prob = SDEProblem(f,g,em,(0.0,100.0))
-@time sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
-#@profile sol1 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
-#ProfileView.view()
-srand(100)
-prob = SDEProblem(f,g,em[:],(0.0,100.0))
-@time sol2 = solve(prob,SRIW1(),progress=true,abstol=1e-2,reltol=1e-2,save_timeseries=false)
 
 function test_loop(a)
   for i in eachindex(a)
