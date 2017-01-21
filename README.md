@@ -201,7 +201,7 @@ and mutatate `tis.y` in `f`. For example, we could have
 
 ```julia
 function f(t,tis::Tissue,du)
-  tis.y += randn(3)
+  tis.y .+= randn(3)
 end
 ```
 
