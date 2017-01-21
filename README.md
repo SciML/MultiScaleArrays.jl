@@ -135,7 +135,7 @@ level. Using `level_iter_idx`, we can have its changes update some other head no
 `d_em` via:
 
 ```julia
-for cell in level_iter_idx(em,2)
+for (cell,y,z) in level_iter_idx(em,2)
   f(t,cell,@view d_em[y:z])
 end
 ```
@@ -173,7 +173,7 @@ Then we'd construct cells with `cell3 = Cell([3.0;2.0;5.0],:BCell)`, and can
 give it a cell type. This information is part of the call, so
 
 ```julia
-for cell in level_iter_idx(em,2)
+for (cell,y,z) in level_iter_idx(em,2)
   f(t,cell,@view d_em[y:z])
 end
 ```
@@ -192,7 +192,7 @@ tis = construct(Tissue,deepcopy([p;p2]),[0.0;0.0;0.0])
 We can selectively apply some function on these `y` values via:
 
 ```julia
-for tis in level_iter_idx(em,1)
+for (tis,y,z) in level_iter_idx(em,1)
   f(t,tis,@view d_em[y:z])
 end
 ```
