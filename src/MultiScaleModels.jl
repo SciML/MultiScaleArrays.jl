@@ -4,6 +4,7 @@ import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
        linearindexing, .*, .+, *, +,/,./,-,.-,show
 import RecursiveArrayTools: recursivecopy!
+using Iterators
 abstract AbstractMultiScaleModel{B} <: AbstractArray{B,1}
 abstract MultiScaleModelLeaf{B} <: AbstractMultiScaleModel{B}
 abstract MultiScaleModelHead{B} <: AbstractMultiScaleModel{B}
@@ -15,6 +16,7 @@ include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")
 include("math.jl")
+include("level_iterations.jl")
 
 # Types
 export AbstractMultiScaleModel, MultiScaleModelLeaf, MultiScaleModelHead
@@ -34,5 +36,7 @@ export ==, .*, .+, *, +,/,./,-,.-
 
 # Misc
 export print_matrix
+
+export level_iter,LevelIterIdx, level_iter_idx
 
 end # module

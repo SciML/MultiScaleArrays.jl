@@ -27,7 +27,7 @@ function construct{T<:MultiScaleModelLeaf,T2}(::Type{T},x::Vector{T2})
   T(x)
 end
 
-function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3})
+function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3}=Float64[])
   end_idxs = Vector{Int}(length(x))
   end_idxs[1] = length(x[1])
   for i in 2:length(x)
@@ -38,8 +38,6 @@ function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Nu
   end
   m = T(x,y,end_idxs)
 end
-
-construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel}(::Type{T},x::Vector{T2}) = construct(T,x,Float64[])
 
 function vcat(m1::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   error("AbstractMultiScaleModels cannot be concatenated")

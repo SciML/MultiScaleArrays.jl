@@ -86,6 +86,10 @@ function getindex(m::AbstractMultiScaleModel,::Colon)
   [m[i] for i in 1:length(m)]
 end
 
+function getindex(m::MultiScaleModelLeaf,::Colon)
+  m.x
+end
+
 function getindex(m::AbstractMultiScaleModel,i::CartesianIndex{1}) # (i,)
   m[i[1]]
 end

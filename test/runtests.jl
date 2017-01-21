@@ -128,6 +128,8 @@ tis3 = construct(Tissue,deepcopy([p,p2]))
 
 add_daughter!(em,tis3)
 
+em_save = deepcopy(em)
+
 @test length(em) == 30
 @test em.x[1] != tis #There was a deepcopy
 @test em.x[3] == tis3 #No deepcopy
@@ -243,6 +245,42 @@ em2 = similar(em)
 recursivecopy!(em2,em)
 @test em[5] == em2[5]
 @test em != em2
+
+## Level iterators
+
+em = em_save
+level_iter(em,1) == em.x
+for (i,p) in enumerate(level_iter(em,2))
+  if i == 1
+    @test p == em.x[1].x[1]
+  elseif i == 2
+    @test p == em.x[1].x[2]
+  elseif i == 3
+    @test p == em.x[2].x[1]
+  elseif i == 4
+    @test p == em.x[2].x[2]
+  elseif i == 5
+    @test p == em.x[3].x[1]
+  elseif i == 6
+    @test p == em.x[3].x[2]
+  elseif i > 6
+    error("you shouldn't be here")
+  end
+end
+
+em_arr = em[:]
+
+for (x,y,z) in LevelIterIdx(em,1)
+  @test maximum(em_arr[y:z]- x[:]) ==0
+end
+
+for (x,y,z) in LevelIterIdx(em,2)
+  @test maximum(em_arr[y:z]- x[:]) ==0
+end
+
+for (x,y,z) in LevelIterIdx(em,3)
+  @test maximum(em_arr[y:z]- x[:]) ==0
+end
 
 ### Non-Empty y
 
