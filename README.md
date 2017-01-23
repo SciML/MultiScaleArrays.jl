@@ -7,11 +7,14 @@
 [![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl)
 
 MultiScaleModels.jl allows you to easily build multiple scale models which are
-fully compatible with the DifferentialEquations.jl ecosystem. These models utilize
+fully compatible with native Julia scientific computing packages like 
+DifferentialEquations.jl or Optim.jl. These models utilize
 a tree structure to describe phenomena of multiple scales, but the interface allows
 you to describe equations on different levels, using aggregations from lower
 levels to describe complex systems. Their structure allows for complex and dynamic
-models to be developed without losing much performance.
+models to be developed without losing much performance. In the end, they present
+themselves as an `AbstractArray` to standard solvers, allowing them to be used
+in place of a `Vector` in any appropriately made Julia package.
 
 ## Idea
 
