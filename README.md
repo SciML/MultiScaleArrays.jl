@@ -114,7 +114,7 @@ mimics a vector in order for usage in DifferentialEquations. So for example
 em[12]
 ```
 
-returns the "12th cell", counting by Embryo > Tissue > Population > Cell in order
+returns the "12th protein", counting by Embryo > Tissue > Population > Cell in order
 of the vectors. The linear indexing exists for every `AbstractMultiScaleModel`.
 These types act as full linear vectors, so standard operations do the sensical
 operations:
