@@ -12,7 +12,7 @@ DifferentialEquations.jl or Optim.jl. These models utilize
 a tree structure to describe phenomena of multiple scales, but the interface allows
 you to describe equations on different levels, using aggregations from lower
 levels to describe complex systems. Their structure allows for complex and dynamic
-models to be developed without losing much performance. In the end, they present
+models to be developed with only a small performance difference. In the end, they present
 themselves as an `AbstractArray` to standard solvers, allowing them to be used
 in place of a `Vector` in any appropriately made Julia package.
 
@@ -136,7 +136,7 @@ With proper index overloads, one can define a type such that `a[i]` does just th
 and thus it will work in the differential equation solvers. MultiScaleModels.jl
 takes that further by allowing one to recursively define an arbitrary `n`-level
 hierarchical model which has efficient indexing structures. The result is a type
-which models complex behavior, but the standard differential equation solvers will 
+which models complex behavior, but the standard differential equation solvers will
 work directly and efficiently on this type, making it easy to develop novel models
 without having to re-develop advanced adaptive/stiff/stochastic/etc. solving
 techniques for each new model.
