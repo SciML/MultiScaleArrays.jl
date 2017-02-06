@@ -16,7 +16,7 @@ function bisect_search(a,i)
   #length(a) - sum(map((x)->x>=i,a))
 end
 
-linearindexing(m::AbstractMultiScaleModel) = Base.LinearFast()
+linearindexing{T<:AbstractMultiScaleModel}(::Type{T}) = Base.LinearFast()
 
 @inline function getindex(m::AbstractMultiScaleModel,i::Int)
   idx = bisect_search(m.end_idxs,i)
