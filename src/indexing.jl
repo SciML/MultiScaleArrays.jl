@@ -16,9 +16,9 @@ function bisect_search(a,i)
   #length(a) - sum(map((x)->x>=i,a))
 end
 
-linearindexing{T<:AbstractMultiScaleModel}(::Type{T}) = Base.LinearFast()
+linearindexing{T<:AbstractMultiScaleArray}(::Type{T}) = Base.LinearFast()
 
-@inline function getindex(m::AbstractMultiScaleModel,i::Int)
+@inline function getindex(m::AbstractMultiScaleArray,i::Int)
   idx = bisect_search(m.end_idxs,i)
   if idx > 1
     i = i-m.end_idxs[idx-1] # also works with y
@@ -30,7 +30,7 @@ linearindexing{T<:AbstractMultiScaleModel}(::Type{T}) = Base.LinearFast()
   end
 end
 
-@inline function setindex!(m::AbstractMultiScaleModel,x,i::Int)
+@inline function setindex!(m::AbstractMultiScaleArray,x,i::Int)
   idx = bisect_search(m.end_idxs,i) # +1 for 1-based indexing
   if idx > 1
     i = i-m.end_idxs[idx-1]
@@ -42,15 +42,15 @@ end
   end
 end
 
-@inline function getindex(m::MultiScaleModelLeaf,i::Int)
+@inline function getindex(m::MultiScaleArrayLeaf,i::Int)
   m.x[i]
 end
 
-@inline function getindex(m::MultiScaleModelLeaf,i::Int...)
+@inline function getindex(m::MultiScaleArrayLeaf,i::Int...)
   m.x[i[1]]
 end
 
-@inline function getindex(m::AbstractMultiScaleModel,i...)
+@inline function getindex(m::AbstractMultiScaleArray,i...)
   if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...]
   else
@@ -58,23 +58,23 @@ end
   end
 end
 
-@inline function getindex(m::MultiScaleModelLeaf,i...)
+@inline function getindex(m::MultiScaleArrayLeaf,i...)
   m.x[i[1]]
 end
 
-@inline function getindex(m::MultiScaleModelLeaf,i::CartesianIndex{1})
+@inline function getindex(m::MultiScaleArrayLeaf,i::CartesianIndex{1})
   m.x[i[1]]
 end
 
-@inline function setindex!(m::MultiScaleModelLeaf,x,i::Int)
+@inline function setindex!(m::MultiScaleArrayLeaf,x,i::Int)
   m.x[i] = x
 end
 
-@inline function setindex!(m::MultiScaleModelLeaf,x,i::Int...)
+@inline function setindex!(m::MultiScaleArrayLeaf,x,i::Int...)
   m.x[i[1]] = x
 end
 
-@inline function setindex!(m::AbstractMultiScaleModel,x,i::Int...)
+@inline function setindex!(m::AbstractMultiScaleArray,x,i::Int...)
   if isempty(m.y) || i[1] < length(m.end_idxs)
     m.x[i[1]][i[2:end]...] = x
   else
@@ -82,22 +82,22 @@ end
   end
 end
 
-@inline function getindex(m::AbstractMultiScaleModel,::Colon)
+@inline function getindex(m::AbstractMultiScaleArray,::Colon)
   [m[i] for i in 1:length(m)]
 end
 
-@inline function getindex(m::MultiScaleModelLeaf,::Colon)
+@inline function getindex(m::MultiScaleArrayLeaf,::Colon)
   m.x
 end
 
-@inline function getindex(m::AbstractMultiScaleModel,i::CartesianIndex{1}) # (i,)
+@inline function getindex(m::AbstractMultiScaleArray,i::CartesianIndex{1}) # (i,)
   m[i[1]]
 end
 
-eachindex(m::AbstractMultiScaleModel) = 1:length(m)
-endof(m::AbstractMultiScaleModel) = length(m)
+eachindex(m::AbstractMultiScaleArray) = 1:length(m)
+endof(m::AbstractMultiScaleArray) = length(m)
 
-Base.eltype{B}(S::AbstractMultiScaleModel{B}) = B
-#broadcast_getindex(m::MultiScaleModelLeaf,i::Int)    =  (println("here");m[i])
-#broadcast_getindex(m::AbstractMultiScaleModel,i::Int)    =  (println("here");m[i])
-#broadcast_getindex(m::AbstractMultiScaleModel,i::Int...) = m[i]
+Base.eltype{B}(S::AbstractMultiScaleArray{B}) = B
+#broadcast_getindex(m::MultiScaleArrayLeaf,i::Int)    =  (println("here");m[i])
+#broadcast_getindex(m::AbstractMultiScaleArray,i::Int)    =  (println("here");m[i])
+#broadcast_getindex(m::AbstractMultiScaleArray,i::Int...) = m[i]

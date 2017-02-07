@@ -1,6 +1,6 @@
 ### Necessary until broadcast changes
 
-function .*(m::AbstractMultiScaleModel,y::Number)
+function .*(m::AbstractMultiScaleArray,y::Number)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]*y
@@ -8,7 +8,7 @@ function .*(m::AbstractMultiScaleModel,y::Number)
   new_m
 end
 
-function .*(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
+function .*(m::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]*m2[i]
@@ -16,11 +16,11 @@ function .*(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
-*(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.*y
-*(m::AbstractMultiScaleModel,y::Number) = m.*y
-*(y::Number,m::AbstractMultiScaleModel) = m.*y
+*(m::AbstractMultiScaleArray,y::AbstractMultiScaleArray) = m.*y
+*(m::AbstractMultiScaleArray,y::Number) = m.*y
+*(y::Number,m::AbstractMultiScaleArray) = m.*y
 
-function .+(m::AbstractMultiScaleModel,y::Number)
+function .+(m::AbstractMultiScaleArray,y::Number)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]+y
@@ -28,7 +28,7 @@ function .+(m::AbstractMultiScaleModel,y::Number)
   new_m
 end
 
-function .+(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
+function .+(m::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]+m2[i]
@@ -36,11 +36,11 @@ function .+(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
-+(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.+y
-+(m::AbstractMultiScaleModel,y::Number) = m.+y
-+(y::Number,m::AbstractMultiScaleModel) = m.+y
++(m::AbstractMultiScaleArray,y::AbstractMultiScaleArray) = m.+y
++(m::AbstractMultiScaleArray,y::Number) = m.+y
++(y::Number,m::AbstractMultiScaleArray) = m.+y
 
-function ./(m::AbstractMultiScaleModel,y::Number)
+function ./(m::AbstractMultiScaleArray,y::Number)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]/y
@@ -48,7 +48,7 @@ function ./(m::AbstractMultiScaleModel,y::Number)
   new_m
 end
 
-function ./(y::Number,m::AbstractMultiScaleModel)
+function ./(y::Number,m::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = y/m[i]
@@ -56,7 +56,7 @@ function ./(y::Number,m::AbstractMultiScaleModel)
   new_m
 end
 
-function ./(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
+function ./(m::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]/m2[i]
@@ -64,12 +64,12 @@ function ./(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
-/(m::AbstractMultiScaleModel,y::Number) = m./y
-/(y::Number,m::AbstractMultiScaleModel) = y./m
+/(m::AbstractMultiScaleArray,y::Number) = m./y
+/(y::Number,m::AbstractMultiScaleArray) = y./m
 
 
 
-function .-(m::AbstractMultiScaleModel,y::Number)
+function .-(m::AbstractMultiScaleArray,y::Number)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]-y
@@ -77,7 +77,7 @@ function .-(m::AbstractMultiScaleModel,y::Number)
   new_m
 end
 
-function .-(y::Number,m::AbstractMultiScaleModel)
+function .-(y::Number,m::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = y-m[i]
@@ -85,7 +85,7 @@ function .-(y::Number,m::AbstractMultiScaleModel)
   new_m
 end
 
-function .-(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
+function .-(m::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   new_m = similar(m)
   for i in eachindex(m)
     new_m[i] = m[i]-m2[i]
@@ -93,6 +93,6 @@ function .-(m::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
   new_m
 end
 
--(m::AbstractMultiScaleModel,y::AbstractMultiScaleModel) = m.-y
--(m::AbstractMultiScaleModel,y::Number) = m.-y
--(y::Number,m::AbstractMultiScaleModel) = y.-m
+-(m::AbstractMultiScaleArray,y::AbstractMultiScaleArray) = m.-y
+-(m::AbstractMultiScaleArray,y::Number) = m.-y
+-(y::Number,m::AbstractMultiScaleArray) = y.-m

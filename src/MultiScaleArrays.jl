@@ -1,16 +1,16 @@
-module MultiScaleModels
+module MultiScaleArrays
 
 import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
        linearindexing, .*, .+, *, +,/,./,-,.-,show
 import RecursiveArrayTools: recursivecopy!
 using Iterators
-abstract AbstractMultiScaleModel{B} <: AbstractArray{B,1}
-abstract MultiScaleModelLeaf{B} <: AbstractMultiScaleModel{B}
-abstract MultiScaleModelHead{B} <: AbstractMultiScaleModel{B}
+abstract AbstractMultiScaleArray{B} <: AbstractArray{B,1}
+abstract MultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B}
+abstract MultiScaleArrayHead{B} <: AbstractMultiScaleArray{B}
 
-Base.show(io::IO, x::AbstractMultiScaleModel) = invoke(show, Tuple{IO, Any}, io, x)
-Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleModel) = show(io, x)
+Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
+Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
 
 include("shape_construction.jl")
 include("addition_deletion.jl")
@@ -19,7 +19,7 @@ include("math.jl")
 include("level_iterations.jl")
 
 # Types
-export AbstractMultiScaleModel, MultiScaleModelLeaf, MultiScaleModelHead
+export AbstractMultiScaleArray, MultiScaleArrayLeaf, MultiScaleArrayHead
 
 # Constructors
 export construct, similar, deepcopy, recursivecopy!

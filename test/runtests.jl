@@ -1,16 +1,16 @@
-using MultiScaleModels, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
+using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
 using Base.Test
 
 #=
 macro define_hierarchy(BottomType,names)
  quote
    name = $(esc(names))[1]
-   immutable $(esc(name)){$(esc(BottomType))} <: MultiScaleModelLeaf{$(esc(BottomType))}
+   immutable $(esc(name)){$(esc(BottomType))} <: MultiScaleArrayLeaf{$(esc(BottomType))}
      x::Vector{$(esc(BottomType))}
    end
 
    $((quote
-     immutable $(esc(names.args[i])){$(esc(BottomType))<:AbstractMultiScaleModel} <: AbstractMultiScaleModel{Float64}
+     immutable $(esc(names.args[i])){$(esc(BottomType))<:AbstractMultiScaleArray} <: AbstractMultiScaleArray{Float64}
        x::Vector{T}
        end_idxs::Vector{Int}
      end
@@ -27,20 +27,20 @@ end
 
 ### Setup a hierarchy
 
-immutable Cell{B} <: MultiScaleModelLeaf{B}
+immutable Cell{B} <: MultiScaleArrayLeaf{B}
   x::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
+immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
+immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleModel,B<:Number} <: MultiScaleModelHead{B}
+immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleArrayHead{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
@@ -69,11 +69,11 @@ end
 #### End Setup
 
 a = collect(3:3:30)
-@test MultiScaleModels.bisect_search(a,20) == 7
-@test MultiScaleModels.bisect_search(a,13) == 5
-@test MultiScaleModels.bisect_search(a,12) == 4
+@test MultiScaleArrays.bisect_search(a,20) == 7
+@test MultiScaleArrays.bisect_search(a,13) == 5
+@test MultiScaleArrays.bisect_search(a,12) == 4
 for i = 1:30
-  @test MultiScaleModels.bisect_search(a,i) == ((i-1)÷3)+1 #+1 for 1-based indexing
+  @test MultiScaleArrays.bisect_search(a,i) == ((i-1)÷3)+1 #+1 for 1-based indexing
 end
 
 

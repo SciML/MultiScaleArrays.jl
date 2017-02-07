@@ -9,7 +9,7 @@ end
 type LevelIterIdx{T}
   iter::T
 end
-LevelIterIdx(S::AbstractMultiScaleModel,n::Int) = LevelIterIdx(level_iter(S,n))
+LevelIterIdx(S::AbstractMultiScaleArray,n::Int) = LevelIterIdx(level_iter(S,n))
 
 function Base.start(l::LevelIterIdx)
   (start(l.iter),1)

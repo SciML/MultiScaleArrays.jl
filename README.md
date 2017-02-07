@@ -1,12 +1,12 @@
-# MultiScaleModels
+# MultiScaleArrays
 
 [![Join the chat at https://gitter.im/JuliaDiffEq/Lobby](https://badges.gitter.im/JuliaDiffEq/Lobby.svg)](https://gitter.im/JuliaDiffEq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl.svg?branch=master)](https://travis-ci.org/JuliaDiffEq/MultiScaleModels.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/vfi59h7s6bva5x0m?svg=true)](https://ci.appveyor.com/project/ChrisRackauckas/multiscalemodels-jl)
-[![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleModels.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleModels.jl)
-[![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleModels.jl)
+[![Build Status](https://travis-ci.org/JuliaDiffEq/MultiScaleArrays.jl.svg?branch=master)](https://travis-ci.org/JuliaDiffEq/MultiScaleArrays.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/vfi59h7s6bva5x0m?svg=true)](https://ci.appveyor.com/project/ChrisRackauckas/multiscalearrays-jl)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleArrays.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleArrays.jl)
+[![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl)
 
-MultiScaleModels.jl allows you to easily build multiple scale models which are
+MultiScaleArrays.jl allows you to easily build multiple scale models which are
 fully compatible with native Julia scientific computing packages like
 DifferentialEquations.jl or Optim.jl. These models utilize
 a tree structure to describe phenomena of multiple scales, but the interface allows
@@ -24,20 +24,20 @@ cells contain proteins whose concentrations are modeled as simply a vector
 of numbers (it can be anything linearly indexable).
 
 ```julia
-immutable Cell{B} <: MultiScaleModelLeaf{B}
+immutable Cell{B} <: MultiScaleArrayLeaf{B}
   x::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
+immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleModel,B<:Number} <: AbstractMultiScaleModel{B}
+immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleModel,B<:Number} <: MultiScaleModelHead{B}
+immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleModelHead{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
@@ -52,7 +52,7 @@ cell2 = Cell([4.0;5])
 ```
 
 and build types higher up in the hierarchy by using the `constuct` method. The method
-is `construct(T::AbstractMultiScaleModel,x,y)`, though if `y` is not given it's
+is `construct(T::AbstractMultiScaleArray,x,y)`, though if `y` is not given it's
 taken to be empty.
 
 ```julia
@@ -73,7 +73,7 @@ embryo[12]
 ```
 
 returns the "12th protein", counting by Embryo > Tissue > Population > Cell in order
-of the vectors. The linear indexing exists for every `AbstractMultiScaleModel`.
+of the vectors. The linear indexing exists for every `AbstractMultiScaleArray`.
 These types act as full linear vectors, so standard operations do the sensical
 operations:
 
@@ -111,7 +111,7 @@ vector cell-by-cell via the function `f` without allocating. This allows one to 
 
 However, the interesting behavior comes from event handling. Since `em` will be the
 "vector" for the differential equation or otimization problem, it will be the value
-passed to the event handling. MultiScaleModels includes behavior for changing the
+passed to the event handling. MultiScaleArrays includes behavior for changing the
 structure. For example:
 
 ```julia
@@ -125,7 +125,7 @@ low level behaviors.
 
 ## Idea
 
-The idea behind MultiScaleModels is simple. The `*DiffEq` solvers (OrdinaryDiffEq.jl,
+The idea behind MultiScaleArrays is simple. The `*DiffEq` solvers (OrdinaryDiffEq.jl,
 StochasticDiffEq.jl, DelayDiffEq.jl, etc.) and native optimization packages like
 Optim.jl in their efficient in-place form all work with any Julia-defined
 `AbstractArray` which has a linear index. Thus, to define our multiscale model,
@@ -133,7 +133,7 @@ we develop a type which has an efficient linear index. One can think of represen
 cells with proteins as each being an array with values for each protein. The linear
 index of the multiscale model would be indexing through each protein of each cell.
 With proper index overloads, one can define a type such that `a[i]` does just that,
-and thus it will work in the differential equation solvers. MultiScaleModels.jl
+and thus it will work in the differential equation solvers. MultiScaleArrays.jl
 takes that further by allowing one to recursively define an arbitrary `n`-level
 hierarchical model which has efficient indexing structures. The result is a type
 which models complex behavior, but the standard differential equation solvers will
@@ -143,9 +143,9 @@ techniques for each new model.
 
 ## Defining A MultiScaleModel: The Interface
 
-The required interface is as follows. Leaf types must extend MultiScaleModelLeaf, the
+The required interface is as follows. Leaf types must extend MultiScaleArrayLeaf, the
 highest level of the model or the head extends MultiScaleModelHead, and all
-intermediate types extend AbstractMultiScaleModel. The leaf has an array `x::Vector{B}`.
+intermediate types extend AbstractMultiScaleArray. The leaf has an array `x::Vector{B}`.
 Each type above then contains three fields:
 
 - `x::Vector{T}`
@@ -153,8 +153,8 @@ Each type above then contains three fields:
 - `end_idxs::Vector{Int}``
 
 `B` is the `BottomType`, which has to be the same as the eltype for the array
-in the leaf types. `T` is another `AbstractMultiScaleModel`. Thus at each level,
-an` AbstractMultiScaleModel` contains some information of its own (`y`), the
+in the leaf types. `T` is another `AbstractMultiScaleArray`. Thus at each level,
+an` AbstractMultiScaleArray` contains some information of its own (`y`), the
 next level down in the heirarchy (`x`), and caching for indices (`end_idxs`).
 You can add and use extra fields as you please, and even make the types immutable.
 
@@ -186,7 +186,7 @@ extended as one pleases. For example, we can change the definition of the cell
 to have:
 
 ```julia
-immutable Cell{B} <: MultiScaleModelLeaf{B}
+immutable Cell{B} <: MultiScaleArrayLeaf{B}
   x::Vector{B}
   celltype::Symbol
 end

@@ -1,13 +1,13 @@
-length(m::MultiScaleModelLeaf) = length(m.x)
-length(m::AbstractMultiScaleModel) = m.end_idxs[end]
-num_daughters(m::MultiScaleModelLeaf) = 0
-num_daughters(m::AbstractMultiScaleModel) = size(m.x)[1]
-ndims(m::AbstractMultiScaleModel) = 1
-size(m::AbstractMultiScaleModel,i::Int) = Int((i==1))*length(m)
-size(m::AbstractMultiScaleModel) = (length(m),)
+length(m::MultiScaleArrayLeaf) = length(m.x)
+length(m::AbstractMultiScaleArray) = m.end_idxs[end]
+num_daughters(m::MultiScaleArrayLeaf) = 0
+num_daughters(m::AbstractMultiScaleArray) = size(m.x)[1]
+ndims(m::AbstractMultiScaleArray) = 1
+size(m::AbstractMultiScaleArray,i::Int) = Int((i==1))*length(m)
+size(m::AbstractMultiScaleArray) = (length(m),)
 
 
-function similar(m::AbstractMultiScaleModel)
+function similar(m::AbstractMultiScaleArray)
   m_new = construct(typeof(m),deepcopy(m.x),copy(m.y)) # Copy because y is a vector!
   #for i in eachindex(m.x) # Is this necessary?
   #  m_new.x[i] = similar(m.x[i])
@@ -15,19 +15,19 @@ function similar(m::AbstractMultiScaleModel)
   m_new
 end
 
-similar(m::MultiScaleModelLeaf) = construct(typeof(m),similar(m.x))
+similar(m::MultiScaleArrayLeaf) = construct(typeof(m),similar(m.x))
 
 #=
-function print_matrix(IO,m::AbstractMultiScaleModel,str1,str2,str3)
+function print_matrix(IO,m::AbstractMultiScaleArray,str1,str2,str3)
   print_matrix(IO,m.x,str1,str2,str3)
 end
 =#
 
-function construct{T<:MultiScaleModelLeaf,T2}(::Type{T},x::Vector{T2})
+function construct{T<:MultiScaleArrayLeaf,T2}(::Type{T},x::Vector{T2})
   T(x)
 end
 
-function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3}=Float64[])
+function construct{T<:AbstractMultiScaleArray,T2<:AbstractMultiScaleArray,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3}=Float64[])
   end_idxs = Vector{Int}(length(x))
   end_idxs[1] = length(x[1])
   for i in 2:length(x)
@@ -39,23 +39,23 @@ function construct{T<:AbstractMultiScaleModel,T2<:AbstractMultiScaleModel,T3<:Nu
   m = T(x,y,end_idxs)
 end
 
-function vcat(m1::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
-  error("AbstractMultiScaleModels cannot be concatenated")
+function vcat(m1::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
+  error("AbstractMultiScaleArrays cannot be concatenated")
 end
 
-function hcat(m1::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
-  error("AbstractMultiScaleModels cannot be concatenated")
+function hcat(m1::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
+  error("AbstractMultiScaleArrays cannot be concatenated")
 end
 
-function ==(m1::AbstractMultiScaleModel,m2::AbstractMultiScaleModel)
+function ==(m1::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   m1 === m2
 end
 
-function recursivecopy!(b::MultiScaleModelLeaf,a::MultiScaleModelLeaf)
+function recursivecopy!(b::MultiScaleArrayLeaf,a::MultiScaleArrayLeaf)
   @inbounds copy!(b,a)
 end
 
-function recursivecopy!(b::AbstractMultiScaleModel,a::AbstractMultiScaleModel)
+function recursivecopy!(b::AbstractMultiScaleArray,a::AbstractMultiScaleArray)
   @inbounds for i in eachindex(a.x)
     recursivecopy!(b.x[i],a.x[i])
   end
