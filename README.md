@@ -24,7 +24,7 @@ cells contain proteins whose concentrations are modeled as simply a vector
 of numbers (it can be anything linearly indexable).
 
 ```julia
-immutable Cell{B} <: MultiScaleArrayLeaf{B}
+immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
   x::Vector{B}
 end
 immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
@@ -37,7 +37,7 @@ immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleArrayHead{B}
+immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
@@ -143,7 +143,7 @@ techniques for each new model.
 
 ## Defining A MultiScaleModel: The Interface
 
-The required interface is as follows. Leaf types must extend MultiScaleArrayLeaf, the
+The required interface is as follows. Leaf types must extend AbstractMultiScaleArrayLeaf, the
 highest level of the model or the head extends MultiScaleModelHead, and all
 intermediate types extend AbstractMultiScaleArray. The leaf has an array `x::Vector{B}`.
 Each type above then contains three fields:
@@ -186,7 +186,7 @@ extended as one pleases. For example, we can change the definition of the cell
 to have:
 
 ```julia
-immutable Cell{B} <: MultiScaleArrayLeaf{B}
+immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
   x::Vector{B}
   celltype::Symbol
 end

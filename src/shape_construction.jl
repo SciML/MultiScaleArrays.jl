@@ -1,6 +1,6 @@
-length(m::MultiScaleArrayLeaf) = length(m.x)
+length(m::AbstractMultiScaleArrayLeaf) = length(m.x)
 length(m::AbstractMultiScaleArray) = m.end_idxs[end]
-num_daughters(m::MultiScaleArrayLeaf) = 0
+num_daughters(m::AbstractMultiScaleArrayLeaf) = 0
 num_daughters(m::AbstractMultiScaleArray) = size(m.x)[1]
 ndims(m::AbstractMultiScaleArray) = 1
 size(m::AbstractMultiScaleArray,i::Int) = Int((i==1))*length(m)
@@ -15,7 +15,7 @@ function similar(m::AbstractMultiScaleArray)
   m_new
 end
 
-similar(m::MultiScaleArrayLeaf) = construct(typeof(m),similar(m.x))
+similar(m::AbstractMultiScaleArrayLeaf) = construct(typeof(m),similar(m.x))
 
 #=
 function print_matrix(IO,m::AbstractMultiScaleArray,str1,str2,str3)
@@ -23,7 +23,7 @@ function print_matrix(IO,m::AbstractMultiScaleArray,str1,str2,str3)
 end
 =#
 
-function construct{T<:MultiScaleArrayLeaf,T2}(::Type{T},x::Vector{T2})
+function construct{T<:AbstractMultiScaleArrayLeaf,T2}(::Type{T},x::Vector{T2})
   T(x)
 end
 
@@ -51,7 +51,7 @@ function ==(m1::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   m1 === m2
 end
 
-function recursivecopy!(b::MultiScaleArrayLeaf,a::MultiScaleArrayLeaf)
+function recursivecopy!(b::AbstractMultiScaleArrayLeaf,a::AbstractMultiScaleArrayLeaf)
   @inbounds copy!(b,a)
 end
 

@@ -5,7 +5,7 @@ using Base.Test
 macro define_hierarchy(BottomType,names)
  quote
    name = $(esc(names))[1]
-   immutable $(esc(name)){$(esc(BottomType))} <: MultiScaleArrayLeaf{$(esc(BottomType))}
+   immutable $(esc(name)){$(esc(BottomType))} <: AbstractMultiScaleArrayLeaf{$(esc(BottomType))}
      x::Vector{$(esc(BottomType))}
    end
 
@@ -27,7 +27,7 @@ end
 
 ### Setup a hierarchy
 
-immutable Cell{B} <: MultiScaleArrayLeaf{B}
+immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
   x::Vector{B}
 end
 immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
@@ -40,7 +40,7 @@ immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleArrayHead{B}
+immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}

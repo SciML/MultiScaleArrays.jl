@@ -42,11 +42,11 @@ end
   end
 end
 
-@inline function getindex(m::MultiScaleArrayLeaf,i::Int)
+@inline function getindex(m::AbstractMultiScaleArrayLeaf,i::Int)
   m.x[i]
 end
 
-@inline function getindex(m::MultiScaleArrayLeaf,i::Int...)
+@inline function getindex(m::AbstractMultiScaleArrayLeaf,i::Int...)
   m.x[i[1]]
 end
 
@@ -58,19 +58,19 @@ end
   end
 end
 
-@inline function getindex(m::MultiScaleArrayLeaf,i...)
+@inline function getindex(m::AbstractMultiScaleArrayLeaf,i...)
   m.x[i[1]]
 end
 
-@inline function getindex(m::MultiScaleArrayLeaf,i::CartesianIndex{1})
+@inline function getindex(m::AbstractMultiScaleArrayLeaf,i::CartesianIndex{1})
   m.x[i[1]]
 end
 
-@inline function setindex!(m::MultiScaleArrayLeaf,x,i::Int)
+@inline function setindex!(m::AbstractMultiScaleArrayLeaf,x,i::Int)
   m.x[i] = x
 end
 
-@inline function setindex!(m::MultiScaleArrayLeaf,x,i::Int...)
+@inline function setindex!(m::AbstractMultiScaleArrayLeaf,x,i::Int...)
   m.x[i[1]] = x
 end
 
@@ -86,7 +86,7 @@ end
   [m[i] for i in 1:length(m)]
 end
 
-@inline function getindex(m::MultiScaleArrayLeaf,::Colon)
+@inline function getindex(m::AbstractMultiScaleArrayLeaf,::Colon)
   m.x
 end
 
@@ -98,6 +98,6 @@ eachindex(m::AbstractMultiScaleArray) = 1:length(m)
 endof(m::AbstractMultiScaleArray) = length(m)
 
 Base.eltype{B}(S::AbstractMultiScaleArray{B}) = B
-#broadcast_getindex(m::MultiScaleArrayLeaf,i::Int)    =  (println("here");m[i])
+#broadcast_getindex(m::AbstractMultiScaleArrayLeaf,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray,i::Int...) = m[i]

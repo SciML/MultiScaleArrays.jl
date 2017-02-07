@@ -6,8 +6,8 @@ import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
 import RecursiveArrayTools: recursivecopy!
 using Iterators
 abstract AbstractMultiScaleArray{B} <: AbstractArray{B,1}
-abstract MultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B}
-abstract MultiScaleArrayHead{B} <: AbstractMultiScaleArray{B}
+abstract AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B}
+abstract AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B}
 
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
@@ -19,7 +19,7 @@ include("math.jl")
 include("level_iterations.jl")
 
 # Types
-export AbstractMultiScaleArray, MultiScaleArrayLeaf, MultiScaleArrayHead
+export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf, AbstractMultiScaleArrayHead
 
 # Constructors
 export construct, similar, deepcopy, recursivecopy!
