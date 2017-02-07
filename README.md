@@ -37,7 +37,7 @@ immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
   y::Vector{B}
   end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleModelHead{B}
+immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: MultiScaleArrayHead{B}
   x::Vector{T}
   y::Vector{B}
   end_idxs::Vector{Int}
