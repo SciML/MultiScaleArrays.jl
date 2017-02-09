@@ -97,11 +97,11 @@ end
 
 To apply a function cell-by-cell, you can write a dispatch `f` on the type for the
 level. Using `level_iter_idx`, we can have its changes update some other head node
-`d_em` via:
+`d_embryo` via:
 
 ```julia
-for (cell,y,z) in level_iter_idx(embryo,2)
-  f(t,cell,@view embryo[y:z])
+for (cell,y,z) in LevelIterIdx(embryo,2)
+  f(t,cell,@view d_embryo[y:z])
 end
 ```
 
