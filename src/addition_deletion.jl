@@ -102,7 +102,7 @@ function __remove_daughter!(m::AbstractMultiScaleArray,i::Tuple{Int})
 end
 
 function remove_daughter!(m::AbstractMultiScaleArrayHead,i::Int...)
-  del_length = __remove_daughter!(m.x[i[1]],i[2:end])
+  del_length = __remove_daughter!(m.x[i[1]],i[2:end]...)
   for j = i[1]:num_daughters(m)
     m.end_idxs[j] -= del_length
   end
@@ -117,7 +117,7 @@ function remove_daughter!(m::AbstractMultiScaleArrayHead,i::Int...)
 end
 
 function __remove_daughter!(m::AbstractMultiScaleArray,i::Int...)
-  del_length = __remove_daughter!(m.x[i[1]],i[2:end])
+  del_length = __remove_daughter!(m.x[i[1]],i[2:end]...)
   for j = i[1]:num_daughters(m)
     m.end_idxs[j] -= del_length
   end

@@ -9,6 +9,8 @@ abstract AbstractMultiScaleArray{B} <: AbstractArray{B,1}
 abstract AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B}
 abstract AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B}
 
+using DiffEqBase
+
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
 
@@ -17,6 +19,7 @@ include("addition_deletion.jl")
 include("indexing.jl")
 include("math.jl")
 include("level_iterations.jl")
+include("diffeq.jl")
 
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf, AbstractMultiScaleArrayHead
