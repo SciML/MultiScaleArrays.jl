@@ -1,6 +1,7 @@
 using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase
 
+#=
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
   x::Vector{B}
 end
@@ -19,6 +20,7 @@ immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
   y::Vector{B}
   end_idxs::Vector{Int}
 end
+=#
 
 cell1 = Cell([1.0;2.0;3.0])
 cell2 = Cell([4.0;5])
