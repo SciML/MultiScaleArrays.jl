@@ -56,13 +56,13 @@ is `construct(T::AbstractMultiScaleArray,x,y)`, though if `y` is not given it's
 taken to be empty.
 
 ```julia
-population = construct(Population,deepcopy([cell1;cell2])) # Make a Population from cells
+population = construct(Population,deepcopy([cell1,cell2])) # Make a Population from cells
 cell3 = Cell([3.0;2.0;5.0])
 cell4 = Cell([4.0;6])
-population2 = construct(Population,deepcopy([cell3;cell4]))
-tissue1 = construct(Tissue,deepcopy([population;population2])) # Make a Tissue from Populations
-tissue2 = construct(Tissue,deepcopy([population2;population]))
-embryo = construct(Embryo,deepcopy([tissue1;tissue2])) # Make an embryo from Tissues
+population2 = construct(Population,deepcopy([cell3,cell4]))
+tissue1 = construct(Tissue,deepcopy([population,population2])) # Make a Tissue from Populations
+tissue2 = construct(Tissue,deepcopy([population2,population]))
+embryo = construct(Embryo,deepcopy([tissue1,tissue2])) # Make an embryo from Tissues
 ```
 
 The head node then acts as the king. It is designed to have functionality which
