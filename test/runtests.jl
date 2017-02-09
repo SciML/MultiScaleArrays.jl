@@ -46,6 +46,7 @@ immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
   end_idxs::Vector{Int}
 end
 
+#=
 Cell(x::Tuple) = Cell(Vector{Float64}(x))
 function Population(x::Tuple)
   p = Population(Vector{Cell}(x[1]))
@@ -65,16 +66,9 @@ function Embryo(x::Tuple)
     tis[i] = Tissue(x[2:end])
   end
 end
+=#
 
 #### End Setup
-
-a = collect(3:3:30)
-@test MultiScaleArrays.bisect_search(a,20) == 7
-@test MultiScaleArrays.bisect_search(a,13) == 5
-@test MultiScaleArrays.bisect_search(a,12) == 4
-for i = 1:30
-  @test MultiScaleArrays.bisect_search(a,i) == ((i-1)÷3)+1 #+1 for 1-based indexing
-end
 
 
 cell1 = Cell([1.0;2.0;3.0])
@@ -185,7 +179,6 @@ cell3 = cell1.+2
 cell1./2
 
 size(cell1)
-Cell(size(cell1))
 
 t = 2
 p/zero(t)
