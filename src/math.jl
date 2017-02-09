@@ -16,7 +16,6 @@ function .*(m::AbstractMultiScaleArray,m2::AbstractMultiScaleArray)
   new_m
 end
 
-*(m::AbstractMultiScaleArray,y::AbstractMultiScaleArray) = m.*y
 *(m::AbstractMultiScaleArray,y::Number) = m.*y
 *(y::Number,m::AbstractMultiScaleArray) = m.*y
 
