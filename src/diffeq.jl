@@ -1,10 +1,9 @@
 function remove_daughter!(integrator::DEIntegrator,I...)
-  cur_len = length(integrator.u)
-  remove_len = length(integrator.u[I...])
+  idxs = getindices(integrator.u,I...)
   for c in user_cache(integrator)
     remove_daughter!(c,I...)
   end
-  resize_non_user_cache!(integrator,cur_len-remove_len)
+  deleteat_non_user_cache!(integrator,idxs)
 end
 
 function add_daughter!(integrator::DEIntegrator,x,I...)
@@ -13,7 +12,9 @@ function add_daughter!(integrator::DEIntegrator,x,I...)
   for c in user_cache(integrator)
     add_daughter!(c,deepcopy(x),I...)
   end
-  resize_non_user_cache!(integrator,cur_len+add_len)
+  last_idx = length(integrator.u[I...].x)
+  idxs = getindices(integrator.u,I...,last_idx)
+  addat_non_user_cache!(integrator,idxs)
 end
 
 reshape(m::AbstractMultiScaleArray,i::Int...) = m
