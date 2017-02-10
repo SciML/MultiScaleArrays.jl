@@ -50,15 +50,15 @@ end
   m.x[i[1]]
 end
 
-@inline function getindex(m::AbstractMultiScaleArray,i...)
-  if isempty(m.y) || i[1] < length(m.end_idxs)
-    if length(i)==2
-      return m.x[i[1]].x[i[2]]
+@inline function getindex(m::AbstractMultiScaleArray,i,I...)
+  if isempty(m.y) || i < length(m.end_idxs)
+    if length(I)==1
+      return m.x[i].x[I[1]]
     else
-      return m.x[i[1]][i[2:end]...]
+      return m.x[i][I...]
     end
   else
-    return m.y[i[2:end]...]
+    return m.y[I...]
   end
 end
 
@@ -78,15 +78,15 @@ end
   m.x[i[1]] = x
 end
 
-@inline function setindex!(m::AbstractMultiScaleArray,x,i::Int...)
-  if isempty(m.y) || i[1] < length(m.end_idxs)
-    if length(i)==2
-      return m.x[i[1]].x[i[2]] = x
+@inline function setindex!(m::AbstractMultiScaleArray,x,i,I::Int...)
+  if isempty(m.y) || i < length(m.end_idxs)
+    if length(I)==1
+      return m.x[i].x[I[1]] = x
     else
-      return m.x[i[1]][i[2:end]...] = x
+      return m.x[i][I...] = x
     end
   else
-    m.y[i[2:end]...] = x
+    m.y[I...] = x
   end
 end
 
