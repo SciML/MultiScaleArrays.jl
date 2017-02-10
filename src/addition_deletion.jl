@@ -9,9 +9,9 @@ function add_daughter!(m::AbstractMultiScaleArrayHead,x::AbstractMultiScaleArray
   nothing
 end
 
-function __add_daughter!(m::AbstractMultiScaleArray,x::AbstractMultiScaleArray,i::Int...)
-  __add_daughter!(m.x[i[1]],x,i[2:end])
-  for j = i[1]:num_daughters(m)
+function __add_daughter!(m::AbstractMultiScaleArray,x::AbstractMultiScaleArray,i,I::Int...)
+  __add_daughter!(m.x[i],x,I...)
+  for j = i:num_daughters(m)
     m.end_idxs[j]  += length(x)
   end
   if !isempty(m.y)
@@ -29,10 +29,6 @@ function __add_daughter!(m::AbstractMultiScaleArray,x::AbstractMultiScaleArray)
     push!(m.end_idxs,m.end_idxs[end]+length(x))
   end
   nothing
-end
-
-function __add_daughter!(m::AbstractMultiScaleArray,x::AbstractMultiScaleArray,i::Tuple{Int})
-  __add_daughter!(m,x,i[1])
 end
 
 function __add_daughter!(m::AbstractMultiScaleArray,x::AbstractMultiScaleArray,i::Int)
@@ -57,9 +53,9 @@ function add_daughter!(m::AbstractMultiScaleArrayHead,x::AbstractMultiScaleArray
   nothing
 end
 
-function add_daughter!(m::AbstractMultiScaleArrayHead,x::AbstractMultiScaleArray,i::Int...)
-  __add_daughter!(m.x[i[1]],x,i[2:end])
-  for j = i[1]:num_daughters(m)
+function add_daughter!(m::AbstractMultiScaleArrayHead,x::AbstractMultiScaleArray,i,I::Int...)
+  __add_daughter!(m.x[i],x,I...)
+  for j = i:num_daughters(m)
     m.end_idxs[j]  += length(x)
   end
   if !isempty(m.y)
@@ -97,35 +93,31 @@ function __remove_daughter!(m::AbstractMultiScaleArrayLeaf,i::Int)
   1
 end
 
-function __remove_daughter!(m::AbstractMultiScaleArray,i::Tuple{Int})
-  __remove_daughter!(m,i[1])
-end
-
-function remove_daughter!(m::AbstractMultiScaleArrayHead,i::Int...)
-  del_length = __remove_daughter!(m.x[i[1]],i[2:end]...)
-  for j = i[1]:num_daughters(m)
+function remove_daughter!(m::AbstractMultiScaleArrayHead,i,I::Int...)
+  del_length = __remove_daughter!(m.x[i],I...)
+  for j = i:num_daughters(m)
     m.end_idxs[j] -= del_length
   end
   if !isempty(m.y)
     m.end_idxs[end]  -= del_length
   end
-  if size(m.x[i[1]].x) == (0,)
-    deleteat!(m.x,i[1])
-    deleteat!(m.end_idxs,i[1])
+  if size(m.x[i].x) == (0,)
+    deleteat!(m.x,i)
+    deleteat!(m.end_idxs,i)
   end
   nothing
 end
 
-function __remove_daughter!(m::AbstractMultiScaleArray,i::Int...)
-  del_length = __remove_daughter!(m.x[i[1]],i[2:end]...)
-  for j = i[1]:num_daughters(m)
+function __remove_daughter!(m::AbstractMultiScaleArray,i,I::Int...)
+  del_length = __remove_daughter!(m.x[i],I...)
+  for j = i:num_daughters(m)
     m.end_idxs[j] -= del_length
   end
   if !isempty(m.y)
     m.end_idxs[end]  -= del_length
   end
-  if length(m.x[i[1]]) == 0
-    deleteat!(m.x,i[1])
+  if length(m.x[i]) == 0
+    deleteat!(m.x,i)
   end
   del_length
 end
