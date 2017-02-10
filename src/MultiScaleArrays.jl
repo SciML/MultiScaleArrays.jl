@@ -2,7 +2,7 @@ module MultiScaleArrays
 
 import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
-       linearindexing, .*, .+, *, +,/,./,-,.-,show
+       linearindexing, .*, .+, *, +,/,./,-,.-,show, vec, reshape
 import RecursiveArrayTools: recursivecopy!
 using Iterators
 abstract AbstractMultiScaleArray{B} <: AbstractArray{B,1}
@@ -31,7 +31,7 @@ export construct, similar, deepcopy, recursivecopy!
 export add_daughter!, remove_daughter!
 
 # Indexing
-export getindex, setindex!, eachindex, length, num_daughters,
+export getindex, setindex!, eachindex, length, num_daughters, getindices,
        ndims, size, broadcast_getindex, hcat, vcat, linearindexing
 
 # Math and Logic

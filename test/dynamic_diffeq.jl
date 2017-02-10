@@ -1,5 +1,5 @@
 using MultiScaleArrays
-using OrdinaryDiffEq, DiffEqBase
+using OrdinaryDiffEq, DiffEqBase, Base.Test, StochasticDiffEq
 
 #=
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
@@ -71,5 +71,21 @@ end
 shrinking_cb = DiscreteCallback(condition,affect_del!)
 
 sol = solve(prob,Tsit5(),callback=shrinking_cb,tstops=tstop)
+
+@test length(sol[end]) == 17
+
+
+g = function (t,u,du)
+  for i in eachindex(u)
+    du[i] = 0.1u[i]
+  end
+end
+prob = SDEProblem(f,g,embryo,(0.0,1.0))
+
+sol = solve(prob,SRIW1(),callback=growing_cb,tstops=tstop)
+
+@test length(sol[end]) == 23
+
+sol = solve(prob,SRIW1(),callback=shrinking_cb,tstops=tstop)
 
 @test length(sol[end]) == 17

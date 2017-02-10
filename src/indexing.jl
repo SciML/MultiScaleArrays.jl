@@ -109,3 +109,52 @@ Base.eltype{B}(S::AbstractMultiScaleArray{B}) = B
 #broadcast_getindex(m::AbstractMultiScaleArrayLeaf,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray,i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray,i::Int...) = m[i]
+
+function getindices(m::AbstractMultiScaleArrayHead)
+  1:length(m)
+end
+
+function getindices(m::AbstractMultiScaleArrayHead,i::Int)
+  top_idx = m.end_idxs[i]
+  if i > 1
+    bot_idx = m.end_idxs[i-1] + 1
+  else
+    bot_idx = 1
+  end
+  bot_idx:top_idx
+end
+
+function getindices(m::AbstractMultiScaleArrayHead,i,I::Int...)
+  top_idx = m.end_idxs[i]
+  if i > 1
+    bot_idx = m.end_idxs[i-1] + 1
+  else
+    bot_idx = 1
+  end
+  getindices(m.x[i],bot_idx,top_idx,I...)
+end
+
+function getindices(m::AbstractMultiScaleArray,bot_idx,top_idx,i::Int)
+  top_idx -= length(m) - m.end_idxs[i]
+  if i > 1
+    bot_idx += m.end_idxs[i-1]
+  end
+  bot_idx:top_idx
+end
+
+function getindices(m::AbstractMultiScaleArray,bot_idx,top_idx,i,I::Int...)
+  top_idx -= length(m) - m.end_idxs[i]
+  if i > 1
+    bot_idx += m.end_idxs[i-1]
+  end
+  getindices(m.x[i],bot_idx,top_idx,I...)
+end
+
+function getindices(m::AbstractMultiScaleArrayLeaf,bot_idx,top_idx,i::Int)
+  i > length(m) ? error("Final index is larger than length of leaf") : (top_idx -= length(m) - i)
+  top_idx:top_idx
+end
+
+function getindices(m::AbstractMultiScaleArrayLeaf,bot_idx,top_idx,I::Int...)
+  error("Indexes past the bottom.")
+end
