@@ -10,7 +10,7 @@ function add_daughter!(integrator::DEIntegrator,x,I...)
   cur_len = length(integrator.u)
   add_len = length(x)
   for c in user_cache(integrator)
-    add_daughter!(c,deepcopy(x),I...)
+    add_daughter!(c,similar(x,eltype(c)),I...)
   end
   last_idx = length(integrator.u[I...].x)
   idxs = getindices(integrator.u,I...,last_idx)

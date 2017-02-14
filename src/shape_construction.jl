@@ -8,7 +8,7 @@ size(m::AbstractMultiScaleArray) = (length(m),)
 
 
 function similar(m::AbstractMultiScaleArray)
-  m_new = construct(typeof(m),deepcopy(m.x),copy(m.y)) # Copy because y is a vector!
+  m_new = construct(typeof(m),deepcopy(m.x),deepcopy(m.y))
   #for i in eachindex(m.x) # Is this necessary?
   #  m_new.x[i] = similar(m.x[i])
   #end
@@ -17,11 +17,13 @@ end
 
 similar(m::AbstractMultiScaleArrayLeaf) = construct(typeof(m),similar(m.x))
 
-#=
-function print_matrix(IO,m::AbstractMultiScaleArray,str1,str2,str3)
-  print_matrix(IO,m.x,str1,str2,str3)
+similar(m::AbstractMultiScaleArrayLeaf,T::Type) = construct(typeof(m).name.primary,similar(m.x,T))
+
+function similar(m::AbstractMultiScaleArray,T::Type)
+  new_x = [similar(v,T) for v in m.x]
+  new_y = similar(m.y,T)
+  construct(typeof(m).name.primary,new_x,new_y)
 end
-=#
 
 function construct{T<:AbstractMultiScaleArrayLeaf,T2}(::Type{T},x::Vector{T2})
   T(x)

@@ -62,6 +62,8 @@ test_embryo = deepcopy(embryo)
 
 sol = solve(prob,Tsit5(),callback=growing_cb,tstops=tstop)
 
+sol = solve(prob,Rosenbrock23(),callback=growing_cb,tstops=tstop)
+
 @test length(sol[end]) == 23
 
 affect_del! = function (integrator)
@@ -71,6 +73,8 @@ end
 shrinking_cb = DiscreteCallback(condition,affect_del!)
 
 sol = solve(prob,Tsit5(),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,Rosenbrock23(),callback=shrinking_cb,tstops=tstop)
 
 @test length(sol[end]) == 17
 
