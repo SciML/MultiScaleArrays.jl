@@ -88,8 +88,28 @@ prob = SDEProblem(f,g,embryo,(0.0,1.0))
 
 sol = solve(prob,SRIW1(),callback=growing_cb,tstops=tstop)
 
+sol = solve(prob,SRI(),callback=growing_cb,tstops=tstop)
+
+sol = solve(prob,SRA(),callback=growing_cb,tstops=tstop)
+
+sol = solve(prob,SRA1(),callback=growing_cb,tstops=tstop)
+
+sol = solve(prob,RKMil(),callback=growing_cb,dt=1/10,tstops=tstop)
+
+sol = solve(prob,EM(),dt=1/10,callback=growing_cb,tstops=tstop)
+
 @test length(sol[end]) == 23
 
 sol = solve(prob,SRIW1(),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,SRI(),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,SRA(),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,SRA1(),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,RKMil(),dt=1/10,callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob,EM(),dt=1/10,callback=shrinking_cb,tstops=tstop)
 
 @test length(sol[end]) == 17
