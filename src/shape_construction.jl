@@ -25,11 +25,11 @@ function similar(m::AbstractMultiScaleArray,T::Type)
   construct(typeof(m).name.primary,new_x,new_y)
 end
 
-function construct{T<:AbstractMultiScaleArrayLeaf,T2}(::Type{T},x::Vector{T2})
+function construct{T<:AbstractMultiScaleArrayLeaf}(::Type{T},x)
   T(x)
 end
 
-function construct{T<:AbstractMultiScaleArray,T2<:AbstractMultiScaleArray,T3<:Number}(::Type{T},x::Vector{T2},y::Vector{T3}=Float64[])
+function construct{T<:AbstractMultiScaleArray,T2<:AbstractMultiScaleArray}(::Type{T},x::Vector{T2},y=Float64[])
   end_idxs = Vector{Int}(length(x))
   end_idxs[1] = length(x[1])
   for i in 2:length(x)

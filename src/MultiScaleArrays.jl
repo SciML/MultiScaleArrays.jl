@@ -40,6 +40,6 @@ export ==, .*, .+, *, +,/,./,-,.-
 # Misc
 export print_matrix
 
-export level_iter,LevelIterIdx, level_iter_idx
+export LevelIterIdx, level_iter
 
 end # module
