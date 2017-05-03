@@ -16,7 +16,7 @@ function bisect_search(a,i)
   #length(a) - sum(map((x)->x>=i,a))
 end
 
-linearindexing{T<:AbstractMultiScaleArray}(::Type{T}) = Base.LinearFast()
+@compat Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
 
 @inline function getindex(m::AbstractMultiScaleArray,i::Int)
   idx = bisect_search(m.end_idxs,i)

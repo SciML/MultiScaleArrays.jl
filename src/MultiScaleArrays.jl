@@ -5,11 +5,13 @@ module MultiScaleArrays
 import Base: length, push!, deleteat!,getindex, setindex!, eachindex,
        ndims, size, print_matrix, similar, broadcast_getindex, hcat, vcat, ==,
        linearindexing, .*, .+, *, +,/,./,-,.-,show, vec, reshape
+
+using Compat
 import RecursiveArrayTools: recursivecopy!
 using Iterators
-abstract AbstractMultiScaleArray{B} <: AbstractArray{B,1}
-abstract AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B}
-abstract AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B}
+@compat abstract type AbstractMultiScaleArray{B} <: AbstractArray{B,1} end
+@compat abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
+@compat abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
 using DiffEqBase
 
