@@ -75,7 +75,7 @@ end
 end
 
 @inline function setindex!(m::AbstractMultiScaleArray,x,i::CartesianIndex{1})
-  m.x[first(i)] = x
+  m.x[i[1]] = x
 end
 
 @inline function setindex!(m::AbstractMultiScaleArrayLeaf,x,i::Int...)
