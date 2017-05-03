@@ -18,6 +18,7 @@ using DiffEqBase
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
 
+include("utils.jl")
 include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")

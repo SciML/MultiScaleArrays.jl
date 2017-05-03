@@ -17,7 +17,7 @@ end
 
 similar(m::AbstractMultiScaleArrayLeaf) = construct(typeof(m),similar(m.x))
 
-similar(m::AbstractMultiScaleArrayLeaf,T::Type) = construct(typeof(m).name.primary,similar(m.x,T))
+similar(m::AbstractMultiScaleArrayLeaf,T::Type) = construct(parameterless_type(m),similar(m.x,T))
 
 function similar(m::AbstractMultiScaleArray,T::Type)
   new_x = [similar(v,T) for v in m.x]
