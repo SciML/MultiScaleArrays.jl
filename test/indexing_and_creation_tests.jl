@@ -1,3 +1,5 @@
+using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Base.Test
+
 ### Setup a hierarchy
 
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
