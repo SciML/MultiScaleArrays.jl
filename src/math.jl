@@ -1,6 +1,6 @@
 ### Necessary until broadcast changes
 
-if VERSION < v"0.6-"
+if VERSION < v"0.6.0-dev.1632" # julia PR #17623
   function .*(m::AbstractMultiScaleArray,y::Number)
     new_m = similar(m)
     for i in eachindex(m)
