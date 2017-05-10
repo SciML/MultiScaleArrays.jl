@@ -6,6 +6,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleArrays.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleArrays.jl)
 [![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl)
 
+[![MultiScaleArrays](http://pkg.julialang.org/badges/MultiScaleArrays_0.5.svg)](http://pkg.julialang.org/?pkg=MultiScaleArrays)
+[![MultiScaleArrays](http://pkg.julialang.org/badges/MultiScaleArrays_0.6.svg)](http://pkg.julialang.org/?pkg=MultiScaleArrays)
+
 MultiScaleArrays.jl allows you to easily build multiple scale models which are
 fully compatible with native Julia scientific computing packages like
 DifferentialEquations.jl or Optim.jl. These models utilize
