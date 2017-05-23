@@ -8,7 +8,9 @@ import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims, si
 
 using Compat
 import RecursiveArrayTools: recursivecopy!
-using Iterators
+
+import RecursiveArrayTools: chain
+
 @compat abstract type AbstractMultiScaleArray{B} <: AbstractArray{B,1} end
 @compat abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
 @compat abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
