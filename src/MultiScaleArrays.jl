@@ -6,21 +6,20 @@ import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims, si
        print_matrix, similar, broadcast_getindex, hcat, vcat, linearindexing,
        ==, *, +, /, -, show, vec, reshape
 
-using Compat
 import RecursiveArrayTools: recursivecopy!
 
 import RecursiveArrayTools: chain
 
-@compat abstract type AbstractMultiScaleArray{B} <: AbstractArray{B,1} end
-@compat abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
-@compat abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
+abstract type AbstractMultiScaleArray{B}     <: AbstractVector{B} end
+abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
+abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
 using DiffEqBase
+using StringLiterals
 
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
 
-include("utils.jl")
 include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")
