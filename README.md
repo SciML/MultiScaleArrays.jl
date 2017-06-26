@@ -47,7 +47,12 @@ immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArra
 end
 ```
 
-Using this we can directly construct leaf types:
+This setup defines a type structure which is both a tree and an array. A picture of a possible
+version is the following:
+
+<img src="https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG">
+
+Let's build a version of this. Using the constructors we can directly construct leaf types:
 
 ```julia
 cell1 = Cell([1.0;2.0;3.0])
