@@ -129,7 +129,7 @@ g = (x,y) -> x*y
 
 cell3 = cell1.+2
 
-@test_broken typeof(cell3) <: AbstractMultiScaleArray
+@test typeof(cell3) <: AbstractMultiScaleArray
 
 cell3 = similar(cell1)
 cell3 .+= 2

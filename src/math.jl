@@ -1,50 +1,24 @@
-#=
-function Base.broadcast!(f, A::AbstractMultiScaleArray, B::AbstractMultiScaleArray, N::Number)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], B.x[i], N)
-    end
-    A
-end
+# Abbreviation to help keep code short!
+const AMSA = AbstractMultiScaleArray
 
-function Base.broadcast!(f, A::AbstractMultiScaleArray, N::Number, B::AbstractMultiScaleArray)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], N, B.x[i])
-    end
-    A
-end
+Base.map!{F}(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) =
+        broadcast!(f, m, A0, As...)
+Base.map!{F}(f::F, m::AMSA, A0, As...) =
+        broadcast!(f, m, A0, As...)
 
-function Base.broadcast!(f, A::AbstractMultiScaleArray,
-                         B::AbstractMultiScaleArray, C::AbstractMultiScaleArray)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], B.x[i], C.x[i])
-    end
-    A
-end
+Base.Broadcast.promote_containertype(::Type{T}, ::Type{T}) where {T<:AMSA} = T
+Base.Broadcast.promote_containertype(::Type{T}, ::Type{S}) where {T<:AMSA, S<:AbstractArray} = T
+Base.Broadcast.promote_containertype(::Type{S}, ::Type{T}) where {T<:AMSA, S<:AbstractArray} = T
+Base.Broadcast.promote_containertype(::Type{T}, ::Type{<:Any}) where {T<:AMSA} = T
+Base.Broadcast.promote_containertype(::Type{<:Any}, ::Type{T}) where {T<:AMSA} = T
+Base.Broadcast._containertype(::Type{T}) where {T<:AMSA} = T
+Base.Broadcast.broadcast_indices(::Type{<:AMSA}, A) = indices(A)
 
-function Base.broadcast(f, B::AbstractMultiScaleArray, N::Number)
-    A = similar(B)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], B.x[i], N)
-    end
-    A
+@inline function Base.Broadcast.broadcast_c{S<:AMSA}(f, ::Type{S}, A, Bs...)
+    T = Base.Broadcast._broadcast_eltype(f, A, Bs...)
+    shape = Base.Broadcast.broadcast_indices(A, Bs...)
+    broadcast!(f, similar(A), A, Bs...)
 end
-
-function Base.broadcast(f, N::Number, B::AbstractMultiScaleArray)
-    A = similar(B)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], N, B.x[i])
-    end
-    A
-end
-
-function Base.broadcast(f, B::AbstractMultiScaleArray, C::AbstractMultiScaleArray)
-    A = similar(B)
-    for i in eachindex(A.x)
-        broadcast!(f, A.x[i], B.x[i], C.x[i])
-    end
-    A
-end
-=#
 
 +(m::AbstractMultiScaleArray, y::AbstractMultiScaleArray) = m .+ y
 +(m::AbstractMultiScaleArray, y::Number) = m .+ y
