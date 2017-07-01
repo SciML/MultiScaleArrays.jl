@@ -2,9 +2,9 @@ __precompile__()
 
 module MultiScaleArrays
 
-import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims, size,
-       print_matrix, similar, broadcast_getindex, hcat, vcat, linearindexing,
-       ==, *, +, /, -, show, vec, reshape
+import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
+       size, print_matrix, similar, broadcast_getindex, hcat, vcat,
+       linearindexing, ==, *, +, /, -, show, vec, reshape
 
 import RecursiveArrayTools: recursivecopy!
 
@@ -15,7 +15,6 @@ abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
 abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
 using DiffEqBase
-using StringLiterals
 
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
@@ -28,7 +27,8 @@ include("level_iterations.jl")
 include("diffeq.jl")
 
 # Types
-export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf, AbstractMultiScaleArrayHead
+export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
+       AbstractMultiScaleArrayHead
 
 # Constructors
 export construct, recursivecopy!
