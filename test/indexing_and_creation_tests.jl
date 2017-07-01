@@ -3,22 +3,22 @@ using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Base.Test
 ### Setup a hierarchy
 
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  nodes::Vector{B}
+    values::Vector{B}
 end
 immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
 immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
 immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
 
 #### End Setup
@@ -54,7 +54,7 @@ sim_p_arr  = similar(p,indices(p))
 @test typeof(sim_p_arr) <: Vector{Float64}
 @test length(sim_p) == length(p)
 @test length(sim_p.nodes[1]) == length(p.nodes[1])
-@test !(sim_p.nodes[1]===p.nodes[1])
+@test !(sim_p.nodes[1] === p.nodes[1])
 
 p2 = construct(Population,deepcopy([cell3,cell4]))
 
@@ -77,7 +77,7 @@ tis3 = construct(Tissue,deepcopy([p,p2]))
 
 @test length(em) == 20
 
-add_daughter!(em,tis3)
+add_node!(em, tis3)
 
 em_save = deepcopy(em)
 
@@ -88,29 +88,30 @@ em_save = deepcopy(em)
 @test em[12] == 2
 
 em[12] = 50.0
-@test em.nodes[2].nodes[1].nodes[1].nodes[2] == 50
-p3 = construct(Population,deepcopy([cell1,cell2]))
-add_daughter!(em,p3,2)
+@test em.nodes[2].nodes[1].nodes[1].values[2] == 50
+p3 = construct(Population, deepcopy([cell1, cell2]))
+add_node!(em, p3, 2)
 @test length(em.nodes[2].nodes) == 3
 @test length(em.nodes[2]) == 15
 @test em.end_idxs[2] == 25
 
-cell3 = Cell([20.0;11;13])
-add_daughter!(em,cell3,2,3)
+cell3 = Cell([20.0; 11; 13])
+add_node!(em, cell3, 2, 3)
 
 @test length(em.nodes[2].nodes) == length(em.nodes[2].end_idxs)
 
-remove_daughter!(em,3)
-@test length(em.end_idxs)==2
-add_daughter!(em,tis3)
-remove_daughter!(em,1)
-@test em.end_idxs[1]==18
+remove_node!(em, 3)
+@test length(em.end_idxs) == 2
+add_node!(em, tis3)
+remove_node!(em, 1)
+@test em.end_idxs[1] == 18
 
-remove_daughter!(em,2,1)
+remove_node!(em, 2, 1)
 @test em.end_idxs[2] == 23
-remove_daughter!(em,2,1)
+remove_node!(em, 2, 1)
 @test length(em.nodes) == 1 # Should drop the 0
-remove_daughter!(em,1,1)
+remove_node!(em, 1, 1)
+
 @test length(em) == 13
 
 for i in eachindex(em)
@@ -127,7 +128,7 @@ g = (x,y) -> x*y
 @test g.(cell1,2) == [2.;4;6]
 # cell1 .= g.(cell1,2) How to broadcast right???
 
-cell3 = cell1.+2
+cell3 = cell1 .+ 2
 
 @test typeof(cell3) <: AbstractMultiScaleArray
 
@@ -145,14 +146,14 @@ p/zero(t)
 size(p)
 
 f = function (t,u,du)
-  for i in eachindex(u)
-    du[i] = 0.42*u[i]
-  end
+    for i in eachindex(u)
+        du[i] = 0.42*u[i]
+    end
 end
 g = function (t,u,du)
-  for i in eachindex(u)
-    du[i] = 0.42*u[i]
-  end
+    for i in eachindex(u)
+        du[i] = 0.42*u[i]
+    end
 end
 
 vem = @view [em,em][1:2]
@@ -178,9 +179,9 @@ prob = SDEProblem(f,g,em[:],(0.0,1000.0))
 @test sol1.t == sol2.t
 
 function test_loop(a)
-  for i in eachindex(a)
-    a[i] = a[i] + 1
-  end
+    for i in eachindex(a)
+        a[i] = a[i] + 1
+    end
 end
 @time test_loop(em)
 @time test_loop(em[:])
@@ -200,35 +201,35 @@ recursivecopy!(em2,em)
 em = em_save
 level_iter(em,1) == em.nodes
 for (i,p) in enumerate(level_iter(em,2))
-  if i == 1
-    @test p == em.nodes[1].nodes[1]
-  elseif i == 2
-    @test p == em.nodes[1].nodes[2]
-  elseif i == 3
-    @test p == em.nodes[2].nodes[1]
-  elseif i == 4
-    @test p == em.nodes[2].nodes[2]
-  elseif i == 5
-    @test p == em.nodes[3].nodes[1]
-  elseif i == 6
-    @test p == em.nodes[3].nodes[2]
-  elseif i > 6
-    error("you shouldn't be here")
-  end
+    if i == 1
+        @test p == em.nodes[1].nodes[1]
+    elseif i == 2
+        @test p == em.nodes[1].nodes[2]
+    elseif i == 3
+        @test p == em.nodes[2].nodes[1]
+    elseif i == 4
+        @test p == em.nodes[2].nodes[2]
+    elseif i == 5
+        @test p == em.nodes[3].nodes[1]
+    elseif i == 6
+        @test p == em.nodes[3].nodes[2]
+    elseif i > 6
+        error("you shouldn't be here")
+    end
 end
 
 em_arr = em[:]
 
 for (x,y,z) in LevelIterIdx(em,1)
-  @test maximum(em_arr[y:z]- x[:]) ==0
+    @test maximum(em_arr[y:z]- x[:]) ==0
 end
 
 for (x,y,z) in LevelIterIdx(em,2)
-  @test maximum(em_arr[y:z]- x[:]) ==0
+    @test maximum(em_arr[y:z]- x[:]) ==0
 end
 
 for (x,y,z) in LevelIterIdx(em,3)
-  @test maximum(em_arr[y:z]- x[:]) ==0
+    @test maximum(em_arr[y:z]- x[:]) ==0
 end
 
 ### Non-Empty y

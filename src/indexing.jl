@@ -34,8 +34,8 @@ end
     end
 end
 
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int) = m.nodes[i]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int...) = m.nodes[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int) = m.values[i]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int...) = m.values[i[1]]
 
 @inline function getindex(m::AbstractMultiScaleArray, i, I...)
     if isempty(m.values) || i < length(m.end_idxs)
@@ -45,29 +45,38 @@ end
     end
 end
 
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i...) = m.nodes[i[1]]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::CartesianIndex{1}) = m.nodes[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i...) = m.values[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::CartesianIndex{1}) = m.values[i[1]]
 
-@inline setindex!(m::AbstractMultiScaleArrayLeaf, nodes, i::Int) = (m.nodes[i] = nodes)
-@inline setindex!(m::AbstractMultiScaleArray, nodes, i::CartesianIndex{1}) = (m[i[1]] = nodes)
-@inline setindex!(m::AbstractMultiScaleArrayLeaf, nodes, i::Int...) = (m.nodes[i[1]] = nodes)
+@inline setindex!(m::AbstractMultiScaleArrayLeaf, values, i::Int) = (m.values[i] = values)
+@inline setindex!(m::AbstractMultiScaleArrayLeaf, values, i::Int...) = (m.values[i[1]] = values)
 
-@inline function setindex!(m::AbstractMultiScaleArray, nodes, i, I::Int...)
+@inline setindex!(m::AbstractMultiScaleArray, values, i::CartesianIndex{1}) = (m[i[1]] = values)
+
+@inline function setindex!(m::AbstractMultiScaleArray, values, i, I::Int...)
     if isempty(m.values) || i < length(m.end_idxs)
-        length(I) == 1 ? (m.nodes[i].nodes[I[1]] = nodes) : (m.nodes[i][I...] = nodes)
+        mx = m.nodes[i]
+        length(I) == 1 ? (mx[I[1]] = values) : (mx[I...] = values)
     else
-        m.values[I...] = nodes
+        m.values[I...] = values
     end
 end
 
 @inline getindex(m::AbstractMultiScaleArray, ::Colon) = [m[i] for i in 1:length(m)]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, ::Colon) = m.nodes
+@inline getindex(m::AbstractMultiScaleArrayLeaf, ::Colon) = m.values
 @inline getindex(m::AbstractMultiScaleArray, i::CartesianIndex{1}) = m[i[1]] # (i, )
 
 eachindex(m::AbstractMultiScaleArray) = 1:length(m)
 endof(m::AbstractMultiScaleArray) = length(m)
 
-Base.eltype(S::AbstractMultiScaleArray{B}) where {B} = B
+Base.eltype(::Type{<:AbstractMultiScaleArray{B}}) where {B<:Number} = B
+# For now, default to Float64 (like v0.5 version did) if not specified
+function Base.eltype(::Type{T}) where {T<:AbstractMultiScaleArray}
+    eltype(fieldtype(T, :values)) === Any && return Float64
+    error("Invalid AbstractMultiScaleArray, type of values not specified")
+end
+Base.eltype(::T) where {T<:AbstractMultiScaleArray} = eltype(T)
+                                                               
 #broadcast_getindex(m::AbstractMultiScaleArrayLeaf, i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int...) = m[i]

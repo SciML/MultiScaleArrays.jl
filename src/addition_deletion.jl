@@ -1,55 +1,55 @@
-function __add_daughter!(m::AbstractMultiScaleArray, nodes::AbstractMultiScaleArray)
-    push!(m.end_idxs, m.end_idxs[end] + length(nodes) + length(m.values))
-    push!(m.nodes, nodes)
+function __add_node!(m::AbstractMultiScaleArray, node::AbstractMultiScaleArray)
+    push!(m.end_idxs, m.end_idxs[end] + length(node) + length(m.values))
+    push!(m.nodes, node)
     nothing
 end
 
 function __update_lengths(m::AbstractMultiScaleArray, beg, len)
-    for j = beg:num_daughters(m)
+    for j = beg:num_nodes(m)
         m.end_idxs[j] += len
     end
     isempty(m.values) || (m.end_idxs[end] += len)
     nothing
 end
 
-function __add_daughter!(m::AbstractMultiScaleArray, nodes::AbstractMultiScaleArray, i::Int)
-    __add_daughter!(m.nodes[i], nodes)
-    __update_lengths(m, i, length(nodes))
+function __add_node!(m::AbstractMultiScaleArray, node::AbstractMultiScaleArray, i::Int)
+    __add_node!(m.nodes[i], node)
+    __update_lengths(m, i, length(node))
 end
 
-function __add_daughter!(m::AbstractMultiScaleArray, nodes::AbstractMultiScaleArray, i, I::Int...)
-    __add_daughter!(m.nodes[i], nodes, I...)
-    __update_lengths(m, i, length(nodes))
+function __add_node!(m::AbstractMultiScaleArray, node::AbstractMultiScaleArray, i, I::Int...)
+    __add_node!(m.nodes[i], node, I...)
+    __update_lengths(m, i, length(node))
 end
 
-add_daughter!(m::AbstractMultiScaleArrayHead, nodes::AbstractMultiScaleArray) =
-    __add_daughter!(m, nodes)
+add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray) =
+    __add_node!(m, node)
 
-add_daughter!(m::AbstractMultiScaleArrayHead, nodes::AbstractMultiScaleArray, i::Int) =
-    __add_daughter!(m, nodes, i)
+add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray, i::Int) =
+    __add_node!(m, node, i)
 
-add_daughter!(m::AbstractMultiScaleArrayHead, nodes::AbstractMultiScaleArray, i, I::Int...) =
-    __add_daughter!(m, nodes, i, I...)
+add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray, i, I::Int...) =
+    __add_node!(m, node, i, I...)
 
-function __remove_daughter!(m::AbstractMultiScaleArray, i::Int)
+function __remove_node!(m::AbstractMultiScaleArray, i::Int)
     del_length = length(m.nodes[i])
     deleteat!(m.nodes, i)
     deleteat!(m.end_idxs, i)
-    for j = i:num_daughters(m)
+    for j = i:num_nodes(m)
         m.end_idxs[j] -= del_length
     end
     isempty(m.values) || (m.end_idxs[end] -= del_length)
     del_length
 end
 
-function __remove_daughter!(m::AbstractMultiScaleArrayLeaf, i::Int)
+function __remove_node!(m::AbstractMultiScaleArrayLeaf, i::Int)
     deleteat!(m.nodes, i)
     1
 end
 
-function remove_daughter!(m::AbstractMultiScaleArrayHead, i, I::Int...)
-    del_length = __remove_daughter!(m.nodes[i], I...)
-    for j = i:num_daughters(m)
+function remove_node!(m::AbstractMultiScaleArrayHead, i, I::Int...)
+    del_length = __remove_node!(m.nodes[i], I...)
+    for j = i:num_nodes(m)
         m.end_idxs[j] -= del_length
     end
     isempty(m.values) || (m.end_idxs[end] -= del_length)
@@ -60,9 +60,9 @@ function remove_daughter!(m::AbstractMultiScaleArrayHead, i, I::Int...)
     nothing
 end
 
-function __remove_daughter!(m::AbstractMultiScaleArray, i, I::Int...)
-    del_length = __remove_daughter!(m.nodes[i], I...)
-    for j = i:num_daughters(m)
+function __remove_node!(m::AbstractMultiScaleArray, i, I::Int...)
+    del_length = __remove_node!(m.nodes[i], I...)
+    for j = i:num_nodes(m)
         m.end_idxs[j] -= del_length
     end
     isempty(m.values) || (m.end_idxs[end] -= del_length)
@@ -70,5 +70,5 @@ function __remove_daughter!(m::AbstractMultiScaleArray, i, I::Int...)
     del_length
 end
 
-remove_daughter!(m::AbstractMultiScaleArrayHead, i::Int) =
-    (__remove_daughter!(m, i); nothing)
+remove_node!(m::AbstractMultiScaleArrayHead, i::Int) =
+    (__remove_node!(m, i); nothing)
