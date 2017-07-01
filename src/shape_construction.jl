@@ -35,10 +35,10 @@ construct(::Type{T}, x::Vector{<:AbstractMultiScaleArray}) where {T<:AbstractMul
 function construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray},
                    values::Vector{Float64}) where {T<:AbstractMultiScaleArray}
     vallen = length(values)
-    end_idxs = Vector{Int}(length(x) + ifelse(vallen == 0, 0, 1))
+    end_idxs = Vector{Int}(length(nodes) + ifelse(vallen == 0, 0, 1))
     off = 0
-    @inbounds for i in 1:length(x)
-        end_idxs[i] = (off += length(x[i]))
+    @inbounds for i in 1:length(nodes)
+        end_idxs[i] = (off += length(nodes[i]))
     end
     vallen == 0 || (end_idxs[end] = off + vallen)
     T(nodes, values, end_idxs)

@@ -3,21 +3,21 @@ using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Base.Test
 ### Setup a hierarchy
 
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  x::Vector{B}
+  nodes::Vector{B}
 end
 immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 
@@ -30,9 +30,9 @@ cell2 = Cell([4.0;5])
 sim_cell = similar(cell1)
 
 @test length(cell1) == 3
-sim_cell.x[:] = [1.;2;3]
-@test sim_cell.x == cell1.x
-@test !(sim_cell.x === cell1.x)
+sim_cell.nodes[:] = [1.;2;3]
+@test sim_cell.nodes == cell1.nodes
+@test !(sim_cell.nodes === cell1.nodes)
 
 cell3 = Cell([3.0;2.0;5.0])
 cell4 = Cell([4.0;6])
@@ -53,8 +53,8 @@ sim_p_arr  = similar(p,indices(p))
 @test typeof(sim_p) <: Population
 @test typeof(sim_p_arr) <: Vector{Float64}
 @test length(sim_p) == length(p)
-@test length(sim_p.x[1]) == length(p.x[1])
-@test !(sim_p.x[1]===p.x[1])
+@test length(sim_p.nodes[1]) == length(p.nodes[1])
+@test !(sim_p.nodes[1]===p.nodes[1])
 
 p2 = construct(Population,deepcopy([cell3,cell4]))
 
@@ -65,9 +65,9 @@ sim_tis = similar(tis)
 
 @test tis[9] == 4
 
-@test tis.x[2].end_idxs[1] == length(cell1)
-@test tis.x[2].end_idxs[2] == length(cell1)+length(cell2)
-@test tis.x[2].end_idxs[2] == length(p)
+@test tis.nodes[2].end_idxs[1] == length(cell1)
+@test tis.nodes[2].end_idxs[2] == length(cell1)+length(cell2)
+@test tis.nodes[2].end_idxs[2] == length(p)
 
 tis2 = construct(Tissue,deepcopy([p2,p]))
 
@@ -82,23 +82,23 @@ add_daughter!(em,tis3)
 em_save = deepcopy(em)
 
 @test length(em) == 30
-@test em.x[1] != tis #There was a deepcopy
-@test em.x[3] == tis3 #No deepcopy
+@test em.nodes[1] != tis #There was a deepcopy
+@test em.nodes[3] == tis3 #No deepcopy
 
 @test em[12] == 2
 
 em[12] = 50.0
-@test em.x[2].x[1].x[1].x[2] == 50
+@test em.nodes[2].nodes[1].nodes[1].nodes[2] == 50
 p3 = construct(Population,deepcopy([cell1,cell2]))
 add_daughter!(em,p3,2)
-@test length(em.x[2].x) == 3
-@test length(em.x[2]) == 15
+@test length(em.nodes[2].nodes) == 3
+@test length(em.nodes[2]) == 15
 @test em.end_idxs[2] == 25
 
 cell3 = Cell([20.0;11;13])
 add_daughter!(em,cell3,2,3)
 
-@test length(em.x[2].x) == length(em.x[2].end_idxs)
+@test length(em.nodes[2].nodes) == length(em.nodes[2].end_idxs)
 
 remove_daughter!(em,3)
 @test length(em.end_idxs)==2
@@ -109,7 +109,7 @@ remove_daughter!(em,1)
 remove_daughter!(em,2,1)
 @test em.end_idxs[2] == 23
 remove_daughter!(em,2,1)
-@test length(em.x) == 1 # Should drop the 0
+@test length(em.nodes) == 1 # Should drop the 0
 remove_daughter!(em,1,1)
 @test length(em) == 13
 
@@ -198,20 +198,20 @@ recursivecopy!(em2,em)
 ## Level iterators
 
 em = em_save
-level_iter(em,1) == em.x
+level_iter(em,1) == em.nodes
 for (i,p) in enumerate(level_iter(em,2))
   if i == 1
-    @test p == em.x[1].x[1]
+    @test p == em.nodes[1].nodes[1]
   elseif i == 2
-    @test p == em.x[1].x[2]
+    @test p == em.nodes[1].nodes[2]
   elseif i == 3
-    @test p == em.x[2].x[1]
+    @test p == em.nodes[2].nodes[1]
   elseif i == 4
-    @test p == em.x[2].x[2]
+    @test p == em.nodes[2].nodes[2]
   elseif i == 5
-    @test p == em.x[3].x[1]
+    @test p == em.nodes[3].nodes[1]
   elseif i == 6
-    @test p == em.x[3].x[2]
+    @test p == em.nodes[3].nodes[2]
   elseif i > 6
     error("you shouldn't be here")
   end
@@ -246,8 +246,8 @@ p = construct(Population,deepcopy([cell1,cell2]),[1.;2;3])
 
 sim_p  = similar(p)
 @test length(sim_p) == length(p)
-@test length(sim_p.x[1]) == length(p.x[1])
-@test !(sim_p.x[1]===p.x[1])
+@test length(sim_p.nodes[1]) == length(p.nodes[1])
+@test !(sim_p.nodes[1]===p.nodes[1])
 
 p2 = construct(Population,deepcopy([cell3,cell4]),[11.;12;13])
 

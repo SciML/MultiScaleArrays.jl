@@ -3,21 +3,21 @@ using OrdinaryDiffEq, DiffEqBase, Base.Test, StochasticDiffEq
 
 #=
 immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  x::Vector{B}
+  nodes::Vector{B}
 end
 immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
-  x::Vector{T}
-  y::Vector{B}
+  nodes::Vector{T}
+  values::Vector{B}
   end_idxs::Vector{Int}
 end
 =#
