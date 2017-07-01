@@ -24,22 +24,22 @@ end
 #### End Setup
 
 
-cell1 = Cell([1.0;2.0;3.0])
-cell2 = Cell([4.0;5])
+cell1 = Cell([1.0; 2.0; 3.0])
+cell2 = Cell([4.0; 5])
 
 sim_cell = similar(cell1)
 
 @test length(cell1) == 3
-sim_cell.nodes[:] = [1.;2;3]
-@test sim_cell.nodes == cell1.nodes
-@test !(sim_cell.nodes === cell1.nodes)
+sim_cell.values[:] = [1.; 2; 3]
+@test sim_cell.values == cell1.values
+@test !(sim_cell.values === cell1.values)
 
-cell3 = Cell([3.0;2.0;5.0])
-cell4 = Cell([4.0;6])
+cell3 = Cell([3.0; 2.0; 5.0])
+cell4 = Cell([4.0; 6])
 
 @test cell4[2] == 6.0
 
-p = construct(Population,deepcopy([cell1,cell2]))
+p = construct(Population, deepcopy([cell1, cell2]))
 
 @test p[1] == 1
 @test p[2] == 2
@@ -48,7 +48,7 @@ p = construct(Population,deepcopy([cell1,cell2]))
 @test p[5] == 5
 
 sim_p  = similar(p)
-sim_p_arr  = similar(p,indices(p))
+sim_p_arr  = similar(p, indices(p))
 
 @test typeof(sim_p) <: Population
 @test typeof(sim_p_arr) <: Vector{Float64}
@@ -56,9 +56,9 @@ sim_p_arr  = similar(p,indices(p))
 @test length(sim_p.nodes[1]) == length(p.nodes[1])
 @test !(sim_p.nodes[1] === p.nodes[1])
 
-p2 = construct(Population,deepcopy([cell3,cell4]))
+p2 = construct(Population, deepcopy([cell3, cell4]))
 
-tis = construct(Tissue,deepcopy([p,p2]))
+tis = construct(Tissue, deepcopy([p, p2]))
 
 sim_tis = similar(tis)
 @test length(sim_tis) == length(tis)
@@ -69,11 +69,11 @@ sim_tis = similar(tis)
 @test tis.nodes[2].end_idxs[2] == length(cell1)+length(cell2)
 @test tis.nodes[2].end_idxs[2] == length(p)
 
-tis2 = construct(Tissue,deepcopy([p2,p]))
+tis2 = construct(Tissue, deepcopy([p2, p]))
 
-em = construct(Embryo,deepcopy([tis,tis2]))
+em = construct(Embryo, deepcopy([tis, tis2]))
 
-tis3 = construct(Tissue,deepcopy([p,p2]))
+tis3 = construct(Tissue, deepcopy([p, p2]))
 
 @test length(em) == 20
 
@@ -122,11 +122,11 @@ end
 
 ### Test math
 
-#broadcast_getindex(cell1,1)
+#broadcast_getindex(cell1, 1)
 
-g = (x,y) -> x*y
-@test g.(cell1,2) == [2.;4;6]
-# cell1 .= g.(cell1,2) How to broadcast right???
+g = (x, y) -> x*y
+@test g.(cell1, 2) == [2.; 4; 6]
+# cell1 .= g.(cell1, 2) How to broadcast right???
 
 cell3 = cell1 .+ 2
 
@@ -145,37 +145,37 @@ p/zero(t)
 
 size(p)
 
-f = function (t,u,du)
+f = function (t, u, du)
     for i in eachindex(u)
         du[i] = 0.42*u[i]
     end
 end
-g = function (t,u,du)
+g = function (t, u, du)
     for i in eachindex(u)
         du[i] = 0.42*u[i]
     end
 end
 
-vem = @view [em,em][1:2]
+vem = @view [em, em][1:2]
 
-prob = ODEProblem(f,em,(0.0,1500.0))
-@time sol1 = solve(prob,Tsit5(),save_everystep=false)
+prob = ODEProblem(f, em, (0.0, 1500.0))
+@time sol1 = solve(prob, Tsit5(), save_everystep=false)
 
-prob = ODEProblem(f,em[:],(0.0,1500.0))
-@time sol2 = solve(prob,Tsit5(),save_everystep=false)
+prob = ODEProblem(f, em[:], (0.0, 1500.0))
+@time sol2 = solve(prob, Tsit5(), save_everystep=false)
 @test sol1.t == sol2.t
 
-prob = ODEProblem(f,em,(0.0,1500.0))
-sol1 = solve(prob,Tsit5())
+prob = ODEProblem(f, em, (0.0, 1500.0))
+sol1 = solve(prob, Tsit5())
 
 # Check stepping behavior matches array
 srand(100)
-prob = SDEProblem(f,g,em,(0.0,1000.0))
-@time sol1 = solve(prob,SRIW1(),progress=false,abstol=1e-2,reltol=1e-2,save_everystep=false)
+prob = SDEProblem(f, g, em, (0.0, 1000.0))
+@time sol1 = solve(prob, SRIW1(), progress=false, abstol=1e-2, reltol=1e-2, save_everystep=false)
 
 srand(100)
-prob = SDEProblem(f,g,em[:],(0.0,1000.0))
-@time sol2 = solve(prob,SRIW1(),progress=false,abstol=1e-2,reltol=1e-2,save_everystep=false)
+prob = SDEProblem(f, g, em[:], (0.0, 1000.0))
+@time sol2 = solve(prob, SRIW1(), progress=false, abstol=1e-2, reltol=1e-2, save_everystep=false)
 @test sol1.t == sol2.t
 
 function test_loop(a)
@@ -189,18 +189,18 @@ end
 a = em[:]
 @time a[1]
 
-#sol = solve(prob,EM())
+#sol = solve(prob, EM())
 
 em2 = similar(em)
-recursivecopy!(em2,em)
+recursivecopy!(em2, em)
 @test em[5] == em2[5]
 @test em != em2
 
 ## Level iterators
 
 em = em_save
-level_iter(em,1) == em.nodes
-for (i,p) in enumerate(level_iter(em,2))
+level_iter(em, 1) == em.nodes
+for (i, p) in enumerate(level_iter(em, 2))
     if i == 1
         @test p == em.nodes[1].nodes[1]
     elseif i == 2
@@ -220,21 +220,21 @@ end
 
 em_arr = em[:]
 
-for (x,y,z) in LevelIterIdx(em,1)
-    @test maximum(em_arr[y:z]- x[:]) ==0
+for (x, y, z) in LevelIterIdx(em, 1)
+    @test maximum(em_arr[y:z] - x[:]) == 0
 end
 
-for (x,y,z) in LevelIterIdx(em,2)
-    @test maximum(em_arr[y:z]- x[:]) ==0
+for (x, y, z) in LevelIterIdx(em, 2)
+    @test maximum(em_arr[y:z] - x[:]) == 0
 end
 
-for (x,y,z) in LevelIterIdx(em,3)
-    @test maximum(em_arr[y:z]- x[:]) ==0
+for (x, y, z) in LevelIterIdx(em, 3)
+    @test maximum(em_arr[y:z] - x[:]) == 0
 end
 
 ### Non-Empty y
 
-p = construct(Population,deepcopy([cell1,cell2]),[1.;2;3])
+p = construct(Population, deepcopy([cell1, cell2]), [1.; 2; 3])
 
 @test p[1] == 1
 @test p[2] == 2
@@ -250,9 +250,9 @@ sim_p  = similar(p)
 @test length(sim_p.nodes[1]) == length(p.nodes[1])
 @test !(sim_p.nodes[1]===p.nodes[1])
 
-p2 = construct(Population,deepcopy([cell3,cell4]),[11.;12;13])
+p2 = construct(Population, deepcopy([cell3, cell4]), [11.; 12; 13])
 
-tis = construct(Tissue,deepcopy([p,p2]))
+tis = construct(Tissue, deepcopy([p, p2]))
 
 @test length(tis) == length(p) + length(p2)
 
