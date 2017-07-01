@@ -57,6 +57,8 @@ end
 
 growing_cb = DiscreteCallback(condition,affect!)
 
+println("Do the ODE Part")
+
 prob = ODEProblem(f,embryo,(0.0,1.0))
 test_embryo = deepcopy(embryo)
 
@@ -78,6 +80,7 @@ shrinking_cb = DiscreteCallback(condition,affect_del!)
 
 @test_broken length(sol[end]) == 17
 
+println("Do the SDE Part")
 
 g = function (t,u,du)
   for i in eachindex(u)
@@ -86,29 +89,53 @@ g = function (t,u,du)
 end
 prob = SDEProblem(f,g,embryo,(0.0,1.0))
 
+@show SRIW1
+
 sol = solve(prob,SRIW1(),callback=growing_cb,tstops=tstop)
+
+@show SRI
 
 sol = solve(prob,SRI(),callback=growing_cb,tstops=tstop)
 
+@show SRA
+
 sol = solve(prob,SRA(),callback=growing_cb,tstops=tstop)
+
+@show SRA1
 
 sol = solve(prob,SRA1(),callback=growing_cb,tstops=tstop)
 
+@show RKMil
+
 sol = solve(prob,RKMil(),callback=growing_cb,dt=1/10,tstops=tstop)
 
-sol = solve(prob,EM(),dt=1/10,callback=growing_cb,tstops=tstop)
+@show EM
+
+sol = solve(prob,EM(),dt=1/20,callback=growing_cb,tstops=tstop)
 
 @test length(sol[end]) == 23
 
+@show SRIW1
+
 sol = solve(prob,SRIW1(),callback=shrinking_cb,tstops=tstop)
+
+@show SRI
 
 sol = solve(prob,SRI(),callback=shrinking_cb,tstops=tstop)
 
+@show SRA
+
 sol = solve(prob,SRA(),callback=shrinking_cb,tstops=tstop)
+
+@show SRA1
 
 sol = solve(prob,SRA1(),callback=shrinking_cb,tstops=tstop)
 
+@show RKMil
+
 sol = solve(prob,RKMil(),dt=1/10,callback=shrinking_cb,tstops=tstop)
+
+@show EM
 
 sol = solve(prob,EM(),dt=1/10,callback=shrinking_cb,tstops=tstop)
 
