@@ -20,56 +20,48 @@ Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
 
 @inline function getindex(m::AbstractMultiScaleArray, i::Int)
     idx = bisect_search(m.end_idxs, i)
-    idx > 1 && (i -= m.end_idxs[idx-1]) # also works with y
-    (isempty(m.y) || idx < length(m.end_idxs)) ? m.x[idx][i] : m.y[i]
+    idx > 1 && (i -= m.end_idxs[idx-1]) # also works with values
+    (isempty(m.values) || idx < length(m.end_idxs)) ? m.nodes[idx][i] : m.values[i]
 end
 
-@inline function setindex!(m::AbstractMultiScaleArray, x, i::Int)
+@inline function setindex!(m::AbstractMultiScaleArray, nodes, i::Int)
     idx = bisect_search(m.end_idxs, i) # +1 for 1-based indexing
     idx > 1 && (i -= m.end_idxs[idx-1])
-    if isempty(m.y) || idx < length(m.end_idxs)
-        m.x[idx][i] = x
+    if isempty(m.values) || idx < length(m.end_idxs)
+        m.nodes[idx][i] = nodes
     else
-        m.y[i] = x
+        m.values[i] = nodes
     end
 end
 
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int) = m.x[i]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int...) = m.x[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int) = m.nodes[i]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::Int...) = m.nodes[i[1]]
 
 @inline function getindex(m::AbstractMultiScaleArray, i, I...)
-    if isempty(m.y) || i < length(m.end_idxs)
-        if length(I)==1
-            return m.x[i].x[I[1]]
-        else
-            return m.x[i][I...]
-        end
+    if isempty(m.values) || i < length(m.end_idxs)
+        length(I) == 1 ? m.nodes[i].nodes[I[1]] : m.nodes[i][I...]
     else
-        return m.y[I...]
+        m.values[I...]
     end
 end
 
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i...) = m.x[i[1]]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, i::CartesianIndex{1}) = m.x[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i...) = m.nodes[i[1]]
+@inline getindex(m::AbstractMultiScaleArrayLeaf, i::CartesianIndex{1}) = m.nodes[i[1]]
 
-@inline setindex!(m::AbstractMultiScaleArrayLeaf, x, i::Int) = (m.x[i] = x)
-@inline setindex!(m::AbstractMultiScaleArray, x, i::CartesianIndex{1}) = (m[i[1]] = x)
-@inline setindex!(m::AbstractMultiScaleArrayLeaf, x, i::Int...) = (m.x[i[1]] = x)
+@inline setindex!(m::AbstractMultiScaleArrayLeaf, nodes, i::Int) = (m.nodes[i] = nodes)
+@inline setindex!(m::AbstractMultiScaleArray, nodes, i::CartesianIndex{1}) = (m[i[1]] = nodes)
+@inline setindex!(m::AbstractMultiScaleArrayLeaf, nodes, i::Int...) = (m.nodes[i[1]] = nodes)
 
-@inline function setindex!(m::AbstractMultiScaleArray, x, i, I::Int...)
-    if isempty(m.y) || i < length(m.end_idxs)
-        if length(I)==1
-            return m.x[i].x[I[1]] = x
-        else
-            return m.x[i][I...] = x
-        end
+@inline function setindex!(m::AbstractMultiScaleArray, nodes, i, I::Int...)
+    if isempty(m.values) || i < length(m.end_idxs)
+        length(I) == 1 ? (m.nodes[i].nodes[I[1]] = nodes) : (m.nodes[i][I...] = nodes)
     else
-        m.y[I...] = x
+        m.values[I...] = nodes
     end
 end
 
 @inline getindex(m::AbstractMultiScaleArray, ::Colon) = [m[i] for i in 1:length(m)]
-@inline getindex(m::AbstractMultiScaleArrayLeaf, ::Colon) = m.x
+@inline getindex(m::AbstractMultiScaleArrayLeaf, ::Colon) = m.nodes
 @inline getindex(m::AbstractMultiScaleArray, i::CartesianIndex{1}) = m[i[1]] # (i, )
 
 eachindex(m::AbstractMultiScaleArray) = 1:length(m)
@@ -86,13 +78,13 @@ getindices(m::AbstractMultiScaleArrayHead, i::Int) =
     ((i > 1) ? (m.end_idxs[i-1] + 1) : 1) : m.end_idxs[i]
 
 getindices(m::AbstractMultiScaleArrayHead, i, I::Int...) =
-    getindices(m.x[i], ((i > 1) ? (m.end_idxs[i-1] + 1) : 1), m.end_idxs[i], I...)
+    getindices(m.nodes[i], ((i > 1) ? (m.end_idxs[i-1] + 1) : 1), m.end_idxs[i], I...)
 
 getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i::Int) =
     (bot_idx + ((i > 1) ? m.end_idxs[i-1] : 0)) : (top_idx + m.end_idxs[i] - length(m))
 
 getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i, I::Int...) =
-    getindices(m.x[i],
+    getindices(m.nodes[i],
                bot_idx + ((i > 1) ? m.end_idxs[i-1] : 0),
                top_idx + m.end_idxs[i] - length(m),
                I...)

@@ -12,8 +12,8 @@ function add_daughter!(integrator::DEIntegrator, x, I...)
     for c in user_cache(integrator)
         add_daughter!(c, similar(x, eltype(c)), I...)
     end
-    last_idx = length(integrator.u[I...].x)
-    idxs = getindices(integrator.u,I..., last_idx)
+    last_idx = length(integrator.u[I...].nodes)
+    idxs = getindices(integrator.u, I..., last_idx)
     addat_non_user_cache!(integrator, idxs)
 end
 

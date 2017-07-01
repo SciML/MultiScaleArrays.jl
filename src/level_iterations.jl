@@ -1,4 +1,4 @@
-level_iter(S, n::Int) = n == 1 ? S.x : chain((level_iter(x, n-1) for x in S.x)...)
+level_iter(S, n::Int) = n == 1 ? S.nodes : chain((level_iter(node, n-1) for node in S.nodes)...)
 
 type LevelIterIdx{T}
     iter::T
