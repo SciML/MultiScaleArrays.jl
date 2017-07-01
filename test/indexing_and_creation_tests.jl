@@ -243,6 +243,7 @@ sim_p  = similar(p)
 @test length(sim_p.x[1]) == length(p.x[1])
 @test !(sim_p.x[1]===p.x[1])
 
+#=
 p2 = construct(Population,deepcopy([cell3,cell4]),[11.;12;13])
 
 tis = construct(Tissue,deepcopy([p,p2]))
@@ -266,3 +267,4 @@ tis = construct(Tissue,deepcopy([p,p2]))
 @test tis[14] == p2[6]
 @test tis[15] == p2[7]
 @test tis[16] == p2[8]
+=#
