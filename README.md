@@ -27,23 +27,23 @@ cells contain proteins whose concentrations are modeled as simply a vector
 of numbers (it can be anything linearly indexable).
 
 ```julia
-immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  x::Vector{B}
+struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
+    values::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
-  end_idxs::Vector{Int}
+struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  x::Vector{T}
-  y::Vector{B}
-  end_idxs::Vector{Int}
+struct Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
-  x::Vector{T}
-  y::Vector{B}
-  end_idxs::Vector{Int}
+struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
 ```
 
@@ -55,22 +55,22 @@ version is the following:
 Let's build a version of this. Using the constructors we can directly construct leaf types:
 
 ```julia
-cell1 = Cell([1.0;2.0;3.0])
-cell2 = Cell([4.0;5])
+cell1 = Cell([1.0; 2.0; 3.0])
+cell2 = Cell([4.0; 5.0])
 ```
 
 and build types higher up in the hierarchy by using the `constuct` method. The method
-is `construct(T::AbstractMultiScaleArray,x,y)`, though if `y` is not given it's
+is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is not given it's
 taken to be empty.
 
 ```julia
-population = construct(Population,deepcopy([cell1,cell2])) # Make a Population from cells
-cell3 = Cell([3.0;2.0;5.0])
-cell4 = Cell([4.0;6])
-population2 = construct(Population,deepcopy([cell3,cell4]))
-tissue1 = construct(Tissue,deepcopy([population,population2])) # Make a Tissue from Populations
-tissue2 = construct(Tissue,deepcopy([population2,population]))
-embryo = construct(Embryo,deepcopy([tissue1,tissue2])) # Make an embryo from Tissues
+population = construct(Population, deepcopy([cell1, cell2])) # Make a Population from cells
+cell3 = Cell([3.0; 2.0; 5.0])
+cell4 = Cell([4.0; 6.0])
+population2 = construct(Population, deepcopy([cell3, cell4]))
+tissue1 = construct(Tissue, deepcopy([population, population2])) # Make a Tissue from Populations
+tissue2 = construct(Tissue, deepcopy([population2, population]))
+embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
 
 The head node then acts as the king. It is designed to have functionality which
@@ -108,8 +108,8 @@ level. Using `level_iter_idx`, we can have its changes update some other head no
 `d_embryo` via:
 
 ```julia
-for (cell,y,z) in LevelIterIdx(embryo,2)
-  f(t,cell,@view d_embryo[y:z])
+for (cell, y, z) in LevelIterIdx(embryo, 2)
+    f(t, cell, @view d_embryo[y:z])
 end
 ```
 
@@ -123,9 +123,9 @@ passed to the event handling. MultiScaleArrays includes behavior for changing th
 structure. For example:
 
 ```julia
-tissue3 = construct(Tissue,deepcopy([population;population2]))
-add_daughter!(embryo,tissue3) # Adds a new tissue to the embryo
-remove_daughter!(embryo,2,1) # Removes population 1 from tissue 2 of the embryo
+tissue3 = construct(Tissue, deepcopy([population; population2]))
+add_node!(embryo, tissue3) # Adds a new tissue to the embryo
+remove_node!(embryo, 2, 1) # Removes population 1 from tissue 2 of the embryo
 ```
 
 Combined with event handling, this allows for dynamic structures to be derived from
@@ -153,38 +153,38 @@ techniques for each new model.
 
 The required interface is as follows. Leaf types must extend AbstractMultiScaleArrayLeaf, the
 highest level of the model or the head extends MultiScaleModelHead, and all
-intermediate types extend AbstractMultiScaleArray. The leaf has an array `x::Vector{B}`.
+intermediate types extend AbstractMultiScaleArray. The leaf has an array `values::Vector{B}`.
 Each type above then contains three fields:
 
-- `x::Vector{T}`
-- `y::Vector{B}`
+- `nodes::Vector{T}`
+- `values::Vector{B}`
 - `end_idxs::Vector{Int}``
 
 `B` is the `BottomType`, which has to be the same as the eltype for the array
 in the leaf types. `T` is another `AbstractMultiScaleArray`. Thus at each level,
-an` AbstractMultiScaleArray` contains some information of its own (`y`), the
-next level down in the heirarchy (`x`), and caching for indices (`end_idxs`).
+an` AbstractMultiScaleArray` contains some information of its own (`values`), the
+next level down in the heirarchy (`nodes`), and caching for indices (`end_idxs`).
 You can add and use extra fields as you please, and even make the types immutable.
 
 ## The MultiScaleModel API
 
 The resulting type acts as an array. A leaf type `l` acts exactly as an array
-with `l[i]==l.x[i]`. Higher nodes also act as a linear array. If `ln` is level
-`n` in the heirarchy, then `ln.x` is the vector of level `n-1` objects, and `ln.y`
+with `l[i] == l.values[i]`. Higher nodes also act as a linear array. If `ln` is level
+`n` in the heirarchy, then `ln.nodes` is the vector of level `n-1` objects, and `ln.values`
 are its "intrinsic values". There is an indexing scheme on `ln`, where:
 
-- `ln[i,j,k]` gets the `k`th `n-3` obejct in the `j`th `n-2` object in the `i`th level `n-1`
+- `ln[i,j,k]` gets the `k`th `n-3` object in the `j`th `n-2` object in the `i`th level `n-1`
   object. Of course, this recurses for the whole hierarchy.
-- `ln[i]` provides a linear index through all `.x` and `.y` values in every lower
-  level and `ln.y` itself.
+- `ln[i]` provides a linear index through all `.nodes` and `.values` values in every lower
+  level and `ln.values` itself.
 
-Thus `typeof(ln) <: AbstarctArray{B,1}` where `B` is the eltype of its leaves and
-all `.y`'s.
+Thus `typeof(ln) <: AbstractVector{B}` where `B` is the eltype of its leaves and
+all `.values`'s.
 
 In addition, iterators are provided to make it easy to iterate through levels.
 For `h` being the head node, `level_iter(h,n)` iterates through all level objects
 `n` levels down from the top, while `level_iter_idx(h,n)` is an enumeration
-`(x,y,z)` where `x` are the `n`th from the head objects, with `h[y:z]` being
+`(node,y,z)` where `node` are the `n`th from the head objects, with `h[y:z]` being
 the values it holds in the linear indexing.
 
 ### Extensions
@@ -194,18 +194,18 @@ extended as one pleases. For example, we can change the definition of the cell
 to have:
 
 ```julia
-immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  x::Vector{B}
-  celltype::Symbol
+struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
+    values::Vector{B}
+    celltype::Symbol
 end
 ```
 
-Then we'd construct cells with `cell3 = Cell([3.0;2.0;5.0],:BCell)`, and can
+Then we'd construct cells with `cell3 = Cell([3.0; 2.0; 5.0], :BCell)`, and can
 give it a cell type. This information is part of the call, so
 
 ```julia
-for (cell,y,z) in level_iter_idx(embryo,2)
-  f(t,cell,@view embryo[y:z])
+for (cell, y, z) in level_iter_idx(embryo, 2)
+    f(t, cell, @view embryo[y:z])
 end
 ```
 
@@ -213,31 +213,31 @@ can allow one to check the `cell.celltype` in `f` an apply a different ODE depen
 on the cell type. You can add fields however you want, so you can use them
 to name cells and track lineages.
 
-Showing the use of `y`, you just pass it to the constructor. Let's pass it an array
+Showing the use of `values`, you just pass it to the constructor. Let's pass it an array
 of 3 values:
 
 ```julia
-tissue = construct(Tissue,deepcopy([population;population2]),[0.0;0.0;0.0])
+tissue = construct(Tissue, deepcopy([population; population2]), [0.0; 0.0; 0.0])
 ```
 
-We can selectively apply some function on these `y` values via:
+We can selectively apply some function on these `values` via:
 
 ```julia
-for (tissue,y,z) in level_iter_idx(embryo,1)
-  f(t,tissue,@view embryo[y:z])
+for (tissue, y, z) in level_iter_idx(embryo, 1)
+    f(t, tissue, @view embryo[y:z])
 end
 ```
 
-and mutatate `tis.y` in `f`. For example, we could have
+and mutate `tis.values` in `f`. For example, we could have
 
 ```julia
-function f(t,tissue::Tissue,du)
-  du .+= randn(3)
+function f(t, tissue::Tissue, du)
+    du .+= randn(3)
 end
 ```
 
 applies normal random numbers to the three values. We could use this to add to the
-model the fact that `tissue.y[1:3]` are the tissue's position, and `f` would then be
+model the fact that `tissue.values[1:3]` are the tissue's position, and `f` would then be
 adding Brownian motion.
 
 Of course, you can keep going and kind of do whatever you want. The power is yours!

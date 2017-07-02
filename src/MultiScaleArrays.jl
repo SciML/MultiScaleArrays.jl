@@ -34,10 +34,10 @@ export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
 export construct, recursivecopy!
 
 # Addition Deletion
-export add_daughter!, remove_daughter!
+export add_node!, remove_node!
 
 # Indexing
-export num_daughters, getindices
+export num_nodes, getindices
 
 # Misc
 export LevelIterIdx, level_iter

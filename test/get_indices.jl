@@ -2,23 +2,23 @@ using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase, Base.Test, StochasticDiffEq
 
 #=
-immutable Cell{B} <: AbstractMultiScaleArrayLeaf{B}
-  nodes::Vector{B}
+struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
+    values::Vector{B}
 end
-immutable Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
-immutable Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+struct Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
-immutable Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
-  nodes::Vector{T}
-  values::Vector{B}
-  end_idxs::Vector{Int}
+struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+    nodes::Vector{T}
+    values::Vector{B}
+    end_idxs::Vector{Int}
 end
 =#
 
