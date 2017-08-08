@@ -1,9 +1,9 @@
 # Abbreviation to help keep code short!
 const AMSA = AbstractMultiScaleArray
 
-Base.map!{F}(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) =
+Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} =
         broadcast!(f, m, A0, As...)
-Base.map!{F}(f::F, m::AMSA, A0, As...) =
+Base.map!(f::F, m::AMSA, A0, As...) where {F} =
         broadcast!(f, m, A0, As...)
 
 Base.Broadcast.promote_containertype(::Type{T}, ::Type{T}) where {T<:AMSA} = T
@@ -14,7 +14,7 @@ Base.Broadcast.promote_containertype(::Type{<:Any}, ::Type{T}) where {T<:AMSA} =
 Base.Broadcast._containertype(::Type{T}) where {T<:AMSA} = T
 Base.Broadcast.broadcast_indices(::Type{<:AMSA}, A) = indices(A)
 
-@inline function Base.Broadcast.broadcast_c{S<:AMSA}(f, ::Type{S}, A, Bs...)
+@inline function Base.Broadcast.broadcast_c(f, ::Type{S}, A, Bs...) where S<:AMSA
     T = Base.Broadcast._broadcast_eltype(f, A, Bs...)
     shape = Base.Broadcast.broadcast_indices(A, Bs...)
     broadcast!(f, similar(A), A, Bs...)

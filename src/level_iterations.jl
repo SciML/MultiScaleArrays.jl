@@ -1,6 +1,6 @@
 level_iter(S, n::Int) = n == 1 ? S.nodes : chain((level_iter(node, n-1) for node in S.nodes)...)
 
-type LevelIterIdx{T}
+struct LevelIterIdx{T}
     iter::T
 end
 LevelIterIdx(S::AbstractMultiScaleArray, n::Int) = LevelIterIdx(level_iter(S, n))
