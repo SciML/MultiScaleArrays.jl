@@ -27,6 +27,7 @@ cells contain proteins whose concentrations are modeled as simply a vector
 of numbers (it can be anything linearly indexable).
 
 ```julia
+using MultiScaleArrays
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
