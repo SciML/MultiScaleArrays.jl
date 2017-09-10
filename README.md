@@ -99,17 +99,18 @@ Using the iterators, note that we can get each cell population by looping throug
 2 levels below the top, so
 
 ```julia
-for cell in level_iter(embryo,2)
+for cell in level_iter(embryo,3)
   # Do something with the cells!
 end
 ```
 
 To apply a function cell-by-cell, you can write a dispatch `f` on the type for the
 level. Using `level_iter_idx`, we can have its changes update some other head node
-`d_embryo` via:
+`d_embryo` via: (((here, I think `d_embryo` is not defined, reader does not know what it is
+same thing for the function `f`: `f(t, cell, @view d_embryo[y:z]`))))
 
 ```julia
-for (cell, y, z) in LevelIterIdx(embryo, 2)
+for (cell, y, z) in LevelIterIdx(embryo, 3)
     f(t, cell, @view d_embryo[y:z])
 end
 ```
@@ -118,13 +119,13 @@ end
 making things alittle faster when indexing to create a sub-array). Notice that this updates the top
 vector cell-by-cell via the function `f` without allocating. This allows one to apply an ODE "cell-wise".
 
-However, the interesting behavior comes from event handling. Since `em` will be the
-"vector" for the differential equation or otimization problem, it will be the value
+However, the interesting behavior comes from event handling. Since `embryo` will be the
+"vector" for the differential equation or optimization problem, it will be the value
 passed to the event handling. MultiScaleArrays includes behavior for changing the
 structure. For example:
 
 ```julia
-tissue3 = construct(Tissue, deepcopy([population; population2]))
+tissue3 = construct(Tissue, deepcopy([population, population2]))
 add_node!(embryo, tissue3) # Adds a new tissue to the embryo
 remove_node!(embryo, 2, 1) # Removes population 1 from tissue 2 of the embryo
 ```
