@@ -105,9 +105,8 @@ end
 ```
 
 To apply a function cell-by-cell, you can write a dispatch `f` on the type for the
-level. Using `level_iter_idx`, we can have its changes update some other head node
-`d_embryo` via: (((here, I think `d_embryo` is not defined, reader does not know what it is
-same thing for the function `f`: `f(t, cell, @view d_embryo[y:z]`))))
+level. Assuming we have `d_embryo` as `similar` to `embryo`, using `level_iter_idx`
+we can have its changes update some other head node `d_embryo` via:
 
 ```julia
 for (cell, y, z) in LevelIterIdx(embryo, 3)
