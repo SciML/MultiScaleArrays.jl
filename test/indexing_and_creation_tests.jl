@@ -122,8 +122,6 @@ end
 
 ### Test math
 
-#broadcast_getindex(cell1, 1)
-
 g = (x, y) -> x*y
 @test g.(cell1, 2) == [2.; 4; 6]
 # cell1 .= g.(cell1, 2) How to broadcast right???

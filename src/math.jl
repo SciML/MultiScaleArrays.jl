@@ -22,6 +22,25 @@ Base.Broadcast.broadcast_indices(::Type{<:AMSA}, A) = indices(A)
     broadcast!(f, similar(A), A, Bs...)
 end
 
+@inline function Base.Broadcast.broadcast_c(f, ::Type{S}, A::AMSA, Bs::AMSA...) where S<:AMSA
+    new_A = similar(A)
+    broadcast!(f,new_A,A,Bs...)
+    new_A
+end
+
+@inline function Base.Broadcast.broadcast_c!(f, ::Type{S}, ::Type, A::AbstractMultiScaleArrayLeaf, Bs::AbstractMultiScaleArrayLeaf...) where S<:AbstractMultiScaleArrayLeaf
+    broadcast!(f, A.values, (B.values for B in Bs)...)
+    A
+end
+
+@inline function Base.Broadcast.broadcast_c!(f, ::Type{S}, ::Type, A::AMSA, Bs::AMSA...) where S<:AMSA
+    for i in eachindex(A.nodes)
+            broadcast!(f, A.nodes[i], (B.nodes[i] for B in Bs)...)
+    end
+    broadcast!(f, A.values, (B.values for B in Bs)...)
+    A
+end
+
 +(m::AbstractMultiScaleArray, y::AbstractMultiScaleArray) = m .+ y
 +(m::AbstractMultiScaleArray, y::Number) = m .+ y
 +(y::Number, m::AbstractMultiScaleArray) = m .+ y
