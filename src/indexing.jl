@@ -1,19 +1,5 @@
 function bisect_search(a, i)
-    L=1; R=length(a)
-    while true
-        L>R && error("Left > Right in Bisection. Failed")
-        m = floor(Int, .5*(L+R))
-        if a[m] == i
-            return m
-        elseif R==L
-            return L
-        elseif a[m] < i
-            L = m+1
-        elseif a[m] > i
-            R = m
-        end
-    end
-    #length(a) - sum(map((x)->x>=i, a))
+    first(searchsorted(a,i))
 end
 
 Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
@@ -76,7 +62,7 @@ function Base.eltype(::Type{T}) where {T<:AbstractMultiScaleArray}
     error("Invalid AbstractMultiScaleArray, type of values not specified")
 end
 Base.eltype(::T) where {T<:AbstractMultiScaleArray} = eltype(T)
-                                                               
+
 #broadcast_getindex(m::AbstractMultiScaleArrayLeaf, i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int...) = m[i]

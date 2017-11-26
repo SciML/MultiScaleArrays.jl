@@ -18,7 +18,8 @@ similar(m::AbstractMultiScaleArrayLeaf, T::Type) =
 similar(m::AbstractMultiScaleArray,T::Type) =
     construct(parameterless_type(m), [similar(v, T) for v in m.nodes], similar(m.values, T))
 
-construct(::Type{T}, values) where {T<:AbstractMultiScaleArrayLeaf} = T(values)
+construct(::Type{T}, values, args...) where {T<:AbstractMultiScaleArrayLeaf} =
+                                                              T(values, args...)
 
 function __construct(nodes::Vector{<:AbstractMultiScaleArray})
     end_idxs = Vector{Int}(length(nodes))
@@ -29,12 +30,12 @@ function __construct(nodes::Vector{<:AbstractMultiScaleArray})
     end_idxs
 end
 
-function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray})
+function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray},args...)
           where {T<:AbstractMultiScaleArray})
-    T(nodes, eltype(T)[], __construct(nodes))
+    T(nodes, eltype(T)[], __construct(nodes),args...)
 end
 
-function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray}, values)
+function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray}, values, args...)
           where {T<:AbstractMultiScaleArray})
     vallen = length(values)
     end_idxs = Vector{Int}(length(nodes) + ifelse(vallen == 0, 0, 1))
@@ -43,7 +44,7 @@ function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray}, values)
         end_idxs[i] = (off += length(nodes[i]))
     end
     vallen == 0 || (end_idxs[end] = off + vallen)
-    T(nodes, values, end_idxs)
+    T(nodes, values, end_idxs, args...)
 end
 
 vcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) =
