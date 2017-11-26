@@ -62,11 +62,11 @@ println("Do the ODE Part")
 prob = ODEProblem(f, embryo, (0.0, 1.0))
 test_embryo = deepcopy(embryo)
 
-@test_broken sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
+sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, Rosenbrock23(autodiff=false), callback=growing_cb, tstops=tstop)
+sol = solve(prob, Rosenbrock23(), callback=growing_cb, tstops=tstop)
 
-@test_broken length(sol[end]) == 23
+@test length(sol[end]) == 23
 
 affect_del! = function (integrator)
     remove_node!(integrator, 1, 1, 1)
@@ -74,11 +74,11 @@ end
 
 shrinking_cb = DiscreteCallback(condition, affect_del!)
 
-@test_broken sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
+sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, Rosenbrock23(), callback=shrinking_cb, tstops=tstop)
+sol = solve(prob, Rosenbrock23(), callback=shrinking_cb, tstops=tstop)
 
-@test_broken length(sol[end]) == 17
+@test length(sol[end]) == 17
 
 println("Do the SDE Part")
 
