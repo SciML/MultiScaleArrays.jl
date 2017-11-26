@@ -9,17 +9,23 @@ size(m::AbstractMultiScaleArray) = (length(m),)
 parameterless_type(T::Type) = Base.typename(T).wrapper
 parameterless_type(x) = parameterless_type(typeof(x))
 
-similar(m::AbstractMultiScaleArray) =
-    construct(typeof(m), deepcopy(m.nodes), deepcopy(m.values))
-similar(m::AbstractMultiScaleArrayLeaf) =
-    construct(typeof(m), similar(m.values))
-similar(m::AbstractMultiScaleArrayLeaf, T::Type) =
-    construct(parameterless_type(m), similar(m.values, T))
-similar(m::AbstractMultiScaleArray,T::Type) =
-    construct(parameterless_type(m), [similar(v, T) for v in m.nodes], similar(m.values, T))
+@generated function similar(m::AbstractMultiScaleArrayLeaf,::Type{T}=eltype(m)) where T
+    assignments = [s == :x ? :(similar(m.x, T)) :
+                   (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
+                   for s in fieldnames(m)[2:end]] # 1 is values
+    :(construct(parameterless_type(m), similar(m.values,T),$(assignments...)))
+end
 
-construct(::Type{T}, values, args...) where {T<:AbstractMultiScaleArrayLeaf} =
-                                                              T(values, args...)
+@generated function similar(m::AbstractMultiScaleArray,::Type{T}=eltype(m)) where {T}
+    assignments = [s == :x ? :(similar(m.x, T, dims)) :
+                   (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
+                   for s in fieldnames(m)[4:end]] # 1:3 is nodes,values,end_idxs
+    :(construct(parameterless_type(m), recursive_similar(m.nodes,T),similar(m.values, T),$(assignments...)))
+end
+
+recursive_similar(x,T) = [similar(y, T) for y in x]
+
+construct(::Type{T}, args...) where {T<:AbstractMultiScaleArrayLeaf} = T(args...)
 
 function __construct(nodes::Vector{<:AbstractMultiScaleArray})
     end_idxs = Vector{Int}(length(nodes))

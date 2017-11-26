@@ -161,6 +161,7 @@ Each type above then contains three fields:
 - `values::Vector{B}`
 - `end_idxs::Vector{Int}``
 
+Note that the ordering of the fields matters.
 `B` is the `BottomType`, which has to be the same as the eltype for the array
 in the leaf types. `T` is another `AbstractMultiScaleArray`. Thus at each level,
 an` AbstractMultiScaleArray` contains some information of its own (`values`), the
@@ -201,8 +202,12 @@ struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
 end
 ```
 
-Then we'd construct cells with `cell3 = Cell([3.0; 2.0; 5.0], :BCell)`, and can
-give it a cell type. This information is part of the call, so
+Note that the ordering of the fields matters here: the extra fields must come
+after the standard fields (so for a leaf it comes after `values`, for a standard
+multiscale array it would come after `nodes,values,end_idxs`).
+Then we'd construct cells with
+`cell3 = Cell([3.0; 2.0; 5.0], :BCell)`, and can give it a cell type.
+This information is part of the call, so
 
 ```julia
 for (cell, y, z) in level_iter_idx(embryo, 2)
