@@ -159,7 +159,7 @@ Each type above then contains three fields:
 
 - `nodes::Vector{T}`
 - `values::Vector{B}`
-- `end_idxs::Vector{Int}``
+- `end_idxs::Vector{Int}`
 
 Note that the ordering of the fields matters.
 `B` is the `BottomType`, which has to be the same as the eltype for the array
