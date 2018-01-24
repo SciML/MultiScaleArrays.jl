@@ -143,12 +143,12 @@ p/zero(t)
 
 size(p)
 
-f = function (t, u, du)
+f = function (du,u,p,t)
     for i in eachindex(u)
         du[i] = 0.42*u[i]
     end
 end
-g = function (t, u, du)
+g = function (du,u,p,t)
     for i in eachindex(u)
         du[i] = 0.42*u[i]
     end

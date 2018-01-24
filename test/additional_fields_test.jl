@@ -23,7 +23,7 @@ host = construct(Host,[
         )]
     )
 
-evolve = function (t,u::Host,du)
+evolve = function (du,u::Host,p,t)
   for i in 1:length(u)
     du[i] = 2*u[i]
   end
@@ -60,7 +60,7 @@ host2 = construct(Host2,[
         :my_cell_type
     )
 
-evolve = function (t,u::Host2,du)
+evolve = function (du,u::Host2,p,t)
   for i in 1:length(u)
     du[i] = 2*u[i]
   end

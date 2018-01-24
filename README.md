@@ -237,7 +237,7 @@ end
 and mutate `tis.values` in `f`. For example, we could have
 
 ```julia
-function f(t, tissue::Tissue, du)
+function f(du, tissue::Tissue, p, t)
     du .+= randn(3)
 end
 ```

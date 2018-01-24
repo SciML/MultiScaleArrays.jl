@@ -32,22 +32,22 @@ tissue1 = construct(Tissue, deepcopy([population, population2])) # Make a Tissue
 tissue2 = construct(Tissue, deepcopy([population2, population]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 
-cell_ode = function (t, cell, dcell)
+cell_ode = function (dcell,cell,p,t)
     m = mean(cell)
     for i in eachindex(cell)
         dcell[i] = -m*cell[i]
     end
 end
 
-f = function (t, embryo, dembryo)
+f = function (dembryo,embryo,p,t)
     for (cell, y, z) in LevelIterIdx(embryo, 2)
-        cell_ode(t, cell, @view dembryo[y:z])
+        cell_ode(@view(dembryo[y:z]),cell,p,t)
     end
 end
 
 tstop = [0.5]
 
-condition = function (t, u, integrator)
+condition = function (u, t, integrator)
     t ∈ tstop
 end
 
@@ -82,7 +82,7 @@ sol = solve(prob, Rosenbrock23(), callback=shrinking_cb, tstops=tstop)
 
 println("Do the SDE Part")
 
-g = function (t, u, du)
+g = function (du,u,p,t)
     for i in eachindex(u)
         du[i] = 0.1u[i]
     end
