@@ -27,22 +27,7 @@ recursive_similar(x,T) = [similar(y, T) for y in x]
 
 construct(::Type{T}, args...) where {T<:AbstractMultiScaleArrayLeaf} = T(args...)
 
-function __construct(nodes::Vector{<:AbstractMultiScaleArray})
-    end_idxs = Vector{Int}(length(nodes))
-    off = 0
-    @inbounds for i in 1:length(nodes)
-        end_idxs[i] = (off += length(nodes[i]))
-    end
-    end_idxs
-end
-
-function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray},args...)
-          where {T<:AbstractMultiScaleArray})
-    T(nodes, eltype(T)[], __construct(nodes),args...)
-end
-
-function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray}, values, args...)
-          where {T<:AbstractMultiScaleArray})
+function __construct(T, nodes, values, args)
     vallen = length(values)
     end_idxs = Vector{Int}(length(nodes) + ifelse(vallen == 0, 0, 1))
     off = 0
@@ -52,6 +37,18 @@ function (construct(::Type{T}, nodes::Vector{<:AbstractMultiScaleArray}, values,
     vallen == 0 || (end_idxs[end] = off + vallen)
     T(nodes, values, end_idxs, args...)
 end
+
+construct(::Type{T}, nodes::AbstractVector{<:AbstractMultiScaleArray}, args...)
+    where {T<:AbstractMultiScaleArray} = __construct(T, nodes, eltype(T)[], args...)
+
+construct(::Type{T}, nodes::AbstractVector{<:AbstractMultiScaleArray}, values, args...)
+    where {T<:AbstractMultiScaleArray} = __construct(T, nodes, values, args)
+
+construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, args...)
+    where {T<:AbstractMultiScaleArray} = __construct(T, nodes, eltype(T)[], args)
+
+construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, values, args...)
+    where {T<:AbstractMultiScaleArray} = __construct(T, nodes, values, args)
 
 vcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) =
     error("AbstractMultiScaleArrays cannot be concatenated")
