@@ -1,35 +1,5 @@
-
-# Recursive getters for type stability
-nodevalues(ns::AbstractVector) = (n.values for n in ns)
-nodevalues(ns::Tuple{T,Vararg}) where T = (ns[1].values, nodevalues(Base.tail(ns))...)
-nodevalues(ns::Tuple{}) = tuple()
-
-nodeselection(ns::AbstractVector, i, I...) = ns[i][I...]
-nodeselection(ns::Tuple{T,Vararg}, i, I...) where T =
-    if i > 1
-        nodeselection(Base.tail(ns), i - 1, I...)
-    else
-        ns[1][I...]
-    end
-nodeselection(ns::Tuple{T}, i::Int, I...) where T = ns[1][I...]
-
-nodechild(ns::AbstractVector, i::Int, j::Int) = ns[i].nodes[j]
-nodechild(ns::Tuple{T,Vararg}, i::Int, j::Int) where T =
-    if i > 1
-        nodechild(Base.tail(ns), i - 1, j)
-    else
-        _nodechild(ns[1].nodes, j)
-    end
-nodechild(ns::Tuple{T}, i::Int, j::Int) where T = _nodechild(ns[1].nodes, j)
-
-_nodechild(ns::Tuple{T,Vararg}, j::Int) where T =
-    if j > 1
-        _nodechild(Base.tail(ns), j - 1)
-    else
-        ns[1]
-    end
-_nodechild(ns::Tuple{T}, j::Int) where T = ns[1]
-
+nodeselection(ns, i, I...) = ns[i][I...]
+nodechild(ns, i, j) = ns[i].nodes[j]
 
 function bisect_search(a, i)
     first(searchsorted(a,i))
