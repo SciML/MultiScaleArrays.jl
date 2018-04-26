@@ -1,3 +1,36 @@
+
+# Recursive getters for type stability
+nodevalues(ns::AbstractVector) = (n.values for n in ns)
+nodevalues(ns::Tuple{T,Vararg}) where T = (ns[1].values, nodevalues(Base.tail(ns))...)
+nodevalues(ns::Tuple{}) = tuple()
+
+nodeselection(ns::AbstractVector, i, I...) = ns[i][I...]
+nodeselection(ns::Tuple{T,Vararg}, i, I...) where T =
+    if i > 1
+        nodeselection(Base.tail(ns), i - 1, I...)
+    else
+        ns[1][I...]
+    end
+nodeselection(ns::Tuple{T}, i::Int, I...) where T = ns[1][I...]
+
+nodechild(ns::AbstractVector, i::Int, j::Int) = ns[i].nodes[j]
+nodechild(ns::Tuple{T,Vararg}, i::Int, j::Int) where T =
+    if i > 1
+        nodechild(Base.tail(ns), i - 1, j)
+    else
+        _nodechild(ns[1].nodes, j)
+    end
+nodechild(ns::Tuple{T}, i::Int, j::Int) where T = _nodechild(ns[1].nodes, j)
+
+_nodechild(ns::Tuple{T,Vararg}, j::Int) where T =
+    if j > 1
+        _nodechild(Base.tail(ns), j - 1)
+    else
+        ns[1]
+    end
+_nodechild(ns::Tuple{T}, j::Int) where T = ns[1]
+
+
 function bisect_search(a, i)
     first(searchsorted(a,i))
 end
@@ -7,7 +40,7 @@ Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
 @inline function getindex(m::AbstractMultiScaleArray, i::Int)
     idx = bisect_search(m.end_idxs, i)
     idx > 1 && (i -= m.end_idxs[idx-1]) # also works with values
-    (isempty(m.values) || idx < length(m.end_idxs)) ? m.nodes[idx][i] : m.values[i]
+    (isempty(m.values) || idx < length(m.end_idxs)) ? nodeselection(m.nodes, idx, i) : m.values[i]
 end
 
 @inline function setindex!(m::AbstractMultiScaleArray, nodes, i::Int)
@@ -25,7 +58,7 @@ end
 
 @inline function getindex(m::AbstractMultiScaleArray, i, I...)
     if isempty(m.values) || i < length(m.end_idxs)
-        length(I) == 1 ? m.nodes[i].nodes[I[1]] : m.nodes[i][I...]
+        length(I) == 1 ? nodechild(m.nodes, i, I[1]) : nodeselection(m.nodes, i, I...)
     else
         m.values[I...]
     end

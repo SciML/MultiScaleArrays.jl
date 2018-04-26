@@ -24,6 +24,7 @@ end
 end
 
 recursive_similar(x,T) = [similar(y, T) for y in x]
+recursive_similar(x::Tuple,T) = tuple((similar(y, T) for y in x)...)
 
 construct(::Type{T}, args...) where {T<:AbstractMultiScaleArrayLeaf} = T(args...)
 
