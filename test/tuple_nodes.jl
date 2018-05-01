@@ -89,7 +89,7 @@ growing_cb = DiscreteCallback(condition, affect!)
 
 println("ODE with tuple nodes")
 
-prob = ODEProblem(f, scenario, (0.0, 1.0))
+prob = ODEProblem(f, dscenario, scenario, (0.0, 1.0))
 test_scenario = deepcopy(scenario)
 
 sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
