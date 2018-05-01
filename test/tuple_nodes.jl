@@ -78,20 +78,10 @@ f = function (dscenario,scenario,p,t)
         organ_ode(@view(dscenario[y:z]),organ,p,t)
     end
 end
-tstop = [0.5]
-condition = function (u, t, integrator)
-    t ∈ tstop
-end
-affect! = function (integrator)
-    add_node!(integrator, integrator.u[1, 1, 1], 1, 1)
-end
-growing_cb = DiscreteCallback(condition, affect!)
 
 println("ODE with tuple nodes")
 
-prob = ODEProblem(f, dscenario, scenario, (0.0, 1.0))
-test_scenario = deepcopy(scenario)
-
-sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
+prob = ODEProblem(f, scenario, (0.0, 1.0))
+sol = solve(prob, Tsit5())
 
 @test length(sol[end]) == 23
