@@ -1,4 +1,3 @@
-using Revise
 using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
 using Base.Test
 
