@@ -74,6 +74,15 @@ tissue2 = construct(Tissue, deepcopy([population2, population]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
 
+Note that tuples can be used as well. This allows for type-stable indexing with
+heterogeneous nodes. For example:
+
+```julia
+tissue1 = construct(Tissue, deepcopy((population, cell3)))
+```
+
+(of course at the cost of mutability).
+
 The head node then acts as the king. It is designed to have functionality which
 mimics a vector in order for usage in DifferentialEquations or Optim. So for example
 
