@@ -1,3 +1,6 @@
+nodeselect(ns, i, I...) = ns[i][I...]
+nodechild(ns, i, j) = ns[i].nodes[j]
+
 function bisect_search(a, i)
     first(searchsorted(a,i))
 end
@@ -7,7 +10,7 @@ Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
 @inline function getindex(m::AbstractMultiScaleArray, i::Int)
     idx = bisect_search(m.end_idxs, i)
     idx > 1 && (i -= m.end_idxs[idx-1]) # also works with values
-    (isempty(m.values) || idx < length(m.end_idxs)) ? m.nodes[idx][i] : m.values[i]
+    (isempty(m.values) || idx < length(m.end_idxs)) ? nodeselect(m.nodes, idx, i) : m.values[i]
 end
 
 @inline function setindex!(m::AbstractMultiScaleArray, nodes, i::Int)
@@ -25,7 +28,7 @@ end
 
 @inline function getindex(m::AbstractMultiScaleArray, i, I...)
     if isempty(m.values) || i < length(m.end_idxs)
-        length(I) == 1 ? m.nodes[i].nodes[I[1]] : m.nodes[i][I...]
+        length(I) == 1 ? nodechild(m.nodes, i, I[1]) : nodeselect(m.nodes, i, I...)
     else
         m.values[I...]
     end
