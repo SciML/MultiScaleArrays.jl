@@ -10,14 +10,14 @@ parameterless_type(T::Type) = Base.typename(T).wrapper
 parameterless_type(x) = parameterless_type(typeof(x))
 
 @generated function similar(m::AbstractMultiScaleArrayLeaf,::Type{T}=eltype(m)) where T
-    assignments = [s == :x ? :(similar(m.x, T)) :
+    assignments = [s == :values ? :(similar(m.values, T)) :
                    (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
                    for s in fieldnames(m)[2:end]] # 1 is values
     :(construct(parameterless_type(m), similar(m.values,T),$(assignments...)))
 end
 
 @generated function similar(m::AbstractMultiScaleArray,::Type{T}=eltype(m)) where {T}
-    assignments = [s == :x ? :(similar(m.x, T, dims)) :
+    assignments = [s == :values ? :(similar(m.values, T)) :
                    (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
                    for s in fieldnames(m)[4:end]] # 1:3 is nodes,values,end_idxs
     :(construct(parameterless_type(m), recursive_similar(m.nodes,T),similar(m.values, T),$(assignments...)))
