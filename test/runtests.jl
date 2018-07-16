@@ -1,5 +1,5 @@
 using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
-using Base.Test
+using Test
 
 @time @testset "Tuple Nodes" begin include("tuple_nodes.jl") end
 @time @testset "Bisect Search Tests" begin include("bisect_search_tests.jl") end
