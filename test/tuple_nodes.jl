@@ -1,5 +1,5 @@
 using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
-using Base.Test
+using Test
 
 struct PlantSettings{T} x::T end
 struct OrganParams{T} y::T end

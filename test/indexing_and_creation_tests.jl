@@ -1,4 +1,4 @@
-using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Base.Test
+using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Test
 
 ### Setup a hierarchy
 

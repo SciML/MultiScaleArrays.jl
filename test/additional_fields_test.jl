@@ -1,4 +1,4 @@
-using OrdinaryDiffEq, Base.Test
+using OrdinaryDiffEq, Test
 using MultiScaleArrays
 
 struct CellGenotype{B<:Float64} <: AbstractMultiScaleArrayLeaf{B}
