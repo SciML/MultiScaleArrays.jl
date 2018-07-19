@@ -1,4 +1,4 @@
-function remove_node!(integrator::DEIntegrator, I...)
+function remove_node!(integrator::DiffEqBase.DEIntegrator, I...)
     idxs = getindices(integrator.u, I...)
     for c in user_cache(integrator)
         remove_node!(c, I...)
@@ -6,7 +6,7 @@ function remove_node!(integrator::DEIntegrator, I...)
     deleteat_non_user_cache!(integrator, idxs)
 end
 
-function add_node!(integrator::DEIntegrator, x, I...)
+function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
     cur_len = length(integrator.u)
     add_len = length(x)
     for c in user_cache(integrator)
