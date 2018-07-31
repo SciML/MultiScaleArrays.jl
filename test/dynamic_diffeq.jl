@@ -1,5 +1,5 @@
 using MultiScaleArrays
-using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq
+using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq, Statistics
 
 #=
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}

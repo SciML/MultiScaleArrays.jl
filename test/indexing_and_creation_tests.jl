@@ -49,7 +49,7 @@ p = construct(Population, deepcopy([cell1, cell2]))
 @test p[5] == 5
 
 sim_p  = similar(p)
-sim_p_arr  = similar(p, indices(p))
+sim_p_arr  = similar(p, axes(p))
 
 @test typeof(sim_p) <: Population
 @test typeof(sim_p_arr) <: Vector{Float64}
