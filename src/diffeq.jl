@@ -3,7 +3,7 @@ function remove_node!(integrator::DiffEqBase.DEIntegrator, I...)
     for c in full_cache(integrator)
         remove_node!(c, I...)
     end
-    #deleteat_non_user_cache!(integrator, idxs)
+    #deleteat_non_user_cache!(integrator, idxs) # required to do noise correctly
 end
 
 function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
@@ -14,9 +14,7 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
     for c in full_cache(integrator)
         add_node!(c, similar(x, eltype(c)), I...)
     end
-    #addat_non_user_cache!(integrator, idxs)
+    #addat_non_user_cache!(integrator, idxs) # required to do noise correctly
 end
-
-function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
 
 reshape(m::AbstractMultiScaleArray, i::Int...) = m

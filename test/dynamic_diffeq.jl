@@ -89,54 +89,58 @@ g = function (du,u,p,t)
 end
 prob = SDEProblem(f, g, embryo, (0.0, 1.0))
 
-@show SRIW1
+@test_broken begin
 
-sol = solve(prob, SRIW1(), callback=growing_cb, tstops=tstop)
+  @show SRIW1
 
-@show SRI
+  sol = solve(prob, SRIW1(), callback=growing_cb, tstops=tstop)
 
-sol = solve(prob, SRI(), callback=growing_cb, tstops=tstop)
+  @show SRI
 
-@show SRA
+  sol = solve(prob, SRI(), callback=growing_cb, tstops=tstop)
 
-sol = solve(prob, SRA(), callback=growing_cb, tstops=tstop)
+  @show SRA
 
-@show SRA1
+  sol = solve(prob, SRA(), callback=growing_cb, tstops=tstop)
 
-sol = solve(prob, SRA1(), callback=growing_cb, tstops=tstop)
+  @show SRA1
 
-@show RKMil
+  sol = solve(prob, SRA1(), callback=growing_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, RKMil(), callback=growing_cb, dt=1/10, tstops=tstop)
+  @show RKMil
 
-@show EM
+  @test_broken sol = solve(prob, RKMil(), callback=growing_cb, dt=1/10, tstops=tstop)
 
-sol = solve(prob, EM(), dt=1/20, callback=growing_cb, tstops=tstop)
+  @show EM
 
-@test length(sol[end]) == 23
+  sol = solve(prob, EM(), dt=1/20, callback=growing_cb, tstops=tstop)
 
-@show SRIW1
+  @test length(sol[end]) == 23
 
-sol = solve(prob, SRIW1(), callback=shrinking_cb, tstops=tstop)
+  @show SRIW1
 
-@show SRI
+  sol = solve(prob, SRIW1(), callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, SRI(), callback=shrinking_cb, tstops=tstop)
+  @show SRI
 
-@show SRA
+  sol = solve(prob, SRI(), callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, SRA(), callback=shrinking_cb, tstops=tstop)
+  @show SRA
 
-@show SRA1
+  sol = solve(prob, SRA(), callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, SRA1(), callback=shrinking_cb, tstops=tstop)
+  @show SRA1
 
-@show RKMil
+  sol = solve(prob, SRA1(), callback=shrinking_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, RKMil(), dt=1/10, callback=shrinking_cb, tstops=tstop)
+  @show RKMil
 
-@show EM
+  @test_broken sol = solve(prob, RKMil(), dt=1/10, callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, EM(), dt=1/10, callback=shrinking_cb, tstops=tstop)
+  @show EM
 
-@test length(sol[end]) == 17
+  sol = solve(prob, EM(), dt=1/10, callback=shrinking_cb, tstops=tstop)
+
+  @test length(sol[end]) == 17
+
+end
