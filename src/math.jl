@@ -8,8 +8,8 @@ Base.map!(f::F, m::AMSA, A0, As...) where {F} =
 
 const AMSAStyle = Broadcast.ArrayStyle{AMSA}
 Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
-#Base.BroadcastStyle(::Broadcast.ArrayStyle{AMSA},::Broadcast.ArrayStyle) = Broadcast.ArrayStyle{AMSA}()
-#Base.BroadcastStyle(::Broadcast.ArrayStyle,::Broadcast.ArrayStyle{AMSA}) = Broadcast.ArrayStyle{AMSA}()
+Base.BroadcastStyle(::Broadcast.ArrayStyle{AMSA},::Broadcast.DefaultArrayStyle{1}) = Broadcast.DefaultArrayStyle{1}()
+Base.BroadcastStyle(::Broadcast.DefaultArrayStyle{1},::Broadcast.ArrayStyle{AMSA}) = Broadcast.DefaultArrayStyle{1}()
 Base.similar(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}},::Type{ElType}) where ElType = similar(bc)
 
 function Base.copy(bc::Broadcast.Broadcasted{AMSAStyle})
