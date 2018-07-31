@@ -4,7 +4,7 @@ module MultiScaleArrays
 
 import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
        size, print_matrix, similar, broadcast_getindex, hcat, vcat,
-       linearindexing, ==, *, +, /, -, show, vec, reshape
+       ==, *, +, /, -, show, vec, reshape
 
 import RecursiveArrayTools: recursivecopy!
 

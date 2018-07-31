@@ -1,4 +1,4 @@
-using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
+using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq, Statistics
 using Test
 
 struct PlantSettings{T} x::T end

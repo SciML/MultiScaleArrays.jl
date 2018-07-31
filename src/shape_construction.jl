@@ -23,6 +23,8 @@ end
     :(construct(parameterless_type(m), recursive_similar(m.nodes,T),similar(m.values, T),$(assignments...)))
 end
 
+Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A),0)
+
 recursive_similar(x,T) = [similar(y, T) for y in x]
 recursive_similar(x::Tuple,T) = tuple((similar(y, T) for y in x)...)
 
@@ -30,7 +32,7 @@ construct(::Type{T}, args...) where {T<:AbstractMultiScaleArrayLeaf} = T(args...
 
 function __construct(T, nodes, values, args...)
     vallen = length(values)
-    end_idxs = Vector{Int}(length(nodes) + ifelse(vallen == 0, 0, 1))
+    end_idxs = Vector{Int}(undef,length(nodes) + ifelse(vallen == 0, 0, 1))
     off = 0
     @inbounds for i in 1:length(nodes)
         end_idxs[i] = (off += length(nodes[i]))
@@ -60,7 +62,7 @@ hcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) =
 ==(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) = (m1 === m2)
 
 function recursivecopy!(b::AbstractMultiScaleArrayLeaf, a::AbstractMultiScaleArrayLeaf)
-    @inbounds copy!(b,a)
+    @inbounds copyto!(b,a)
 end
 
 function recursivecopy!(b::AbstractMultiScaleArray, a::AbstractMultiScaleArray)

@@ -6,46 +6,42 @@ Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} =
 Base.map!(f::F, m::AMSA, A0, As...) where {F} =
         broadcast!(f, m, A0, As...)
 
-Base.Broadcast.promote_containertype(::Type{T}, ::Type{T}) where {T<:AMSA} = T
-Base.Broadcast.promote_containertype(::Type{T}, ::Type{S}) where {T<:AMSA, S<:AbstractArray} = T
-Base.Broadcast.promote_containertype(::Type{S}, ::Type{T}) where {T<:AMSA, S<:AbstractArray} = T
-Base.Broadcast.promote_containertype(::Type{T}, ::Type{<:Any}) where {T<:AMSA} = T
-Base.Broadcast.promote_containertype(::Type{<:Any}, ::Type{T}) where {T<:AMSA} = T
-Base.Broadcast.promote_containertype(::Type{Array}, ::Type{T}) where {T<:AMSA} = T
-Base.Broadcast.promote_containertype(::Type{T}, ::Type{Array}) where {T<:AMSA} = T
-Base.Broadcast._containertype(::Type{T}) where {T<:AMSA} = T
-Base.Broadcast.broadcast_indices(::Type{<:AMSA}, A) = indices(A)
+const AMSAStyle = Broadcast.ArrayStyle{AMSA}
+Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
+#Base.BroadcastStyle(::Broadcast.ArrayStyle{AMSA},::Broadcast.ArrayStyle) = Broadcast.ArrayStyle{AMSA}()
+#Base.BroadcastStyle(::Broadcast.ArrayStyle,::Broadcast.ArrayStyle{AMSA}) = Broadcast.ArrayStyle{AMSA}()
+Base.similar(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}},::Type{ElType}) where ElType = similar(bc)
 
-@inline function Base.Broadcast.broadcast_c(f, ::Type{S}, A, Bs...) where S<:AMSA
-    T = Base.Broadcast._broadcast_eltype(f, A, Bs...)
-    shape = Base.Broadcast.broadcast_indices(A, Bs...)
+function Base.copy(bc::Broadcast.Broadcasted{AMSAStyle})
+    ret = Broadcast.flatten(bc)
+    __broadcast(ret.f,ret.args...)
+end
+
+function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{AMSAStyle})
+    ret = Broadcast.flatten(bc)
+    __broadcast!(ret.f,dest,ret.args...)
+end
+
+function __broadcast(f, A::AMSA, Bs...)
     broadcast!(f, similar(A), A, Bs...)
 end
 
-@inline function Base.Broadcast.broadcast_c(f, ::Type{S}, A::AMSA, Bs::AMSA...) where S<:AMSA
-    new_A = similar(A)
-    broadcast!(f,new_A,A,Bs...)
-    new_A
-end
-
-@inline function Base.Broadcast.broadcast_c!(f, ::Type{S}, ::Type, A::AbstractMultiScaleArrayLeaf, Bs::AbstractMultiScaleArrayLeaf...) where S<:AbstractMultiScaleArrayLeaf
-    broadcast!(f, A.values, (B.values for B in Bs)...)
+function __broadcast!(f, A::AbstractMultiScaleArrayLeaf, Bs::Union{Number,AbstractMultiScaleArrayLeaf}...)
+    broadcast!(f, A.values, (typeof(B)<:AbstractMultiScaleArrayLeaf ? B.values : B for B in Bs)...)
     A
 end
 
-@inline function Base.Broadcast.broadcast_c!(f, ::Type{S}, ::Type, A::AMSA, Bs::AMSA...) where S<:AMSA
+function __broadcast!(f, A::AMSA, Bs::Union{Number,AMSA}...)
     for i in eachindex(A.nodes)
-            broadcast!(f, A.nodes[i], (B.nodes[i] for B in Bs)...)
+            broadcast!(f, A.nodes[i], (typeof(B)<:AMSA ? B.nodes[i] : B for B in Bs)...)
     end
-    broadcast!(f, A.values, (B.values for B in Bs)...)
+    broadcast!(f, A.values, (typeof(B)<:AMSA ? B.values : B for B in Bs)...)
     A
 end
 
-+(m::AbstractMultiScaleArray, y::AbstractMultiScaleArray) = m .+ y
 +(m::AbstractMultiScaleArray, y::Number) = m .+ y
 +(y::Number, m::AbstractMultiScaleArray) = m .+ y
 
--(m::AbstractMultiScaleArray, y::AbstractMultiScaleArray) = m .- y
 -(m::AbstractMultiScaleArray, y::Number) = m .- y
 -(y::Number, m::AbstractMultiScaleArray) = y .- m
 
