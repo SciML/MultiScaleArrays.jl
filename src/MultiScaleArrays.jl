@@ -3,7 +3,7 @@ __precompile__()
 module MultiScaleArrays
 
 import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
-       size, print_matrix, similar, broadcast_getindex, hcat, vcat,
+       size, print_matrix, similar, hcat, vcat,
        ==, *, +, /, -, show, vec, reshape
 
 import RecursiveArrayTools: recursivecopy!
