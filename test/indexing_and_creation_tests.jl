@@ -234,6 +234,18 @@ for (x, y, z) in LevelIterIdx(em, 3)
     @test maximum(em_arr[y:z] - x[:]) == 0
 end
 
+em2 = copy(em)
+
+for (pop1,pop2) in LevelIter(2,em,em2)
+    @test typeof(pop1) <: Population
+    @test pop1[:] == pop2[:]
+end
+
+for (cell1,cell2) in LevelIter(3,em,em2)
+    @test typeof(cell1) <: Cell
+    @test cell1[:] == cell2[:]
+end
+
 ### Non-Empty y
 
 p = construct(Population, deepcopy([cell1, cell2]), [1.; 2; 3])

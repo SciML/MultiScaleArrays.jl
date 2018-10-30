@@ -40,6 +40,6 @@ export add_node!, remove_node!
 export num_nodes, getindices
 
 # Misc
-export LevelIterIdx, level_iter
+export LevelIterIdx, LevelIter, level_iter
 
 end # module

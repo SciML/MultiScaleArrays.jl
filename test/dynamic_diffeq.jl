@@ -40,8 +40,8 @@ cell_ode = function (dcell,cell,p,t)
 end
 
 f = function (dembryo,embryo,p,t)
-    for (cell, y, z) in LevelIterIdx(embryo, 2)
-        cell_ode(@view(dembryo[y:z]),cell,p,t)
+    for (cell, dcell) in LevelIter(3,embryo, dembryo)
+        cell_ode(dcell,cell,p,t)
     end
 end
 
@@ -64,7 +64,23 @@ test_embryo = deepcopy(embryo)
 
 sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, Rosenbrock23(autodiff=false), callback=growing_cb, tstops=tstop)
+mutable struct LinSolveFactorize2{F}
+  factorization::F
+  A
+end
+LinSolveFactorize2(factorization) = LinSolveFactorize2(factorization,nothing)
+function (p::LinSolveFactorize2)(x,A,b,update_matrix=false)
+  if update_matrix
+    p.A = p.factorization(A)
+  end
+  ldiv!(convert(Array,x),p.A,convert(Array,b))
+end
+function (p::LinSolveFactorize2)(::Type{Val{:init}},f,u0_prototype)
+  LinSolveFactorize2(p.factorization,nothing)
+end
+using LinearAlgebra
+sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)), callback=growing_cb,
+            tstops=tstop)
 
 @test length(sol[end]) == 23
 
@@ -76,7 +92,8 @@ shrinking_cb = DiscreteCallback(condition, affect_del!)
 
 sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
-@test_broken sol = solve(prob, Rosenbrock23(), callback=shrinking_cb, tstops=tstop)
+sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)), callback=shrinking_cb,
+      tstops=tstop)
 
 @test length(sol[end]) == 17
 
