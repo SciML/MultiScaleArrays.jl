@@ -73,7 +73,10 @@ function (p::LinSolveFactorize2)(x,A,b,update_matrix=false)
   if update_matrix
     p.A = p.factorization(A)
   end
-  ldiv!(convert(Array,x),p.A,convert(Array,b))
+  xout = convert(Array,x)
+  ldiv!(xout,p.A,convert(Array,b))
+  x .= xout
+  nothing
 end
 function (p::LinSolveFactorize2)(::Type{Val{:init}},f,u0_prototype)
   LinSolveFactorize2(p.factorization,nothing)
@@ -92,8 +95,8 @@ shrinking_cb = DiscreteCallback(condition, affect_del!)
 
 sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)), callback=shrinking_cb,
-      tstops=tstop)
+sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)),
+            callback=shrinking_cb,tstops=tstop)
 
 @test length(sol[end]) == 17
 
