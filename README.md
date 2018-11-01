@@ -110,13 +110,22 @@ for cell in level_iter(embryo,3)
 end
 ```
 
+or the multiple level iter:
+
+```julia
+for (cell, dcell) in LevelIter(3,embryo, dembryo)
+    # If these are similar structures, `cell` and `dcell` are the similar parts
+    cell_ode(dcell,cell,p,t)
+end
+```
+
 To apply a function cell-by-cell, you can write a dispatch `f` on the type for the
 level. Assuming we have `d_embryo` as `similar` to `embryo`, using `level_iter_idx`
 we can have its changes update some other head node `d_embryo` via:
 
 ```julia
 for (cell, y, z) in LevelIterIdx(embryo, 3)
-    f(t, cell, @view d_embryo[y:z])
+    # cell = embryo[y:z]
 end
 ```
 
