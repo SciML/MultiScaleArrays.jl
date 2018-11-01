@@ -109,58 +109,38 @@ g = function (du,u,p,t)
 end
 prob = SDEProblem(f, g, embryo, (0.0, 1.0))
 
-@test_broken begin
+@show SRIW1
 
-  @show SRIW1
+sol = solve(prob, SRIW1(), callback=growing_cb, tstops=tstop)
 
-  sol = solve(prob, SRIW1(), callback=growing_cb, tstops=tstop)
+@show SRA1
 
-  @show SRI
+sol = solve(prob, SRA1(), callback=growing_cb, tstops=tstop)
 
-  sol = solve(prob, SRI(), callback=growing_cb, tstops=tstop)
+@show RKMil
 
-  @show SRA
+sol = solve(prob, RKMil(), callback=growing_cb, dt=1/10, tstops=tstop)
 
-  sol = solve(prob, SRA(), callback=growing_cb, tstops=tstop)
+@show EM
 
-  @show SRA1
+sol = solve(prob, EM(), dt=1/20, callback=growing_cb, tstops=tstop)
 
-  sol = solve(prob, SRA1(), callback=growing_cb, tstops=tstop)
+@test length(sol[end]) == 23
 
-  @show RKMil
+@show SRIW1
 
-  @test_broken sol = solve(prob, RKMil(), callback=growing_cb, dt=1/10, tstops=tstop)
+sol = solve(prob, SRIW1(), callback=shrinking_cb, tstops=tstop)
 
-  @show EM
+@show SRA1
 
-  sol = solve(prob, EM(), dt=1/20, callback=growing_cb, tstops=tstop)
+sol = solve(prob, SRA1(), callback=shrinking_cb, tstops=tstop)
 
-  @test length(sol[end]) == 23
+@show RKMil
 
-  @show SRIW1
+sol = solve(prob, RKMil(), dt=1/10, callback=shrinking_cb, tstops=tstop)
 
-  sol = solve(prob, SRIW1(), callback=shrinking_cb, tstops=tstop)
+@show EM
 
-  @show SRI
+sol = solve(prob, EM(), dt=1/10, callback=shrinking_cb, tstops=tstop)
 
-  sol = solve(prob, SRI(), callback=shrinking_cb, tstops=tstop)
-
-  @show SRA
-
-  sol = solve(prob, SRA(), callback=shrinking_cb, tstops=tstop)
-
-  @show SRA1
-
-  sol = solve(prob, SRA1(), callback=shrinking_cb, tstops=tstop)
-
-  @show RKMil
-
-  @test_broken sol = solve(prob, RKMil(), dt=1/10, callback=shrinking_cb, tstops=tstop)
-
-  @show EM
-
-  sol = solve(prob, EM(), dt=1/10, callback=shrinking_cb, tstops=tstop)
-
-  @test length(sol[end]) == 17
-
-end
+@test length(sol[end]) == 17
