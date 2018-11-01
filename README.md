@@ -110,7 +110,8 @@ for cell in level_iter(embryo,3)
 end
 ```
 
-or the multiple level iter:
+or the multiple level iter, which is the one generally used in
+DifferentialEquations.jl functions:
 
 ```julia
 for (cell, dcell) in LevelIter(3,embryo, dembryo)
@@ -119,19 +120,13 @@ for (cell, dcell) in LevelIter(3,embryo, dembryo)
 end
 ```
 
-To apply a function cell-by-cell, you can write a dispatch `f` on the type for the
-level. Assuming we have `d_embryo` as `similar` to `embryo`, using `level_iter_idx`
-we can have its changes update some other head node `d_embryo` via:
+`LevelIterIdx` can give the indices along with iteration:
 
 ```julia
 for (cell, y, z) in LevelIterIdx(embryo, 3)
     # cell = embryo[y:z]
 end
 ```
-
-(`@view` is a standard Julia construct for creating a view instead of a copy when slicing an array,
-making things alittle faster when indexing to create a sub-array). Notice that this updates the top
-vector cell-by-cell via the function `f` without allocating. This allows one to apply an ODE "cell-wise".
 
 However, the interesting behavior comes from event handling. Since `embryo` will be the
 "vector" for the differential equation or optimization problem, it will be the value
@@ -206,7 +201,7 @@ the values it holds in the linear indexing.
 
 ### Extensions
 
-Note that this only showed the most basic MultiScaleModel. These types can be
+Note that this only showed the most basic MultiScaleArray. These types can be
 extended as one pleases. For example, we can change the definition of the cell
 to have:
 
