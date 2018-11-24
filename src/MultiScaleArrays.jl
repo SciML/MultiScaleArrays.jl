@@ -28,20 +28,7 @@ include("diffeq.jl")
 
 using TreeViews
 TreeViews.hastreeview(x::AbstractMultiScaleArray) = true
-function TreeViews.treelabel(io::IO,x::AbstractMultiScaleArray,
-                             mime::MIME"text/plain" = MIME"text/plain"())
-  show(io,mime,Base.Text(Base.summary(x)))
-end
-TreeViews.hastreeview(x::AbstractMultiScaleArrayLeaf) = true
-function TreeViews.treelabel(io::IO,x::AbstractMultiScaleArrayLeaf,
-                             mime::MIME"text/plain" = MIME"text/plain"())
-  show(io,mime,Base.Text(Base.summary(x)))
-end
-TreeViews.hastreeview(x::AbstractMultiScaleArrayHead) = true
-function TreeViews.treelabel(io::IO,x::AbstractMultiScaleArrayHead,
-                             mime::MIME"text/plain" = MIME"text/plain"())
-  show(io,mime,Base.Text(Base.summary(x)))
-end
+Base.show(io::IO, ::MIME"application/prs.juno.inline", x::AbstractMultiScaleArray) = x
 
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
