@@ -6,47 +6,65 @@ Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} =
 Base.map!(f::F, m::AMSA, A0, As...) where {F} =
         broadcast!(f, m, A0, As...)
 
-const AMSAStyle = Broadcast.ArrayStyle{AMSA}
-Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
-Base.BroadcastStyle(::Broadcast.ArrayStyle{AMSA},::Broadcast.DefaultArrayStyle{1}) = Broadcast.DefaultArrayStyle{1}()
-Base.BroadcastStyle(::Broadcast.DefaultArrayStyle{1},::Broadcast.ArrayStyle{AMSA}) = Broadcast.DefaultArrayStyle{1}()
-Base.similar(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}},::Type{ElType}) where ElType = similar(bc)
+struct AMSAStyle{Style <: Broadcast.BroadcastStyle} <: Broadcast.AbstractArrayStyle{Any} end
+AMSAStyle(::S) where {S} = AMSAStyle{S}()
+AMSAStyle(::S, ::Val{N}) where {S,N} = AMSAStyle(S(Val(N)))
+AMSAStyle(::Val{N}) where N = AMSAStyle{Broadcast.DefaultArrayStyle{N}}()
 
-function Base.copy(bc::Broadcast.Broadcasted{AMSAStyle})
-    ret = Broadcast.flatten(bc)
-    __broadcast(ret.f,ret.args...)
+# promotion rules
+function Broadcast.BroadcastStyle(::AMSAStyle{AStyle}, ::AMSAStyle{BStyle}) where {AStyle, BStyle}
+    AMSAStyle(Broadcast.BroadcastStyle(AStyle(), BStyle()))
 end
 
-function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{AMSAStyle})
-    ret = Broadcast.flatten(bc)
-    __broadcast!(ret.f,dest,ret.args...)
-end
+#=
+combine_styles(args::Tuple{})         = Broadcast.DefaultArrayStyle{0}()
+combine_styles(args::Tuple{Any})      = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]))
+combine_styles(args::Tuple{Any, Any}) = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]), Broadcast.BroadcastStyle(args[2]))
+@inline combine_styles(args::Tuple)   = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]), combine_styles(Base.tail(args)))
 
-function __broadcast(f, A::AMSA, Bs...)
-    broadcast!(f, similar(A), A, Bs...)
+function Broadcast.BroadcastStyle(::Type{AMSA{T}}) where {T}
+    Style = combine_styles((T.parameters...,))
+    AMSAStyle(Style)
 end
+=#
 
-function __broadcast!(f, A::AbstractMultiScaleArrayLeaf, Bs::Union{Number,AbstractMultiScaleArrayLeaf}...)
-    broadcast!(f, A.values, (typeof(B)<:AbstractMultiScaleArrayLeaf ? B.values : B for B in Bs)...)
-    A
-end
-
-function __broadcast!(f, A::AMSA, Bs::Union{Number,AMSA}...)
-    for i in eachindex(A.nodes)
-            broadcast!(f, A.nodes[i], (typeof(B)<:AMSA ? B.nodes[i] : B for B in Bs)...)
+@inline function Base.copy(bc::Broadcast.Broadcasted{AMSAStyle{Style}}) where Style
+    nnodes(bc)
+    @inline function f(i)
+        copy(unpack(bc, i))
     end
-    broadcast!(f, A.values, (typeof(B)<:AMSA ? B.values : B for B in Bs)...)
-    A
+    CommonType = get_common_type(bc)
+    construct(CommonType, map(f,N), f(nothing))
 end
 
-+(m::AbstractMultiScaleArray, y::Number) = m .+ y
-+(y::Number, m::AbstractMultiScaleArray) = m .+ y
+@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted)
+    N = length(dest.nodes)
+    for i in 1:N
+        copyto!(dest.nodes[i], unpack(bc, i))
+    end
+    copyto!(dest.values,unpack(bc, nothing))
+end
 
--(m::AbstractMultiScaleArray, y::Number) = m .- y
--(y::Number, m::AbstractMultiScaleArray) = y .- m
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted)
+    copyto!(dest.values,unpack(bc,nothing))
+end
 
-*(m::AbstractMultiScaleArray, y::Number) = m .* y
-*(y::Number, m::AbstractMultiScaleArray) = m .* y
+# drop axes because it is easier to recompute
+@inline unpack(bc::Broadcast.Broadcasted{Style}, i) where Style = Broadcast.Broadcasted{Style}(bc.f, unpack_args(i, bc.args))
+@inline unpack(bc::Broadcast.Broadcasted{AMSAStyle{Style}}, i) where Style = Broadcast.Broadcasted{Style}(bc.f, unpack_args(i, bc.args))
+unpack(x,::Any) = x
+unpack(x::AMSA, i) = x.nodes[i]
+unpack(x::AMSA, ::Nothing) = x.values
 
-/(m::AbstractMultiScaleArray, y::Number) = m ./ y
-/(y::Number, m::AbstractMultiScaleArray) = y ./ m
+@inline unpack_args(i, args::Tuple) = (unpack(args[1], i), unpack_args(i, Base.tail(args))...)
+unpack_args(i, args::Tuple{Any}) = (unpack(args[1], i),)
+unpack_args(::Any, args::Tuple{}) = ()
+
+nnodes(A) = 0
+nnodes(A::ASMA) = length(A.nodes)
+nnodes(bc::Broadcast.Broadcasted) = _nnodes(bc.args)
+nnodes(A, Bs...) = common_number(nnodes(A), _nnodes(Bs))
+
+@inline _nnodes(args::Tuple) = common_number(nnodes(args[1]), _nnodes(Base.tail(args)))
+_nnodes(args::Tuple{Any}) = nnodes(args[1])
+_nnodes(args::Tuple{}) = 0

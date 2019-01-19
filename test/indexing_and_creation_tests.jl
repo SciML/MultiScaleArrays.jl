@@ -132,7 +132,8 @@ cell3 = cell1 .+ 2
 @test typeof(cell3) <: AbstractMultiScaleArray
 
 cell3 = similar(cell1)
-cell3 .+= 2
+cell3 .= [1,2,3]
+cell3 .= 2cell3
 
 @test (p.+2)[1] - p[1] == 2
 cell1./2
