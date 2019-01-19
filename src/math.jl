@@ -61,10 +61,31 @@ unpack_args(i, args::Tuple{Any}) = (unpack(args[1], i),)
 unpack_args(::Any, args::Tuple{}) = ()
 
 nnodes(A) = 0
-nnodes(A::ASMA) = length(A.nodes)
+nnodes(A::AMSA) = length(A.nodes)
 nnodes(bc::Broadcast.Broadcasted) = _nnodes(bc.args)
 nnodes(A, Bs...) = common_number(nnodes(A), _nnodes(Bs))
 
 @inline _nnodes(args::Tuple) = common_number(nnodes(args[1]), _nnodes(Base.tail(args)))
 _nnodes(args::Tuple{Any}) = nnodes(args[1])
 _nnodes(args::Tuple{}) = 0
+
+get_common_type(A) = Nothing
+get_common_type(A::AMSA) = typeof(A)
+get_common_type(bc::Broadcast.Broadcasted) = _nnodes(bc.args)
+get_common_type(A, Bs...) = common_type(get_common_type(A), _get_common_type(Bs))
+
+@inline _get_common_type(args::Tuple) = get_common_type(get_common_type(args[1]), _get_common_type(Base.tail(args)))
+_get_common_type(args::Tuple{Any}) = get_common_type(args[1])
+_get_common_type(args::Tuple{}) = Nothing
+
+## utils
+common_number(a, b) =
+    a == 0 ? b :
+    (b == 0 ? a :
+     (a == b ? a :
+      throw(DimensionMismatch("number of nodes must be equal"))))
+
+common_type(a::T, b::T) where T = T
+common_type(a::T, b::Nothing) where T = T
+common_type(a::Nothing, b::T) where T = T
+common_type(a::Nothing, b::Nothing) where T = Nothing
