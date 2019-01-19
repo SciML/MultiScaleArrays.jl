@@ -37,7 +37,7 @@ end
     construct(CommonType, map(f,N), f(nothing))
 end
 
-@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted)
+@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Nothing})
     N = length(dest.nodes)
     for i in 1:N
         copyto!(dest.nodes[i], unpack(bc, i))
