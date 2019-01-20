@@ -28,6 +28,8 @@ end
 cell1 = Cell([1.0; 2.0; 3.0])
 cell2 = Cell([4.0; 5])
 
+cell1 .+ cell1
+
 sim_cell = similar(cell1)
 
 @test length(cell1) == 3
