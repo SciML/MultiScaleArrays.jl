@@ -86,3 +86,6 @@ prob = ODEProblem(f, scenario, (0.0, 1.0))
 sol = solve(prob, Tsit5())
 
 @test length(sol[end]) == 12
+
+organ1 .+ organ2
+scenario .+ scenario

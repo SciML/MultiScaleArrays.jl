@@ -34,22 +34,43 @@ end
 =#
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
+    first_amsa = find_amsa(bc)
+    out = deepcopy(first_amsa)
+    copyto!(out,bc)
+    out
+    #=
     N = nnodes(bc)
     @inline function f(i)
         copy(unpack(bc, i))
     end
     first_amsa = find_amsa(bc)
-    construct(first_amsa, map(f,N), f(nothing))
+    if length(fieldnames(typeof(first_amsa))) == 1
+        construct(parameterless_type(first_amsa), map(f,N), f(nothing))
+    else
+        out = deepcopy(first_amsa)
+        copyto!(out,bc)
+        return out
+    end
+    =#
 end
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}})
-    @show bc
+    first_amsa = find_amsa(bc)
+    out = deepcopy(first_amsa)
+    copyto!(out,bc)
+    out
+    #=
     @inline function f(i)
         copy(unpack(bc, i))
     end
-    first_amsa = find_amsa(bc)
-    @show first_amsa
-    construct(first_amsa, f(nothing))
+
+    if length(fieldnames(typeof(first_amsa))) == 1
+        return construct(parameterless_type(first_amsa), f(nothing))
+    else
+
+        return out
+    end
+    =#
 end
 
 @inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Nothing})
@@ -60,13 +81,12 @@ end
     copyto!(dest.values,unpack(bc, nothing))
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted)
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{Nothing})
     copyto!(dest.values,unpack(bc,nothing))
 end
 
 # drop axes because it is easier to recompute
-@inline unpack(bc::Broadcast.Broadcasted{Style}, i) where Style = Broadcast.Broadcasted{Style}(bc.f, unpack_args(i, bc.args))
-@inline unpack(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}}, i) = Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}}(bc.f, unpack_args(i, bc.args))
+@inline unpack(bc::Broadcast.Broadcasted, i) = Broadcast.Broadcasted(bc.f, unpack_args(i, bc.args))
 unpack(x,::Any) = x
 unpack(x::AMSA, i) = x.nodes[i]
 unpack(x::AMSA, ::Nothing) = x.values
