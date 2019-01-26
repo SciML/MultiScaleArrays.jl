@@ -1,5 +1,7 @@
 length(m::AbstractMultiScaleArrayLeaf) = length(m.values)
 length(m::AbstractMultiScaleArray) = m.end_idxs[end]
+Base.isempty(m::AbstractMultiScaleArray) = isempty(m.nodes) && isempty(m.values)
+Base.isempty(m::AbstractMultiScaleArrayLeaf) = isempty(m.values)
 num_nodes(m::AbstractMultiScaleArrayLeaf) = 0
 num_nodes(m::AbstractMultiScaleArray) = size(m.nodes, 1)
 ndims(m::AbstractMultiScaleArray) = 1

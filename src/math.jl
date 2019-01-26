@@ -8,30 +8,6 @@ Base.map!(f::F, m::AMSA, A0, As...) where {F} =
 
 Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
 Base.BroadcastStyle(::Type{<:AbstractMultiScaleArrayLeaf}) = Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}()
-Base.BroadcastStyle(a::Broadcast.ArrayStyle{AMSA}, b::Base.Broadcast.DefaultArrayStyle) = b
-#=
-AMSAStyle(::S) where {S} = AMSAStyle{S}()
-AMSAStyle(::S, ::Val{N}) where {S,N} = AMSAStyle(S(Val(N)))
-AMSAStyle(::Val{N}) where N = AMSAStyle{Broadcast.DefaultArrayStyle{N}}()
-
-
-# promotion rules
-function Broadcast.BroadcastStyle(::AMSAStyle{AStyle}, ::AMSAStyle{BStyle}) where {AStyle, BStyle}
-    AMSAStyle(Broadcast.BroadcastStyle(AStyle(), BStyle()))
-end
-=#
-
-#=
-combine_styles(args::Tuple{})         = Broadcast.DefaultArrayStyle{0}()
-combine_styles(args::Tuple{Any})      = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]))
-combine_styles(args::Tuple{Any, Any}) = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]), Broadcast.BroadcastStyle(args[2]))
-@inline combine_styles(args::Tuple)   = Broadcast.result_style(Broadcast.BroadcastStyle(args[1]), combine_styles(Base.tail(args)))
-
-function Broadcast.BroadcastStyle(::Type{AMSA{T}}) where {T}
-    Style = combine_styles((T.parameters...,))
-    AMSAStyle(Style)
-end
-=#
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
     first_amsa = find_amsa(bc)
@@ -47,16 +23,26 @@ end
     out
 end
 
-@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Nothing})
-    N = length(dest.nodes)
-    for i in 1:N
-        copyto!(dest.nodes[i], unpack(bc, i))
+@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
+    if !any_non_amsa(bc)
+        N = length(dest.nodes)
+        for i in 1:N
+            copyto!(dest.nodes[i], unpack(bc, i))
+        end
+        copyto!(dest.values,unpack(bc, nothing))
+    else
+        copyto!(dest,convert(Base.Broadcast.Broadcasted{Broadcast.DefaultArrayStyle{length(axes(bc))}}, bc))
     end
-    copyto!(dest.values,unpack(bc, nothing))
+    dest
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{Nothing})
-    copyto!(dest.values,unpack(bc,nothing))
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}})
+    if !any_non_amsa(bc)
+        copyto!(dest.values,unpack(bc,nothing))
+    else
+        copyto!(dest,convert(Base.Broadcast.Broadcasted{Broadcast.DefaultArrayStyle{length(axes(bc))}}, bc))
+    end
+    dest
 end
 
 # drop axes because it is easier to recompute
@@ -84,6 +70,14 @@ find_amsa(args::Tuple) = find_amsa(find_amsa(args[1]), Base.tail(args))
 find_amsa(x) = x
 find_amsa(a::AMSA, rest) = a
 find_amsa(::Any, rest) = find_amsa(rest)
+
+any_non_amsa(bc::Base.Broadcast.Broadcasted) = any_non_amsa(bc.args)
+any_non_amsa(args::Tuple) = any_non_amsa(any_non_amsa(args[1]), Base.tail(args))
+any_non_amsa(x::AMSA) = false
+any_non_amsa(x::Number) = false
+any_non_amsa(x::Any) = true
+any_non_amsa(x::AbstractArray) = true
+any_non_amsa(x::Bool, rest) = isempty(rest) ? x : x || any_non_amsa(rest)
 
 ## utils
 common_number(a, b) =

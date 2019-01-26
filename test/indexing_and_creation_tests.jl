@@ -144,11 +144,7 @@ size(cell1)
 
 t = 2
 p/zero(t)
-
-size(p)
-
-p ./ rand(length(p))
-
+p ./ randn(length(p))
 
 f = function (du,u,p,t)
     for i in eachindex(u)
@@ -178,8 +174,6 @@ sol1 = solve(prob, Tsit5())
 Random.seed!(100)
 prob = SDEProblem(f, g, em, (0.0, 1000.0))
 @time sol1 = solve(prob, SRIW1(), progress=false, abstol=1e-2, reltol=1e-2, save_everystep=false)
-
-cell1 .= randn.()
 
 Random.seed!(100)
 prob = SDEProblem(f, g, em[:], (0.0, 1000.0))

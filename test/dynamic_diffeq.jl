@@ -30,7 +30,8 @@ cell4 = Cell([4.0; 6])
 population2 = construct(Population, deepcopy([cell3, cell4]))
 tissue1 = construct(Tissue, deepcopy([population, population2])) # Make a Tissue from Populations
 tissue2 = construct(Tissue, deepcopy([population2, population]))
-embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
+_embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
+embryo = deepcopy(_embryo)
 
 cell_ode = function (dcell,cell,p,t)
     m = mean(cell)

@@ -1,31 +1,31 @@
 using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq, Statistics
 
-struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
+struct Cell2{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
-struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+struct Population2{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
 
-cell1 = Cell([1.0; 2.0; 3.0])
-cell2 = Cell([4.0; 5])
-cell3 = Cell([3.0; 2.0; 5.0])
-cell4 = Cell([4.0; 6])
-pop = construct(Population, deepcopy([cell1, cell2, cell3, cell4]))
+cell1 = Cell2([1.0; 2.0; 3.0])
+cell2 = Cell2([4.0; 5])
+cell3 = Cell2([3.0; 2.0; 5.0])
+cell4 = Cell2([4.0; 6])
+pop = construct(Population2, deepcopy([cell1, cell2, cell3, cell4]))
 
-function cell_ode(dcell,cell,p,t)
+function cell_ode4(dcell,cell,p,t)
   m = mean(cell)
   for i in eachindex(cell)
     dcell[i] = -m*cell[i]
   end
 end
 
-function f(dembryo,embryo,p,t)
+function f4(dembryo,embryo,p,t)
   for (cell, dcell) in LevelIter(1,embryo, dembryo)
-    cell_ode(dcell,cell,p,t)
+    cell_ode4(dcell,cell,p,t)
   end
 end
 
@@ -41,7 +41,7 @@ end
 
 growing_cb = DiscreteCallback(condition, affect!)
 
-prob = ODEProblem(f, deepcopy(pop), (0.0, 1.0))
+prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
 
 add_node!(pop,pop.nodes[1])
 
@@ -76,23 +76,23 @@ end
 
 shrinking_cb = DiscreteCallback(condition, affect_del!)
 
-prob = ODEProblem(f, deepcopy(pop), (0.0, 1.0))
+prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
 sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
-prob = ODEProblem(f, deepcopy(pop), (0.0, 1.0))
+prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
 sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)),
             callback=shrinking_cb,tstops=tstop)
 @test length(sol[end]) == 10
 
 println("Do the SDE Part")
 
-function g(du,u,p,t)
+function g4(du,u,p,t)
     for i in eachindex(u)
         du[i] = 0.1u[i]
     end
 end
 
-prob = SDEProblem(f, g, deepcopy(pop), (0.0, 1.0))
+prob = SDEProblem(f4, g4, deepcopy(pop), (0.0, 1.0))
 
 sol = solve(prob, SOSRI(), callback=growing_cb, tstops=tstop)
 
