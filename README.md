@@ -62,23 +62,16 @@ is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is
 taken to be empty.
 
 ```julia
-population = construct(Population, deepcopy([cell1, cell2])) # Make a Population from cells
 cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
-population2 = construct(Population, deepcopy([cell3, cell4]))
-tissue1 = construct(Tissue, deepcopy([population, population2])) # Make a Tissue from Populations
-tissue2 = construct(Tissue, deepcopy([population2, population]))
+population2 = construct(Population, deepcopy([cell1, cell3, cell4]))
+population3 = construct(Population, deepcopy([cell1, cell3, cell4]))
+tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # Make a Tissue from Populations
+tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
 
-Note that tuples can be used as well. This allows for type-stable indexing with
-heterogeneous nodes. For example:
-
-```julia
-tissue1 = construct(Tissue, deepcopy((population, cell3)))
-```
-
-(of course at the cost of mutability).
+## Indexing and Iteration
 
 The head node then acts as the king. It is designed to have functionality which
 mimics a vector in order for usage in DifferentialEquations or Optim. So for example
@@ -141,6 +134,53 @@ remove_node!(embryo, 2, 1) # Removes population 1 from tissue 2 of the embryo
 
 Combined with event handling, this allows for dynamic structures to be derived from
 low level behaviors.
+
+## Heterogeneous Nodes via Tuples
+
+Note that tuples can be used as well. This allows for type-stable broadcasting with
+heterogeneous nodes. This could be useful for mixing types
+inside of the nodes. For example:
+
+```julia
+struct PlantSettings{T} x::T end
+struct OrganParams{T} y::T end
+
+struct Organ{B<:Number,P} <: AbstractMultiScaleArrayLeaf{B}
+    values::Vector{B}
+    name::Symbol
+    params::P
+end
+
+struct Plant{B,S,N<:Tuple{Vararg{<:Organ{<:Number}}}} <: AbstractMultiScaleArray{B}
+    nodes::N
+    values::Vector{B}
+    end_idxs::Vector{Int}
+    settings::S
+end
+
+struct Community{B,N<:Tuple{Vararg{<:Plant{<:Number}}}} <: AbstractMultiScaleArray{B}
+    nodes::N
+    values::Vector{B}
+    end_idxs::Vector{Int}
+end
+
+mutable struct Scenario{B,N<:Tuple{Vararg{<:Community{<:Number}}}} <: AbstractMultiScaleArrayHead{B}
+    nodes::N
+    values::Vector{B}
+    end_idxs::Vector{Int}
+end
+
+organ1 = Organ([1.1,2.1,3.1], :Shoot, OrganParams(:grows_up))
+organ2 = Organ([4.1,5.1,6.1], :Root, OrganParams("grows down"))
+organ3 = Organ([1.2,2.2,3.2], :Shoot, OrganParams(true))
+organ4 = Organ([4.2,5.2,6.2], :Root, OrganParams(1//3))
+plant1 = construct(Plant, (deepcopy(organ1), deepcopy(organ2)), Float64[], PlantSettings(1))
+plant2 = construct(Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[], PlantSettings(1.0))
+community = construct(Community, (deepcopy(plant1), deepcopy(plant2), ))
+scenario = construct(Scenario, (deepcopy(community),))
+```
+
+(of course at the cost of mutability).
 
 ## Idea
 
