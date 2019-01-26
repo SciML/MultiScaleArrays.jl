@@ -8,7 +8,7 @@ Base.map!(f::F, m::AMSA, A0, As...) where {F} =
 
 Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
 Base.BroadcastStyle(::Type{<:AbstractMultiScaleArrayLeaf}) = Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}()
-
+Base.BroadcastStyle(a::Broadcast.ArrayStyle{AMSA}, b::Base.Broadcast.DefaultArrayStyle) = b
 #=
 AMSAStyle(::S) where {S} = AMSAStyle{S}()
 AMSAStyle(::S, ::Val{N}) where {S,N} = AMSAStyle(S(Val(N)))
@@ -35,42 +35,16 @@ end
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
     first_amsa = find_amsa(bc)
-    out = deepcopy(first_amsa)
+    out = similar(first_amsa)
     copyto!(out,bc)
     out
-    #=
-    N = nnodes(bc)
-    @inline function f(i)
-        copy(unpack(bc, i))
-    end
-    first_amsa = find_amsa(bc)
-    if length(fieldnames(typeof(first_amsa))) == 1
-        construct(parameterless_type(first_amsa), map(f,N), f(nothing))
-    else
-        out = deepcopy(first_amsa)
-        copyto!(out,bc)
-        return out
-    end
-    =#
 end
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}})
     first_amsa = find_amsa(bc)
-    out = deepcopy(first_amsa)
+    out = similar(first_amsa)
     copyto!(out,bc)
     out
-    #=
-    @inline function f(i)
-        copy(unpack(bc, i))
-    end
-
-    if length(fieldnames(typeof(first_amsa))) == 1
-        return construct(parameterless_type(first_amsa), f(nothing))
-    else
-
-        return out
-    end
-    =#
 end
 
 @inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Nothing})
