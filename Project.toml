@@ -1,0 +1,21 @@
+name = "MultiScaleArrays"
+uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
+authors = ["Chris Rackauckas <accounts@chrisrackauckas.com>"]
+version = "1.5.0"
+
+[deps]
+DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
+RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
+StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
+TreeViews = "a2a6695c-b41b-5b7d-aed9-dbfdeacea5d7"
+
+[compat]
+RecursiveArrayTools = ">=0.20.0"
+julia = "1"
+
+[extras]
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["OrdinaryDiffEq", "StochasticDiffEq", "Test"]
