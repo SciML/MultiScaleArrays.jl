@@ -11,6 +11,7 @@ StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
 TreeViews = "a2a6695c-b41b-5b7d-aed9-dbfdeacea5d7"
 
 [compat]
+DiffEqBase = "6.5"
 RecursiveArrayTools = "1"
 TreeViews = "0.3"
 StochasticDiffEq = "6.13"
