@@ -66,7 +66,7 @@ _nnodes(args::Tuple{}) = 0
 
 "`A = find_amsa(As)` returns the first AMSA among the arguments."
 find_amsa(bc::Base.Broadcast.Broadcasted) = find_amsa(bc.args)
-find_amsa(args::Tuple) = find_amsa(find_amsa(args[1]), Base.tail(args))
+find_amsa(args::Tuple) = !isempty(args) && find_amsa(find_amsa(args[1]), Base.tail(args))
 find_amsa(x) = x
 find_amsa(a::AMSA, rest) = a
 find_amsa(::Any, rest) = find_amsa(rest)
