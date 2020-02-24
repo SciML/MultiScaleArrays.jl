@@ -78,9 +78,13 @@ printHumanReadable(embryo)
 printHumanReadable(embryo;NcharPerName=6)
 ```
 Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
-```printHumanReadable(embryo.nodes[1];NcharPerName=2,fields=["values"])```
-# if your screen is small
-```printHumanReadable(embryo.nodes[1].nodes[1];fields=["values"])```
+```julia
+printHumanReadable(embryo.nodes[1];NcharPerName=2,fields=["values"])
+```
+if your screen is small
+```julia
+printHumanReadable(embryo.nodes[1].nodes[1];fields=["values"])
+```
 
 ## Indexing and Iteration
 
