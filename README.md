@@ -64,12 +64,21 @@ taken to be empty.
 ```julia
 cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
+population  = construct(Population, deepcopy([cell1, cell3, cell4]))
 population2 = construct(Population, deepcopy([cell1, cell3, cell4]))
 population3 = construct(Population, deepcopy([cell1, cell3, cell4]))
 tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # Make a Tissue from Populations
 tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
+
+## Human readable printing of the embryo structure
+printHumanReadable(embryo)
+printHumanReadable(embryo;NcharPerName=6)
+# Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
+printHumanReadable(embryo.nodes[1];NcharPerName=2,fields=["values"])
+# if your screen is small
+printHumanReadable(embryo.nodes[1].nodes[1];fields=["values"])
 
 ## Indexing and Iteration
 
