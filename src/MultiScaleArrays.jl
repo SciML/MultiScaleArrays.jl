@@ -26,6 +26,7 @@ include("indexing.jl")
 include("math.jl")
 include("level_iterations.jl")
 include("diffeq.jl")
+include("println.jl")
 
 using TreeViews
 TreeViews.hastreeview(x::AbstractMultiScaleArray) = true
@@ -46,5 +47,8 @@ export num_nodes, getindices
 
 # Misc
 export LevelIterIdx, LevelIter, level_iter
+
+# print
+export printHumanReadable
 
 end # module
