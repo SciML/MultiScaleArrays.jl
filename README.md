@@ -73,12 +73,14 @@ embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from T
 ```
 
 ## Human readable printing of the embryo structure
+```julia
 printHumanReadable(embryo)
 printHumanReadable(embryo;NcharPerName=6)
-# Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
-printHumanReadable(embryo.nodes[1];NcharPerName=2,fields=["values"])
+```
+Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
+```printHumanReadable(embryo.nodes[1];NcharPerName=2,fields=["values"])```
 # if your screen is small
-printHumanReadable(embryo.nodes[1].nodes[1];fields=["values"])
+```printHumanReadable(embryo.nodes[1].nodes[1];fields=["values"])```
 
 ## Indexing and Iteration
 
