@@ -49,6 +49,6 @@ export num_nodes, getindices
 export LevelIterIdx, LevelIter, level_iter
 
 # print
-export printHumanReadable
+export print_human_readable
 
 end # module
