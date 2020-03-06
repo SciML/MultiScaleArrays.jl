@@ -17,6 +17,9 @@ abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 using DiffEqBase, Statistics, LinearAlgebra, FiniteDiff
 import OrdinaryDiffEq, StochasticDiffEq, ForwardDiff, SparseDiffTools
 
+Base.show(io::IO, x::AbstractMultiScaleArrayLeaf) = invoke(show, Tuple{IO, Any}, io, x)
+Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArrayLeaf) = show(io, x)
+
 include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")
@@ -24,6 +27,12 @@ include("math.jl")
 include("level_iterations.jl")
 include("diffeq.jl")
 include("show_MultiScaleArray.jl")
+
+using TreeViews
+TreeViews.hastreeview(x::AbstractMultiScaleArrayLeaf) = true
+Base.show(io::IO, ::MIME"application/prs.juno.inline", x::AbstractMultiScaleArrayLeaf) = x
+
+
 
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
