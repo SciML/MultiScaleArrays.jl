@@ -75,20 +75,20 @@ embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from T
 ## Human readable printing of the embryo structure
 ```julia
 show(embryo)
-# +|Tissue;                                        |Tissue                                                          
-#  +|Popula;           |Popula;           |Popula; +         |Popula;           |Popula;           |Popula          
+# +|Tissue;                                                 |Tissue                                                 
+#  +|Popula;           |Popula;           |Popula;          +|Popula;           |Popula;           |Popula          
 #   +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell
 
-show(embryo;NcharPerName=4)
-# +|Ti;                            |Ti                                          
-#  +|Po;         |Po;         |Po; +       |Po;         |Po;         |Po        
+show(embryo;NcharPerName=2)
+# +|Ti;                                   |Ti                                   
+#  +|Po;         |Po;         |Po;        +|Po;         |Po;         |Po        
 #   +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce
 ```
 Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
 ```julia
-# show(embryo;NcharPerName=2,fields=["values"])
-# +|Ti;                                                                                                                        |Ti                                                                                                                                                                                                                                                
-#  +|Po;                                                       |Po;                                                       |Po; +                                                     |Po;                                                       |Po;                                                       |Po                                                                    
+show(embryo;NcharPerName=2,fields=["values"])
+# +|Ti;                                                                                                                                                                             |Ti                                                                                                                                                                             
+#  +|Po;                                                       |Po;                                                       |Po;                                                      +|Po;                                                       |Po;                                                       |Po                                                      
 #   +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]
 ```
 if your screen is small, then print a sub-part of the AbstractMultiScaleArray:
