@@ -17,20 +17,13 @@ abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 using DiffEqBase, Statistics
 import StochasticDiffEq
 
-Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
-Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
-
 include("shape_construction.jl")
 include("addition_deletion.jl")
 include("indexing.jl")
 include("math.jl")
 include("level_iterations.jl")
 include("diffeq.jl")
-include("print_human_readable.jl")
-
-using TreeViews
-TreeViews.hastreeview(x::AbstractMultiScaleArray) = true
-Base.show(io::IO, ::MIME"application/prs.juno.inline", x::AbstractMultiScaleArray) = x
+include("show_MultiScaleArray.jl")
 
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
@@ -47,8 +40,5 @@ export num_nodes, getindices
 
 # Misc
 export LevelIterIdx, LevelIter, level_iter
-
-# print
-export print_human_readable
 
 end # module
