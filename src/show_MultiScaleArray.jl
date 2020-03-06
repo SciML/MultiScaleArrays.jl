@@ -39,9 +39,9 @@ end
 
 # function print_human_readable(X::AbstractMultiScaleArray ; NcharPerName = 6, fields = nothing, LevelMax=Inf, NItemMaxPerLevels = Inf) # fields = nothing OR [field1,field2,...]
 function show(X::AbstractMultiScaleArray ; NcharPerName = 6, fields = nothing, LevelMax=Inf, NItemMaxPerLevels = Inf)
-    if typeof(X) <: AbstractMultiScaleArrayLeaf
-        println(X)
-    else
+#     if typeof(X) <: AbstractMultiScaleArrayLeaf
+#         println(X)
+#     else
         ToPrint = Vector{Vector{String}}([[]]) # one vector per row, one string per element
         ToPrintAbstractMultiScaleArray!(ToPrint,X,fields,LevelMax,NcharPerName)
         toprint = map(x -> join(x,"; "),ToPrint)
@@ -83,7 +83,7 @@ function show(X::AbstractMultiScaleArray ; NcharPerName = 6, fields = nothing, L
             end
         end
         println(join(toprint,"\n"))
-    end
+#     end
 end
 
 
