@@ -1,7 +1,6 @@
 using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq, Statistics
 
-#=
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
@@ -20,7 +19,6 @@ struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHe
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-=#
 
 cell1 = Cell([1.0; 2.0; 3.0])
 cell2 = Cell([4.0; 5])
@@ -64,27 +62,9 @@ prob = ODEProblem(f, embryo, (0.0, 1.0))
 test_embryo = deepcopy(embryo)
 
 sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
-
-mutable struct LinSolveFactorize2{F}
-  factorization::F
-  A
-end
-LinSolveFactorize2(factorization) = LinSolveFactorize2(factorization,nothing)
-function (p::LinSolveFactorize2)(x,A,b,update_matrix=false)
-  if update_matrix
-    p.A = p.factorization(A)
-  end
-  xout = convert(Array,x)
-  ldiv!(xout,p.A,convert(Array,b))
-  x .= xout
-  nothing
-end
-function (p::LinSolveFactorize2)(::Type{Val{:init}},f,u0_prototype)
-  LinSolveFactorize2(p.factorization,nothing)
-end
-using LinearAlgebra
-sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)), callback=growing_cb,
-            tstops=tstop)
+sol = solve(prob, Rosenbrock23(autodiff=false), tstops=tstop)
+sol = solve(prob, Rosenbrock23(autodiff=false), callback=growing_cb, tstops=tstop)
+sol = solve(prob, Rosenbrock23(), callback=growing_cb,tstops=tstop)
 
 @test length(sol[end]) == 23
 
@@ -96,8 +76,9 @@ shrinking_cb = DiscreteCallback(condition, affect_del!)
 
 sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
-sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)),
-            callback=shrinking_cb,tstops=tstop)
+sol = solve(prob, Rosenbrock23(autodiff=false),callback=shrinking_cb,tstops=tstop)
+
+sol = solve(prob, Rosenbrock23(),callback=shrinking_cb,tstops=tstop)
 
 @test length(sol[end]) == 17
 

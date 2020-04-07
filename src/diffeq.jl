@@ -8,7 +8,7 @@ function remove_node!(integrator::DiffEqBase.DEIntegrator, I...)
           remove_node!(c, I...)
       end
     end
-    remove_node_non_user_cache!(integrator, I) # required to do noise correctly
+    remove_node_non_user_cache!(integrator, I...) # required to do noise correctly
 end
 
 function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
@@ -25,7 +25,7 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
           add_node!(c, fill!(similar(x, eltype(c)),0), I...)
       end
     end
-    add_node_non_user_cache!(integrator, idxs, x, I...) # required to do noise correctly
+    add_node_non_user_cache!(integrator, x, I...) # required to do noise correctly
 end
 
 function add_node!(integrator::DiffEqBase.DEIntegrator, x)
@@ -45,16 +45,18 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x)
     add_node_non_user_cache!(integrator, idxs, fill!(similar(x, eltype(x)),0)) # required to do noise correctly
 end
 
-
 reshape(m::AbstractMultiScaleArray, i::Int...) = m
 
-function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,node)
-  i = length(integrator.u)
-  resize_non_user_cache!(integrator,integrator.cache,i)
+function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,node...)
+  remove_node_non_user_cache!(integrator,integrator.cache,node...)
 end
-function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator,node)
+
+remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                         cache::OrdinaryDiffEq.OrdinaryDiffEqCache,node...) = nothing
+
+function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator,node...)
   if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
-    remove_node_noise!(integrator,node)
+    remove_node_noise!(integrator,node...)
     for c in rand_cache(integrator)
       remove_node!(c,node...)
     end
@@ -87,14 +89,99 @@ function remove_node_noise!(integrator,node)
   end
 end
 
-function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,idxs,x)
-  i = length(integrator.u)
-  resize_non_user_cache!(integrator,integrator.cache,i)
+function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,x::AbstractArray)
+  add_node_non_user_cache!(integrator,integrator.cache,x)
 end
-function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,idxs,x,node...)
-  i = length(integrator.u)
-  resize_non_user_cache!(integrator,integrator.cache,i)
+
+function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,x::AbstractArray,node...)
+  add_node_non_user_cache!(integrator,integrator.cache,x,node...)
 end
+
+add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                      cache,idxs,x) = nothing
+add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                      cache,idxs,x,node...) = nothing
+
+function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                      cache::OrdinaryDiffEq.RosenbrockMutableCache,idxs,x)
+  i = length(integrator.u)
+  cache.J = similar(cache.J,i,i)
+  cache.W = similar(cache.W,i,i)
+  add_node_jac_config!(cache.jac_config,i,x)
+  add_node_grad_config!(cache.grad_config,i,x)
+  nothing
+end
+
+function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                      cache::OrdinaryDiffEq.RosenbrockMutableCache,x,node...)
+  i = length(integrator.u)
+  cache.J = similar(cache.J,i,i)
+  cache.W = similar(cache.W,i,i)
+  add_node_jac_config!(cache.jac_config,i,x,node...)
+  add_node_grad_config!(cache.grad_config,i,x,node...)
+  nothing
+end
+
+function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
+                      cache::OrdinaryDiffEq.RosenbrockMutableCache,node...)
+  i = length(integrator.u)
+  cache.J = similar(cache.J,i,i)
+  cache.W = similar(cache.W,i,i)
+  remove_node_jac_config!(cache.jac_config,i,node...)
+  remove_node_grad_config!(cache.grad_config,i,node...)
+  nothing
+end
+
+function add_node_jac_config!(cache::FiniteDiff.JacobianCache,i,x)
+    #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0))
+    add_node!(cache.fx, fill!(similar(x, eltype(cache.fx)),0))
+    #cache.fx1 !== nothing && add_node!(cache.fx1, fill!(similar(x, eltype(cache.fx1)),0))
+    cache.colorvec = 1:i
+    nothing
+end
+
+function add_node_jac_config!(cache::FiniteDiff.JacobianCache,i,x,I...)
+    #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0), I...)
+    add_node!(cache.fx, fill!(similar(x, eltype(cache.fx)),0), I...)
+    #cache.fx1 !== nothing && add_node!(cache.fx1, fill!(similar(x, eltype(cache.fx1)),0), I...)
+    cache.colorvec = 1:i
+    nothing
+end
+
+function remove_node_jac_config!(cache::FiniteDiff.JacobianCache,i,I...)
+    #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0), I...)
+    remove_node!(cache.fx, I...)
+    #cache.fx1 !== nothing && add_node!(cache.fx1, fill!(similar(x, eltype(cache.fx1)),0), I...)
+    cache.colorvec = 1:i
+    nothing
+end
+
+function add_node_grad_config!(grad_config::ForwardDiff.DerivativeConfig,i,x,I...)
+  resize!(grad_config.duals, i)
+  grad_config
+end
+
+function add_node_grad_config!(grad_config::FiniteDiff.GradientCache,i,x,I...)
+  grad_config.fx !== nothing && add_node!(grad_config.fx, fill!(similar(x, eltype(grad_config.fx)),0), I...)
+  grad_config.c1 !== nothing && add_node!(grad_config.c1, fill!(similar(x, eltype(grad_config.c1)),0), I...)
+  grad_config.c2 !== nothing && add_node!(grad_config.c2, fill!(similar(x, eltype(grad_config.c2)),0), I...)
+  grad_config
+end
+
+function add_node_grad_config!(grad_config::FiniteDiff.GradientCache,i,x)
+  grad_config.fx !== nothing && add_node!(grad_config.fx, fill!(similar(x, eltype(grad_config.fx)),0))
+  grad_config.c1 !== nothing && add_node!(grad_config.c1, fill!(similar(x, eltype(grad_config.c1)),0))
+  grad_config.c2 !== nothing && add_node!(grad_config.c2, fill!(similar(x, eltype(grad_config.c2)),0))
+  grad_config
+end
+
+function remove_node_grad_config!(grad_config::FiniteDiff.GradientCache,i,I...)
+  grad_config.fx !== nothing && remove_node!(grad_config.fx, I...)
+  grad_config.c1 !== nothing && remove_node!(grad_config.c1, I...)
+  grad_config.c2 !== nothing && remove_node!(grad_config.c2, I...)
+  grad_config
+end
+
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator,idxs,x,node...)
   if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
     add_node_noise!(integrator,idxs,x,node...)
