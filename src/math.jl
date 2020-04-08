@@ -19,13 +19,6 @@ Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
     out
 end
 
-@inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
-    first_amsa = find_amsa(bc)
-    out = similar(first_amsa)
-    copyto!(out,bc)
-    out
-end
-
 @inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{<:AMSAStyle})
     N = length(dest.nodes)
     for i in 1:N
