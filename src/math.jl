@@ -8,24 +8,25 @@ Base.map!(f::F, m::AMSA, A0, As...) where {F} =
 
 struct AMSAStyle <: Broadcast.AbstractArrayStyle{Any} end
 Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{0}) = AMSAStyle()
+Broadcast.BroadcastStyle(::Broadcast.DefaultArrayStyle{0}, ::AMSAStyle) = AMSAStyle()
 Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{N}) where N = Broadcast.DefaultArrayStyle{N}()
-Broadcast.BroadcastStyle(::Type{AMSA}) = AMSAStyle()
+Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
-@inline function Base.copy(bc::AMSAStyle)
+@inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
     out = similar(first_amsa)
     copyto!(out,bc)
     out
 end
 
-@inline function Base.copy(bc::AMSAStyle)
+@inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
     out = similar(first_amsa)
     copyto!(out,bc)
     out
 end
 
-@inline function Base.copyto!(dest::AMSA, bc::AMSAStyle)
+@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{<:AMSAStyle})
     N = length(dest.nodes)
     for i in 1:N
         copyto!(dest.nodes[i], unpack(bc, i))
@@ -34,7 +35,7 @@ end
     dest
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::AMSAStyle)
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{<:AMSAStyle})
     copyto!(dest.values,unpack(bc,nothing))
     dest
 end

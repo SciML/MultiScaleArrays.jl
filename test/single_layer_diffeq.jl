@@ -47,26 +47,7 @@ add_node!(pop,pop.nodes[1])
 
 sol = solve(prob, Tsit5(), callback=growing_cb, tstops=tstop)
 
-mutable struct LinSolveFactorize2{F}
-  factorization::F
-  A
-end
-LinSolveFactorize2(factorization) = LinSolveFactorize2(factorization,nothing)
-function (p::LinSolveFactorize2)(x,A,b,update_matrix=false)
-  if update_matrix
-    p.A = p.factorization(A)
-  end
-  xout = convert(Array,x)
-  ldiv!(xout,p.A,convert(Array,b))
-  x .= xout
-  nothing
-end
-function (p::LinSolveFactorize2)(::Type{Val{:init}},f,u0_prototype)
-  LinSolveFactorize2(p.factorization,nothing)
-end
-using LinearAlgebra
-sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)), callback=growing_cb,
-            tstops=tstop)
+sol = solve(prob, Rosenbrock23(), callback=growing_cb,tstops=tstop)
 
 @test length(sol[end]) == 13
 
@@ -80,8 +61,7 @@ prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
 sol = solve(prob, Tsit5(), callback=shrinking_cb, tstops=tstop)
 
 prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
-sol = solve(prob, Rosenbrock23(linsolve=LinSolveFactorize2(LinearAlgebra.lu)),
-            callback=shrinking_cb,tstops=tstop)
+sol = solve(prob, Rosenbrock23(),callback=shrinking_cb,tstops=tstop)
 @test length(sol[end]) == 10
 
 println("Do the SDE Part")
