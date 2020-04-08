@@ -6,42 +6,37 @@ Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} =
 Base.map!(f::F, m::AMSA, A0, As...) where {F} =
         broadcast!(f, m, A0, As...)
 
-Base.BroadcastStyle(::Type{<:AMSA}) = Broadcast.ArrayStyle{AMSA}()
-Base.BroadcastStyle(::Type{<:AbstractMultiScaleArrayLeaf}) = Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}()
+struct AMSAStyle <: Broadcast.AbstractArrayStyle{Any} end
+Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{0}) = AMSAStyle()
+Broadcast.BroadcastStyle(::Broadcast.DefaultArrayStyle{0}, ::AMSAStyle) = AMSAStyle()
+Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{N}) where N = Broadcast.DefaultArrayStyle{N}()
+Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
-@inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
+@inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
     out = similar(first_amsa)
     copyto!(out,bc)
     out
 end
 
-@inline function Base.copy(bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}})
+@inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
     out = similar(first_amsa)
     copyto!(out,bc)
     out
 end
 
-@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AMSA}})
-    if !any_non_amsa(bc)
-        N = length(dest.nodes)
-        for i in 1:N
-            copyto!(dest.nodes[i], unpack(bc, i))
-        end
-        copyto!(dest.values,unpack(bc, nothing))
-    else
-        copyto!(dest,convert(Base.Broadcast.Broadcasted{Broadcast.DefaultArrayStyle{length(axes(bc))}}, bc))
+@inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{<:AMSAStyle})
+    N = length(dest.nodes)
+    for i in 1:N
+        copyto!(dest.nodes[i], unpack(bc, i))
     end
+    copyto!(dest.values,unpack(bc, nothing))
     dest
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{AbstractMultiScaleArrayLeaf}})
-    if !any_non_amsa(bc)
-        copyto!(dest.values,unpack(bc,nothing))
-    else
-        copyto!(dest,convert(Base.Broadcast.Broadcasted{Broadcast.DefaultArrayStyle{length(axes(bc))}}, bc))
-    end
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{<:AMSAStyle})
+    copyto!(dest.values,unpack(bc,nothing))
     dest
 end
 
@@ -85,3 +80,21 @@ common_number(a, b) =
     (b == 0 ? a :
      (a == b ? a :
       throw(DimensionMismatch("number of nodes must be equal"))))
+
+## Linear Algebra
+
+function LinearAlgebra.ldiv!(A::LinearAlgebra.LU,b::AMSA)
+    x = Array(b)
+    ldiv!(A,x)
+    b .= x
+end
+function LinearAlgebra.ldiv!(A::LinearAlgebra.QR,b::AMSA)
+    x = Array(b)
+    ldiv!(A,x)
+    b .= x
+end
+function LinearAlgebra.ldiv!(A::LinearAlgebra.SVD,b::AMSA)
+    x = Array(b)
+    ldiv!(A,x)
+    b .= x
+end
