@@ -71,7 +71,11 @@ function recursivecopy!(b::AbstractMultiScaleArray, a::AbstractMultiScaleArray)
     @inbounds for i in eachindex(a.nodes)
         recursivecopy!(b.nodes[i], a.nodes[i])
     end
-    @inbounds for i in eachindex(a.values)
-        recursivecopy!(b.values[i], a.values[i])
-    end
+    recursivecopy!(b.values, a.values)
+end
+
+function recursivecopy(a::AbstractMultiScaleArray)
+    out = similar(a)
+    recursivecopy!(out,a)
+    out
 end

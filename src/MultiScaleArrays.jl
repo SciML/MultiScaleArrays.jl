@@ -6,7 +6,7 @@ import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
        size, print_matrix, similar, hcat, vcat,
        ==, *, +, /, -, show, vec, reshape
 
-import RecursiveArrayTools: recursivecopy!
+import RecursiveArrayTools: recursivecopy,recursivecopy!
 
 import RecursiveArrayTools: chain
 

@@ -1,4 +1,4 @@
-using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
+using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq, SafeTestsets
 using Test
 
 @time @testset "Tuple Nodes" begin include("tuple_nodes.jl") end
@@ -9,3 +9,4 @@ using Test
 @time @testset "Additional Fields Test" begin include("additional_fields_test.jl") end
 @time @testset "Dynamic DiffEq Tests" begin include("dynamic_diffeq.jl") end
 @time @testset "Single Layer DiffEq Tests" begin include("single_layer_diffeq.jl") end
+@time @safetestset "New Nodes Tests" begin include("new_nodes.jl") end

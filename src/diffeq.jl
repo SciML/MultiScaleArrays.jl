@@ -18,11 +18,11 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
     idx_start = getindices(integrator.u, last_idx)[end] + 1
     idxs = idx_start:idx_start+add_len-1
     for c in full_cache(integrator)
-        add_node!(c, fill!(similar(x, eltype(c)),0), I...)
+        add_node!(c, recursivecopy(x), I...)
     end
     if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
       for c in DiffEqBase.ratenoise_cache(integrator)
-          add_node!(c, fill!(similar(x, eltype(c)),0), I...)
+          add_node!(c, recursivecopy(x), I...)
       end
     end
     #addat_non_user_cache!(integrator, idxs)
@@ -36,11 +36,11 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x)
     idx_start = getindices(integrator.u, last_idx)[end] + 1
     idxs = idx_start:idx_start+add_len-1
     for c in full_cache(integrator)
-        add_node!(c, fill!(similar(x, eltype(c)),0))
+        add_node!(c, recursivecopy(x))
     end
     if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
       for c in DiffEqBase.ratenoise_cache(integrator)
-          add_node!(c, fill!(similar(x, eltype(c)),0))
+          add_node!(c, recursivecopy(x))
       end
     end
     add_node_non_user_cache!(integrator, idxs, fill!(similar(x, eltype(x)),0)) # required to do noise correctly
@@ -127,7 +127,7 @@ end
 
 function add_node_jac_config!(cache,config::FiniteDiff.JacobianCache,i,x)
     #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0))
-    add_node!(config.fx, fill!(similar(x, eltype(config.fx)),0))
+    add_node!(config.fx, recursivecopy(x))
     #cache.fx1 !== nothing && add_node!(cache.fx1, fill!(similar(x, eltype(cache.fx1)),0))
     config.colorvec = 1:i
     nothing
@@ -135,7 +135,7 @@ end
 
 function add_node_jac_config!(cache,config::FiniteDiff.JacobianCache,i,x,I...)
     #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0), I...)
-    add_node!(config.fx, fill!(similar(x, eltype(config.fx)),0), I...)
+    add_node!(config.fx, recursivecopy(x), I...)
     #cache.fx1 !== nothing && add_node!(cache.fx1, fill!(similar(x, eltype(cache.fx1)),0), I...)
     config.colorvec = 1:i
     nothing
@@ -170,16 +170,16 @@ function remove_node_grad_config!(cache,grad_config::ForwardDiff.DerivativeConfi
 end
 
 function add_node_grad_config!(cache,grad_config::FiniteDiff.GradientCache,i,x,I...)
-  grad_config.fx !== nothing && add_node!(grad_config.fx, fill!(similar(x, eltype(grad_config.fx)),0), I...)
-  grad_config.c1 !== nothing && add_node!(grad_config.c1, fill!(similar(x, eltype(grad_config.c1)),0), I...)
-  grad_config.c2 !== nothing && add_node!(grad_config.c2, fill!(similar(x, eltype(grad_config.c2)),0), I...)
+  grad_config.fx !== nothing && add_node!(grad_config.fx, recursivecopy(x), I...)
+  grad_config.c1 !== nothing && add_node!(grad_config.c1, recursivecopy(x), I...)
+  grad_config.c2 !== nothing && add_node!(grad_config.c2, recursivecopy(x), I...)
   grad_config
 end
 
 function add_node_grad_config!(cache,grad_config::FiniteDiff.GradientCache,i,x)
-  grad_config.fx !== nothing && add_node!(grad_config.fx, fill!(similar(x, eltype(grad_config.fx)),0))
-  grad_config.c1 !== nothing && add_node!(grad_config.c1, fill!(similar(x, eltype(grad_config.c1)),0))
-  grad_config.c2 !== nothing && add_node!(grad_config.c2, fill!(similar(x, eltype(grad_config.c2)),0))
+  grad_config.fx !== nothing && add_node!(grad_config.fx, recursivecopy(x))
+  grad_config.c1 !== nothing && add_node!(grad_config.c1, recursivecopy(x))
+  grad_config.c2 !== nothing && add_node!(grad_config.c2, recursivecopy(x))
   grad_config
 end
 
