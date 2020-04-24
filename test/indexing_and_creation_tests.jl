@@ -84,6 +84,11 @@ add_node!(em, tis3)
 
 em_save = deepcopy(em)
 
+print_human_readable(em)
+print_human_readable(em;n_char_per_name=2)
+print_human_readable(em;n_char_per_name=2,fields=[:values])
+print_human_readable(em.nodes[1].nodes[1];fields=[:values])
+
 @test length(em) == 30
 @test em.nodes[1] != tis #There was a deepcopy
 @test em.nodes[3] == tis3 #No deepcopy

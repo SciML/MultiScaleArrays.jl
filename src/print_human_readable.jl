@@ -1,35 +1,35 @@
 ############### print_human_readable(X::AbstractMultiScaleArray
-function addSeparator!(firstElement,ToPrint,level)
-    if firstElement
-        ToPrint[level][end] = "+"*ToPrint[level][end]
+function add_separator!(first_element,toprint,level)
+    if first_element
+        toprint[level][end] = "+"*toprint[level][end]
     end
     return false
 end
 
-function Take1stChar(s::Union{String,SubString{String}},N::Int64)     s[1:min(length(s),N)]     end
+function take_first_char(s::Union{String,SubString{String}},N::Int64)     s[1:min(length(s),N)]     end
 
-function ToPrintAbstractMultiScaleArray!(ToPrint,X::AbstractMultiScaleArray,fields,LevelMax,NcharPerName,level = 1)
-    if length(ToPrint) < level
-        push!(ToPrint,Vector{String}())
+function toprint_AbstractMultiScaleArray!(toprint,X::AbstractMultiScaleArray,fields,levelmax,n_char_per_name,level = 1)
+    if length(toprint) < level
+        push!(toprint,Vector{String}())
     end
-    firstElement = true
-    if level<LevelMax
+    first_element = true
+    if level<levelmax
         for x in X.nodes
             if fieldname(typeof(x),1) == :nodes
-                push!(ToPrint[level],  "|"*Take1stChar(split(string(typeof(x)),"{")[1],NcharPerName)  )
-                firstElement = addSeparator!(firstElement,ToPrint,level)
-                ToPrintAbstractMultiScaleArray!(ToPrint,x,fields,LevelMax,NcharPerName,level+1)
+                push!(toprint[level],  "|"*take_first_char(split(string(typeof(x)),"{")[1],n_char_per_name)  )
+                first_element = add_separator!(first_element,toprint,level)
+                toprint_AbstractMultiScaleArray!(toprint,x,fields,levelmax,n_char_per_name,level+1)
             else
                 if fields == nothing
-                    push!(ToPrint[level],  Take1stChar(split(string(typeof(x)),"{")[1],NcharPerName)  )
-                    firstElement = addSeparator!(firstElement,ToPrint,level)
+                    push!(toprint[level],  take_first_char(split(string(typeof(x)),"{")[1],n_char_per_name)  )
+                    first_element = add_separator!(first_element,toprint,level)
                 else
                     if !(typeof(x) <: AbstractMultiScaleArrayLeaf)
-                        push!(ToPrint[level],  Take1stChar(split(string(typeof(x)),"{")[1],NcharPerName)  )
-                        firstElement = addSeparator!(firstElement,ToPrint,level)
+                        push!(toprint[level],  take_first_char(split(string(typeof(x)),"{")[1],n_char_per_name)  )
+                        first_element = add_separator!(first_element,toprint,level)
                     else
-                        push!(ToPrint[level],  join([Take1stChar(string(field),NcharPerName)*": "*string(getfield(x,Symbol(field))) for field in collect(fields)],", ")  )
-                        firstElement = addSeparator!(firstElement,ToPrint,level)
+                        push!(toprint[level],  join([take_first_char(string(field),n_char_per_name)*": "*string(getfield(x,Symbol(field))) for field in collect(fields)],", ")  )
+                        first_element = add_separator!(first_element,toprint,level)
                     end
                 end
             end
@@ -37,13 +37,13 @@ function ToPrintAbstractMultiScaleArray!(ToPrint,X::AbstractMultiScaleArray,fiel
     end
 end
 
-function print_human_readable(X::AbstractMultiScaleArray ; NcharPerName = 6, fields = nothing, LevelMax=Inf, NItemMaxPerLevels = Inf) # fields = nothing OR [field1,field2,...]
+function print_human_readable(X::AbstractMultiScaleArray ; n_char_per_name = 6, fields = nothing, levelmax=Inf, n_item_max_per_levels = Inf) # fields = nothing OR [field1,field2,...]
 #     if typeof(X) <: AbstractMultiScaleArrayLeaf
 #         println(X)
 #     else
-        ToPrint = Vector{Vector{String}}([[]]) # one vector per row, one string per element
-        ToPrintAbstractMultiScaleArray!(ToPrint,X,fields,LevelMax,NcharPerName)
-        toprint = map(x -> join(x,"; "),ToPrint)
+        toprint = Vector{Vector{String}}([[]]) # one vector per row, one string per element
+        toprint_AbstractMultiScaleArray!(toprint,X,fields,levelmax,n_char_per_name)
+        toprint = map(x -> join(x,"; "),toprint)
     #     toprint[1] = join(split(toprint[1]," "),"; ")
         Done = false
         while !Done
@@ -84,20 +84,3 @@ function print_human_readable(X::AbstractMultiScaleArray ; NcharPerName = 6, fie
         println(join(toprint,"\n"))
 #     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
