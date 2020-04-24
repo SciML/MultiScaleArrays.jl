@@ -26,10 +26,13 @@ include("indexing.jl")
 include("math.jl")
 include("level_iterations.jl")
 include("diffeq.jl")
+include("print_human_readable.jl")
 
 using TreeViews
 TreeViews.hastreeview(x::AbstractMultiScaleArray) = true
 Base.show(io::IO, ::MIME"application/prs.juno.inline", x::AbstractMultiScaleArray) = x
+
+
 
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
@@ -46,5 +49,8 @@ export num_nodes, getindices
 
 # Misc
 export LevelIterIdx, LevelIter, level_iter
+
+# print_human_readable
+export print_human_readable
 
 end # module
