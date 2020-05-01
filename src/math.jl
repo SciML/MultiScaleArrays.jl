@@ -14,7 +14,17 @@ Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
-    out = similar(first_amsa)
+
+    out = similar(first_amsa,Base.Broadcast._broadcast_getindex_eltype(bc))
+
+    #=
+    ElType = Base.Broadcast.combine_eltypes(bc.f, bc.args)
+    if Base.isconcretetype(ElType)
+        # We can trust it and defer to the simpler `copyto!`
+        return copyto!(similar(bc, ElType), bc)
+    end
+    =#
+
     copyto!(out,bc)
     out
 end

@@ -169,6 +169,26 @@ function remove_node_grad_config!(cache,grad_config::ForwardDiff.DerivativeConfi
   nothing
 end
 
+function add_node_grad_config!(cache,grad_config::AbstractArray,i,x)
+    cache.grad_config = ForwardDiff.Dual{typeof(ForwardDiff.Tag(cache.tf,eltype(cache.du1)))}.(cache.du1, cache.du1)
+    nothing
+end
+
+function add_node_grad_config!(cache,grad_config::AbstractArray,i,x,I...)
+  cache.grad_config = ForwardDiff.Dual{typeof(ForwardDiff.Tag(cache.tf,eltype(cache.du1)))}.(cache.du1, cache.du1)
+  nothing
+end
+
+function remove_node_grad_config!(cache,grad_config::AbstractArray,i,x)
+    cache.grad_config = ForwardDiff.Dual{typeof(ForwardDiff.Tag(cache.tf,eltype(cache.du1)))}.(cache.du1, cache.du1)
+    nothing
+end
+
+function remove_node_grad_config!(cache,grad_config::AbstractArray,i,x,I...)
+  cache.grad_config = ForwardDiff.Dual{typeof(ForwardDiff.Tag(cache.tf,eltype(cache.du1)))}.(cache.du1, cache.du1)
+  nothing
+end
+
 function add_node_grad_config!(cache,grad_config::FiniteDiff.GradientCache,i,x,I...)
   grad_config.fx !== nothing && add_node!(grad_config.fx, recursivecopy(x), I...)
   grad_config.c1 !== nothing && add_node!(grad_config.c1, recursivecopy(x), I...)
