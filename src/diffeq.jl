@@ -103,25 +103,29 @@ end
 
 function add_node_jac_config!(cache,config::SparseDiffTools.ForwardColorJacCache,i,x,node...)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize)
+    T = SparseDiffTools.gettag(eltype(config.t))
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize,tag = T)
     nothing
 end
 
 function add_node_jac_config!(cache,config::SparseDiffTools.ForwardColorJacCache,i,x)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize)
+    T = SparseDiffTools.gettag(eltype(config.t))
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize,tag = T)
     nothing
 end
 
 function remove_node_jac_config!(cache,config::SparseDiffTools.ForwardColorJacCache,i,x,node...)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize)
+    T = SparseDiffTools.gettag(eltype(config.t))
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize,tag = T)
     nothing
 end
 
 function remove_node_jac_config!(cache,config::SparseDiffTools.ForwardColorJacCache,i,x)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize)
+    T = SparseDiffTools.gettag(eltype(config.t))
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf,cache.uprev,config.chunksize,tag = T)
     nothing
 end
 
