@@ -15,6 +15,13 @@ models to be developed with only a small performance difference. In the end, the
 themselves as an `AbstractArray` to standard solvers, allowing them to be used
 in place of a `Vector` in any appropriately made Julia package.
 
+## Tutorials and Documentation
+
+For information on using the package,
+[see the stable documentation](https://multiscalearrays.sciml.ai/stable/). Use the
+[in-development documentation](https://multiscalearrays.sciml.ai/dev/) for the version of
+the documentation, which contains the unreleased features.
+
 ## Example
 
 The usage is best described by an example. Here we build a hierarchy where
