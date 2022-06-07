@@ -1,9 +1,4 @@
-# MultiScaleArrays
-
-[![Join the chat at https://gitter.im/JuliaDiffEq/Lobby](https://badges.gitter.im/JuliaDiffEq/Lobby.svg)](https://gitter.im/JuliaDiffEq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://github.com/SciML/MultiScaleArrays.jl/workflows/CI/badge.svg)](https://github.com/SciML/MultiScaleArrays.jl/actions?query=workflow%3ACI)
-[![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleArrays.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleArrays.jl)
-[![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl)
+# MultiScaleArrays.jl: High-Performance Matrix Exponentiation and Products
 
 MultiScaleArrays.jl allows you to easily build multiple scale models which are
 fully compatible with native Julia scientific computing packages like
@@ -14,6 +9,15 @@ levels to describe complex systems. Their structure allows for complex and dynam
 models to be developed with only a small performance difference. In the end, they present
 themselves as an `AbstractArray` to standard solvers, allowing them to be used
 in place of a `Vector` in any appropriately made Julia package.
+
+## Installation
+
+To install MultiScaleArrays.jl, use the Julia package manager:
+
+```julia
+using Pkg
+Pkg.add("MultiScaleArrays")
+```
 
 ## Example
 
@@ -70,3 +74,32 @@ tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # 
 tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
+
+## Idea
+
+The idea behind MultiScaleArrays is simple. The `*DiffEq` solvers (OrdinaryDiffEq.jl,
+StochasticDiffEq.jl, DelayDiffEq.jl, etc.) and native optimization packages like
+Optim.jl in their efficient in-place form all work with any Julia-defined
+`AbstractArray` which has a linear index. Thus, to define our multiscale model,
+we develop a type which has an efficient linear index. One can think of representing
+cells with proteins as each being an array with values for each protein. The linear
+index of the multiscale model would be indexing through each protein of each cell.
+With proper index overloads, one can define a type such that `a[i]` does just that,
+and thus it will work in the differential equation solvers. MultiScaleArrays.jl
+takes that further by allowing one to recursively define an arbitrary `n`-level
+hierarchical model which has efficient indexing structures. The result is a type
+which models complex behavior, but the standard differential equation solvers will
+work directly and efficiently on this type, making it easy to develop novel models
+without having to re-develop advanced adaptive/stiff/stochastic/etc. solving
+techniques for each new model.
+
+## Contributing
+
+- Please refer to the
+  [SciML ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://github.com/SciML/ColPrac/blob/master/README.md)
+  for guidance on PRs, issues, and other matters relating to contributing to ModelingToolkit.
+- There are a few community forums:
+    - the #diffeq-bridged channel in the [Julia Slack](https://julialang.org/slack/)
+    - [JuliaDiffEq](https://gitter.im/JuliaDiffEq/Lobby) on Gitter
+    - on the [Julia Discourse forums](https://discourse.julialang.org)
+    - see also [SciML Community page](https://sciml.ai/community/)
