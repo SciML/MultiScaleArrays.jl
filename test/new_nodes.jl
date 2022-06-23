@@ -11,22 +11,20 @@ struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArr
     end_idxs::Vector{Int}
 end
 
-nCells=2
-cellConstructor = [Cell([1.0, 2.0]) for i=1:nCells]
+nCells = 2
+cellConstructor = [Cell([1.0, 2.0]) for i in 1:nCells]
 cellPop = construct(Population, deepcopy(cellConstructor))
 
-
-function StateModel(dpop,pop,p,t) #This is arbitrary
-    for (cell,dcell) in LevelIter(1,pop,dpop)
+function StateModel(dpop, pop, p, t) #This is arbitrary
+    for (cell, dcell) in LevelIter(1, pop, dpop)
         dcell = 1.0
     end
 end
 
-prob = ODEProblem(StateModel,cellPop,(0.0,1.0))
+prob = ODEProblem(StateModel, cellPop, (0.0, 1.0))
 
+integrator = init(prob, Tsit5())
 
-integrator = init(prob,Tsit5())
-
-add_node!(integrator,Cell([5.0, 20.0]))
+add_node!(integrator, Cell([5.0, 20.0]))
 
 @test integrator.u.nodes[end].values == [5.0, 20.0]

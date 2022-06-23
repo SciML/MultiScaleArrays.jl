@@ -2,20 +2,21 @@ nodeselect(ns, i, I...) = ns[i][I...]
 nodechild(ns, i, j) = ns[i].nodes[j]
 
 function bisect_search(a, i)
-    first(searchsorted(a,i))
+    return first(searchsorted(a, i))
 end
 
 Base.IndexStyle(::Type{<:AbstractMultiScaleArray}) = IndexLinear()
 
 @inline function getindex(m::AbstractMultiScaleArray, i::Int)
     idx = bisect_search(m.end_idxs, i)
-    idx > 1 && (i -= m.end_idxs[idx-1]) # also works with values
-    (isempty(m.values) || idx < length(m.end_idxs)) ? nodeselect(m.nodes, idx, i) : m.values[i]
+    idx > 1 && (i -= m.end_idxs[idx - 1]) # also works with values
+    return (isempty(m.values) || idx < length(m.end_idxs)) ? nodeselect(m.nodes, idx, i) :
+           m.values[i]
 end
 
 @inline function setindex!(m::AbstractMultiScaleArray, nodes, i::Int)
     idx = bisect_search(m.end_idxs, i) # +1 for 1-based indexing
-    idx > 1 && (i -= m.end_idxs[idx-1])
+    idx > 1 && (i -= m.end_idxs[idx - 1])
     if isempty(m.values) || idx < length(m.end_idxs)
         m.nodes[idx][i] = nodes
     else
@@ -62,7 +63,7 @@ Base.eltype(::Type{<:AbstractMultiScaleArray{B}}) where {B<:Number} = B
 # For now, default to Float64 (like v0.5 version did) if not specified
 function Base.eltype(::Type{T}) where {T<:AbstractMultiScaleArray}
     eltype(fieldtype(T, :values)) === Any && return Float64
-    error("Invalid AbstractMultiScaleArray, type of values not specified")
+    return error("Invalid AbstractMultiScaleArray, type of values not specified")
 end
 Base.eltype(::T) where {T<:AbstractMultiScaleArray} = eltype(T)
 
@@ -72,26 +73,31 @@ Base.eltype(::T) where {T<:AbstractMultiScaleArray} = eltype(T)
 
 getindices(m::AbstractMultiScaleArrayHead) = 1:length(m)
 
-getindices(m::AbstractMultiScaleArrayHead, i::Int) =
-    ((i > 1) ? (m.end_idxs[i-1] + 1) : 1) : m.end_idxs[i]
+getindices(m::AbstractMultiScaleArrayHead, i::Int) = ((i > 1) ? (m.end_idxs[i - 1] + 1) : 1):m.end_idxs[i]
 
-getindices(m::AbstractMultiScaleArrayHead, i, I::Int...) =
-    getindices(m.nodes[i], ((i > 1) ? (m.end_idxs[i-1] + 1) : 1), m.end_idxs[i], I...)
+getindices(m::AbstractMultiScaleArrayHead, i, I::Int...) = getindices(m.nodes[i],
+                                                                      ((i > 1) ?
+                                                                       (m.end_idxs[i - 1] + 1) : 1),
+                                                                      m.end_idxs[i], I...)
 
-getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i::Int) =
-    (bot_idx + ((i > 1) ? m.end_idxs[i-1] : 0)) : (top_idx + m.end_idxs[i] - length(m))
+getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i::Int) = (bot_idx + ((i > 1) ?
+                                                                               m.end_idxs[i - 1] :
+                                                                               0)):(top_idx + m.end_idxs[i] - length(m))
 
-getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i, I::Int...) =
-    getindices(m.nodes[i],
-               bot_idx + ((i > 1) ? m.end_idxs[i-1] : 0),
-               top_idx + m.end_idxs[i] - length(m),
-               I...)
+getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i, I::Int...) = getindices(m.nodes[i],
+                                                                                    bot_idx +
+                                                                                    ((i > 1) ?
+                                                                                     m.end_idxs[i - 1] :
+                                                                                     0),
+                                                                                    top_idx +
+                                                                                    m.end_idxs[i] -
+                                                                                    length(m),
+                                                                                    I...)
 
 function getindices(m::AbstractMultiScaleArrayLeaf, bot_idx, top_idx, i::Int)
     i > length(m) && error("Final index is larger than length of leaf")
     top_idx -= length(m) - i
-    top_idx:top_idx
+    return top_idx:top_idx
 end
 
-getindices(m::AbstractMultiScaleArrayLeaf, bot_idx, top_idx, I::Int...) =
-    error("Indexes past the bottom.")
+getindices(m::AbstractMultiScaleArrayLeaf, bot_idx, top_idx, I::Int...) = error("Indexes past the bottom.")

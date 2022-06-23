@@ -22,12 +22,12 @@ struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHe
 end
 =#
 
-cell1 = Cell([1.0;2.0;3.0])
-cell2 = Cell([4.0;5])
-population = construct(Population,deepcopy([cell1,cell2]),[11.0,12.0,13.0]) # Make a Population from cells
-cell3 = Cell([3.0;2.0;5.0])
-cell4 = Cell([4.0;6])
-population2 = construct(Population,deepcopy([cell3,cell4]),[8.0,9.0])
+cell1 = Cell([1.0; 2.0; 3.0])
+cell2 = Cell([4.0; 5])
+population = construct(Population, deepcopy([cell1, cell2]), [11.0, 12.0, 13.0]) # Make a Population from cells
+cell3 = Cell([3.0; 2.0; 5.0])
+cell4 = Cell([4.0; 6])
+population2 = construct(Population, deepcopy([cell3, cell4]), [8.0, 9.0])
 
 @test population[1] == 1.0
 @test population[2] == 2.0
@@ -38,9 +38,9 @@ population2 = construct(Population,deepcopy([cell3,cell4]),[8.0,9.0])
 @test population[7] == 12.0
 @test population[8] == 13.0
 
-tissue1 = construct(Tissue,deepcopy([population,population2])) # Make a Tissue from Populations
-tissue2 = construct(Tissue,deepcopy([population2,population]))
-embryo = construct(Embryo,deepcopy([tissue1,tissue2]),[31.0,32.0]) # Make an embryo from Tissues
+tissue1 = construct(Tissue, deepcopy([population, population2])) # Make a Tissue from Populations
+tissue2 = construct(Tissue, deepcopy([population2, population]))
+embryo = construct(Embryo, deepcopy([tissue1, tissue2]), [31.0, 32.0]) # Make an embryo from Tissues
 
 @test tissue1[1] == 1.0
 @test tissue1[2] == 2.0
@@ -51,7 +51,7 @@ embryo = construct(Embryo,deepcopy([tissue1,tissue2]),[31.0,32.0]) # Make an emb
 @test tissue1[7] == 12.0
 @test tissue1[8] == 13.0
 
-@test tissue1[9]  == 3.0
+@test tissue1[9] == 3.0
 @test tissue1[10] == 2.0
 @test tissue1[11] == 5.0
 @test tissue1[12] == 4.0
@@ -68,7 +68,7 @@ embryo = construct(Embryo,deepcopy([tissue1,tissue2]),[31.0,32.0]) # Make an emb
 @test embryo[7] == 12.0
 @test embryo[8] == 13.0
 
-@test embryo[9]  == 3.0
+@test embryo[9] == 3.0
 @test embryo[10] == 2.0
 @test embryo[11] == 5.0
 @test embryo[12] == 4.0

@@ -1,21 +1,20 @@
 # Abbreviation to help keep code short!
 const AMSA = AbstractMultiScaleArray
 
-Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} =
-        broadcast!(f, m, A0, As...)
-Base.map!(f::F, m::AMSA, A0, As...) where {F} =
-        broadcast!(f, m, A0, As...)
+Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F} = broadcast!(f, m, A0,
+                                                                                         As...)
+Base.map!(f::F, m::AMSA, A0, As...) where {F} = broadcast!(f, m, A0, As...)
 
 struct AMSAStyle <: Broadcast.AbstractArrayStyle{Any} end
 Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{0}) = AMSAStyle()
 Broadcast.BroadcastStyle(::Broadcast.DefaultArrayStyle{0}, ::AMSAStyle) = AMSAStyle()
-Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{N}) where N = Broadcast.DefaultArrayStyle{N}()
+Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{N}) where {N} = Broadcast.DefaultArrayStyle{N}()
 Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
     first_amsa = find_amsa(bc)
 
-    out = similar(first_amsa,Base.Broadcast._broadcast_getindex_eltype(bc))
+    out = similar(first_amsa, Base.Broadcast._broadcast_getindex_eltype(bc))
 
     #=
     ElType = Base.Broadcast.combine_eltypes(bc.f, bc.args)
@@ -25,8 +24,8 @@ Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
     end
     =#
 
-    copyto!(out,bc)
-    out
+    copyto!(out, bc)
+    return out
 end
 
 @inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{<:AMSAStyle})
@@ -34,18 +33,19 @@ end
     for i in 1:N
         copyto!(dest.nodes[i], unpack(bc, i))
     end
-    copyto!(dest.values,unpack(bc, nothing))
-    dest
+    copyto!(dest.values, unpack(bc, nothing))
+    return dest
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf, bc::Broadcast.Broadcasted{<:AMSAStyle})
-    copyto!(dest.values,unpack(bc,nothing))
-    dest
+@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf,
+                              bc::Broadcast.Broadcasted{<:AMSAStyle})
+    copyto!(dest.values, unpack(bc, nothing))
+    return dest
 end
 
 # drop axes because it is easier to recompute
 @inline unpack(bc::Broadcast.Broadcasted, i) = Broadcast.Broadcasted(bc.f, unpack_args(i, bc.args))
-unpack(x,::Any) = x
+unpack(x, ::Any) = x
 unpack(x::AMSA, i) = x.nodes[i]
 unpack(x::AMSA, ::Nothing) = x.values
 
@@ -78,26 +78,25 @@ any_non_amsa(x::AbstractArray) = true
 any_non_amsa(x::Bool, rest) = isempty(rest) ? x : x || any_non_amsa(rest)
 
 ## utils
-common_number(a, b) =
-    a == 0 ? b :
-    (b == 0 ? a :
-     (a == b ? a :
-      throw(DimensionMismatch("number of nodes must be equal"))))
+common_number(a, b) = a == 0 ? b :
+                      (b == 0 ? a :
+                       (a == b ? a :
+                        throw(DimensionMismatch("number of nodes must be equal"))))
 
 ## Linear Algebra
 
-function LinearAlgebra.ldiv!(A::LinearAlgebra.LU,b::AMSA)
+function LinearAlgebra.ldiv!(A::LinearAlgebra.LU, b::AMSA)
     x = Array(b)
-    ldiv!(A,x)
-    b .= x
+    ldiv!(A, x)
+    return b .= x
 end
-function LinearAlgebra.ldiv!(A::LinearAlgebra.QR,b::AMSA)
+function LinearAlgebra.ldiv!(A::LinearAlgebra.QR, b::AMSA)
     x = Array(b)
-    ldiv!(A,x)
-    b .= x
+    ldiv!(A, x)
+    return b .= x
 end
-function LinearAlgebra.ldiv!(A::LinearAlgebra.SVD,b::AMSA)
+function LinearAlgebra.ldiv!(A::LinearAlgebra.SVD, b::AMSA)
     x = Array(b)
-    ldiv!(A,x)
-    b .= x
+    ldiv!(A, x)
+    return b .= x
 end
