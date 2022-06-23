@@ -11,30 +11,31 @@ size(m::AbstractMultiScaleArray) = (length(m),)
 parameterless_type(T::Type) = Base.typename(T).wrapper
 parameterless_type(x) = parameterless_type(typeof(x))
 
-@generated function similar(m::AbstractMultiScaleArrayLeaf,::Type{T}=eltype(m)) where T
+@generated function similar(m::AbstractMultiScaleArrayLeaf, ::Type{T} = eltype(m)) where {T}
     assignments = [s == :values ? :(similar(m.values, T)) :
                    (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
                    for s in fieldnames(m)[2:end]] # 1 is values
-    :(construct(parameterless_type(m), similar(m.values,T),$(assignments...)))
+    :(construct(parameterless_type(m), similar(m.values, T), $(assignments...)))
 end
 
-@generated function similar(m::AbstractMultiScaleArray,::Type{T}=eltype(m)) where {T}
+@generated function similar(m::AbstractMultiScaleArray, ::Type{T} = eltype(m)) where {T}
     assignments = [s == :values ? :(similar(m.values, T)) :
                    (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
                    for s in fieldnames(m)[4:end]] # 1:3 is nodes,values,end_idxs
-    :(construct(parameterless_type(m), recursive_similar(m.nodes,T),similar(m.values, T),$(assignments...)))
+    :(construct(parameterless_type(m), recursive_similar(m.nodes, T), similar(m.values, T),
+                $(assignments...)))
 end
 
-Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A),0)
+Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A), 0)
 
-recursive_similar(x,T) = [similar(y, T) for y in x]
-recursive_similar(x::Tuple,T) = tuple((similar(y, T) for y in x)...)
+recursive_similar(x, T) = [similar(y, T) for y in x]
+recursive_similar(x::Tuple, T) = tuple((similar(y, T) for y in x)...)
 
-construct(::Type{T}, args...) where {T<:AbstractMultiScaleArrayLeaf} = T(args...)
+construct(::Type{T}, args...) where {T <: AbstractMultiScaleArrayLeaf} = T(args...)
 
 function __construct(T, nodes, values, args...)
     vallen = length(values)
-    end_idxs = Vector{Int}(undef,length(nodes) + ifelse(vallen == 0, 0, 1))
+    end_idxs = Vector{Int}(undef, length(nodes) + ifelse(vallen == 0, 0, 1))
     off = 0
     @inbounds for i in 1:length(nodes)
         end_idxs[i] = (off += length(nodes[i]))
@@ -44,27 +45,29 @@ function __construct(T, nodes, values, args...)
 end
 
 (construct(::Type{T}, nodes::AbstractVector{<:AbstractMultiScaleArray}, args...)
-    where {T<:AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args...)
+where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args...)
 
 (construct(::Type{T}, nodes::AbstractVector{<:AbstractMultiScaleArray}, values, args...)
-     where {T<:AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
+where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
 
 (construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, args...)
-     where {T<:AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args...)
+where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args...)
 
 (construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, values, args...)
-     where {T<:AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
+where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
 
-vcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) =
+function vcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray)
     error("AbstractMultiScaleArrays cannot be concatenated")
+end
 
-hcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) =
+function hcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray)
     error("AbstractMultiScaleArrays cannot be concatenated")
+end
 
 ==(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) = (m1 === m2)
 
 function recursivecopy!(b::AbstractMultiScaleArrayLeaf, a::AbstractMultiScaleArrayLeaf)
-    @inbounds copyto!(b,a)
+    @inbounds copyto!(b, a)
 end
 
 function recursivecopy!(b::AbstractMultiScaleArray, a::AbstractMultiScaleArray)
@@ -76,6 +79,6 @@ end
 
 function recursivecopy(a::AbstractMultiScaleArray)
     out = similar(a)
-    recursivecopy!(out,a)
+    recursivecopy!(out, a)
     out
 end
