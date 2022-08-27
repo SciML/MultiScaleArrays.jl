@@ -1,9 +1,14 @@
 # MultiScaleArrays
 
-[![Join the chat at https://gitter.im/JuliaDiffEq/Lobby](https://badges.gitter.im/JuliaDiffEq/Lobby.svg)](https://gitter.im/JuliaDiffEq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://julialang.zulipchat.com #sciml-bridged](https://img.shields.io/static/v1?label=Zulip&message=chat&color=9558b2&labelColor=389826)](https://julialang.zulipchat.com/#narrow/stream/279055-sciml-bridged)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](http://multiscalearrays.sciml.ai/stable/)
+[![Global Docs](https://img.shields.io/badge/docs-SciML-blue.svg)](https://docs.sciml.ai/dev/modules/MultiScaleArrays/)
+
+[![codecov](https://codecov.io/gh/SciML/MultiScaleArrays.jl/branch/master/graph/badge.svg?token=FwXaKBNW67)](https://codecov.io/gh/SciML/MultiScaleArrays.jl)
 [![Build Status](https://github.com/SciML/MultiScaleArrays.jl/workflows/CI/badge.svg)](https://github.com/SciML/MultiScaleArrays.jl/actions?query=workflow%3ACI)
-[![Coverage Status](https://coveralls.io/repos/github/JuliaDiffEq/MultiScaleArrays.jl/badge.svg)](https://coveralls.io/github/JuliaDiffEq/MultiScaleArrays.jl)
-[![codecov](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDiffEq/MultiScaleArrays.jl)
+
+[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
+[![SciML Code Style](https://img.shields.io/static/v1?label=code%20style&message=SciML&color=9558b2&labelColor=389826)](https://github.com/SciML/SciMLStyle)
 
 MultiScaleArrays.jl allows you to easily build multiple scale models which are
 fully compatible with native Julia scientific computing packages like
