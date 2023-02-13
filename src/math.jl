@@ -69,7 +69,9 @@ nnodes(A, Bs...) = common_number(nnodes(A), _nnodes(Bs))
 _nnodes(args::Tuple{Any}) = nnodes(args[1])
 _nnodes(args::Tuple{}) = 0
 
-"`A = find_amsa(As)` returns the first AMSA among the arguments."
+"""
+`A = find_amsa(As)` returns the first AMSA among the arguments.
+"""
 find_amsa(bc::Base.Broadcast.Broadcasted) = find_amsa(bc.args)
 find_amsa(args::Tuple) = !isempty(args) && find_amsa(find_amsa(args[1]), Base.tail(args))
 find_amsa(x) = x

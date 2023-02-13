@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/SciML/MultiScaleArrays.jl/branch/master/graph/badge.svg?token=FwXaKBNW67)](https://codecov.io/gh/SciML/MultiScaleArrays.jl)
 [![Build Status](https://github.com/SciML/MultiScaleArrays.jl/workflows/CI/badge.svg)](https://github.com/SciML/MultiScaleArrays.jl/actions?query=workflow%3ACI)
 
-[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
+[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor%27s%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 [![SciML Code Style](https://img.shields.io/static/v1?label=code%20style&message=SciML&color=9558b2&labelColor=389826)](https://github.com/SciML/SciMLStyle)
 
 MultiScaleArrays.jl allows you to easily build multiple scale models which are
@@ -38,17 +38,17 @@ using MultiScaleArrays
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
-struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Population{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Tissue{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+struct Embryo{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
@@ -59,22 +59,18 @@ This setup defines a type structure which is both a tree and an array. A picture
 version is the following:
 
 <img src="https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG">
-
 Let's build a version of this. Using the constructors we can directly construct leaf types:
-
 ```julia
 cell1 = Cell([1.0; 2.0; 3.0])
 cell2 = Cell([4.0; 5.0])
 ```
-
 and build types higher up in the hierarchy by using the `constuct` method. The method
 is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is not given it's
 taken to be empty.
-
 ```julia
 cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
-population  = construct(Population, deepcopy([cell1, cell3, cell4]))
+population = construct(Population, deepcopy([cell1, cell3, cell4]))
 population2 = construct(Population, deepcopy([cell1, cell3, cell4]))
 population3 = construct(Population, deepcopy([cell1, cell3, cell4]))
 tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # Make a Tissue from Populations

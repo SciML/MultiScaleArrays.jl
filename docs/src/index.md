@@ -31,17 +31,17 @@ using MultiScaleArrays
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
-struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Population{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Tissue{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+struct Embryo{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
@@ -53,7 +53,7 @@ version is the following:
 
 ![](https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG)
 
-Let's build a version of this. Using the constructors we can directly construct leaf types:
+Let's build a version of this. Using the constructors, we can directly construct leaf types:
 
 ```julia
 cell1 = Cell([1.0; 2.0; 3.0])
@@ -61,13 +61,13 @@ cell2 = Cell([4.0; 5.0])
 ```
 
 and build types higher up in the hierarchy by using the `constuct` method. The method
-is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is not given it's
+is `construct(T::AbstractMultiScaleArray, nodes, values)`, though, if `values` is not given it's
 taken to be empty.
 
 ```julia
 cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
-population  = construct(Population, deepcopy([cell1, cell3, cell4]))
+population = construct(Population, deepcopy([cell1, cell3, cell4]))
 population2 = construct(Population, deepcopy([cell1, cell3, cell4]))
 population3 = construct(Population, deepcopy([cell1, cell3, cell4]))
 tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # Make a Tissue from Populations
@@ -95,66 +95,87 @@ techniques for each new model.
 
 ## Contributing
 
-- Please refer to the
-  [SciML ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://github.com/SciML/ColPrac/blob/master/README.md)
-  for guidance on PRs, issues, and other matters relating to contributing to ModelingToolkit.
-- There are a few community forums:
-    - the #diffeq-bridged channel in the [Julia Slack](https://julialang.org/slack/)
-    - [JuliaDiffEq](https://gitter.im/JuliaDiffEq/Lobby) on Gitter
-    - on the [Julia Discourse forums](https://discourse.julialang.org)
-    - see also [SciML Community page](https://sciml.ai/community/)
+  - Please refer to the
+    [SciML ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://github.com/SciML/ColPrac/blob/master/README.md)
+    for guidance on PRs, issues, and other matters relating to contributing to SciML.
+
+  - See the [SciML Style Guide](https://github.com/SciML/SciMLStyle) for common coding practices and other style decisions.
+  - There are a few community forums:
+    
+      + The #diffeq-bridged and #sciml-bridged channels in the
+        [Julia Slack](https://julialang.org/slack/)
+      + The #diffeq-bridged and #sciml-bridged channels in the
+        [Julia Zulip](https://julialang.zulipchat.com/#narrow/stream/279055-sciml-bridged)
+      + On the [Julia Discourse forums](https://discourse.julialang.org)
+      + See also [SciML Community page](https://sciml.ai/community/)
 
 ## Reproducibility
+
 ```@raw html
 <details><summary>The documentation of this SciML package was built using these direct dependencies,</summary>
 ```
+
 ```@example
 using Pkg # hide
 Pkg.status() # hide
 ```
+
 ```@raw html
 </details>
 ```
+
 ```@raw html
 <details><summary>and using this machine and Julia version.</summary>
 ```
+
 ```@example
 using InteractiveUtils # hide
 versioninfo() # hide
 ```
+
 ```@raw html
 </details>
 ```
+
 ```@raw html
 <details><summary>A more complete overview of all dependencies and their versions is also provided.</summary>
 ```
+
 ```@example
 using Pkg # hide
-Pkg.status(;mode = PKGMODE_MANIFEST) # hide
+Pkg.status(; mode = PKGMODE_MANIFEST) # hide
 ```
+
 ```@raw html
 </details>
 ```
+
 ```@raw html
 You can also download the 
 <a href="
 ```
+
 ```@eval
 using TOML
-version = TOML.parse(read("../../Project.toml",String))["version"]
-name = TOML.parse(read("../../Project.toml",String))["name"]
-link = "https://github.com/SciML/"*name*".jl/tree/gh-pages/v"*version*"/assets/Manifest.toml"
+version = TOML.parse(read("../../Project.toml", String))["version"]
+name = TOML.parse(read("../../Project.toml", String))["name"]
+link = "https://github.com/SciML/" * name * ".jl/tree/gh-pages/v" * version *
+       "/assets/Manifest.toml"
 ```
+
 ```@raw html
 ">manifest</a> file and the
 <a href="
 ```
+
 ```@eval
 using TOML
-version = TOML.parse(read("../../Project.toml",String))["version"]
-name = TOML.parse(read("../../Project.toml",String))["name"]
-link = "https://github.com/SciML/"*name*".jl/tree/gh-pages/v"*version*"/assets/Project.toml"
+version = TOML.parse(read("../../Project.toml", String))["version"]
+name = TOML.parse(read("../../Project.toml", String))["name"]
+link = "https://github.com/SciML/" * name * ".jl/tree/gh-pages/v" * version *
+       "/assets/Project.toml"
 ```
+
 ```@raw html
 ">project</a> file.
 ```

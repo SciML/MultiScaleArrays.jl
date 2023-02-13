@@ -53,25 +53,29 @@ end
 """
 ```julia
 print_human_readable(embryo)
-# +|Tissue;                                                 |Tissue                                                 
-#  +|Popula;           |Popula;           |Popula;          +|Popula;           |Popula;           |Popula          
+# +|Tissue;                                                 |Tissue
+#  +|Popula;           |Popula;           |Popula;          +|Popula;           |Popula;           |Popula
 #   +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell
 
-print_human_readable(embryo;NcharPerName=2)
-# +|Ti;                                   |Ti                                   
-#  +|Po;         |Po;         |Po;        +|Po;         |Po;         |Po        
+print_human_readable(embryo; NcharPerName = 2)
+# +|Ti;                                   |Ti
+#  +|Po;         |Po;         |Po;        +|Po;         |Po;         |Po
 #   +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce
 ```
+
 Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
+
 ```julia
-print_human_readable(embryo;NcharPerName=2,fields=[:values])
-# +|Ti;                                                                                                                                                                             |Ti                                                                                                                                                                             
-#  +|Po;                                                       |Po;                                                       |Po;                                                      +|Po;                                                       |Po;                                                       |Po                                                      
+print_human_readable(embryo; NcharPerName = 2, fields = [:values])
+# +|Ti;                                                                                                                                                                             |Ti
+#  +|Po;                                                       |Po;                                                       |Po;                                                      +|Po;                                                       |Po;                                                       |Po
 #   +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]
 ```
+
 if your screen is small, then print a sub-part of the AbstractMultiScaleArray:
+
 ```julia
-print_human_readable(embryo.nodes[1].nodes[1];fields=[:values])
+print_human_readable(embryo.nodes[1].nodes[1]; fields = [:values])
 # +values: [1.0, 2.0, 3.0]; values: [3.0, 2.0, 5.0]; values: [4.0, 6.0]
 ```
 """
