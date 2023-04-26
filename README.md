@@ -67,6 +67,7 @@ cell2 = Cell([4.0; 5.0])
 and build types higher up in the hierarchy by using the `constuct` method. The method
 is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is not given it's
 taken to be empty.
+
 ```julia
 cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
