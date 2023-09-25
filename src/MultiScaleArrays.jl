@@ -24,24 +24,24 @@ Each type above then contains three fields:
 
 Note that the ordering of the fields matters.
 `B` is the `BottomType`, which has to be the same as the eltype for the array
-in the leaf types. `T` is another `AbstractMultiScaleArray`. Thus at each level,
-an` AbstractMultiScaleArray` contains some information of its own (`values`), the
+in the leaf types. `T` is another `AbstractMultiScaleArray`. Thus, at each level,
+an `AbstractMultiScaleArray` contains some information of its own (`values`), the
 next level down in the hierarchy (`nodes`), and caching for indices (`end_idxs`).
-You can add and use extra fields as you please, and even make the types immutable.
+You can add and use extra fields as you please, and you can even make the types immutable.
 
 ## The MultiScaleModel API
 
 The resulting type acts as an array. A leaf type `l` acts exactly as an array
 with `l[i] == l.values[i]`. Higher nodes also act as a linear array. If `ln` is level
 `n` in the hierarchy, then `ln.nodes` is the vector of level `n-1` objects, and `ln.values`
-are its "intrinsic values". There is an indexing scheme on `ln`, where:
+are its “intrinsic values”. There is an indexing scheme on `ln`, where:
 
   - `ln[i,j,k]` gets the `k`th `n-3` object in the `j`th `n-2` object in the `i`th level `n-1`
     object. Of course, this recurses for the whole hierarchy.
   - `ln[i]` provides a linear index through all `.nodes` and `.values` values in every lower
     level and `ln.values` itself.
 
-Thus `typeof(ln) <: AbstractVector{B}` where `B` is the eltype of its leaves and
+Thus, `typeof(ln) <: AbstractVector{B}`, where `B` is the eltype of its leaves and
 all `.values`'s.
 
 In addition, iterators are provided to make it easy to iterate through levels.
@@ -59,7 +59,7 @@ mimics a vector in order for usage in DifferentialEquations or Optim. So for exa
 embryo[12]
 ```
 
-returns the "12th protein", counting by Embryo > Tissue > Population > Cell in order
+returns the “12th protein”, counting by Embryo > Tissue > Population > Cell in order
 of the vectors. The linear indexing exists for every `AbstractMultiScaleArray`.
 These types act as full linear vectors, so standard operations do the sensical
 operations:
@@ -82,7 +82,7 @@ for cell in level_iter(embryo, 3)
 end
 ```
 
-or the multiple level iter, which is the one generally used in
+or the multiple-level iter, which is the one generally used in
 DifferentialEquations.jl functions:
 
 ```julia
@@ -101,7 +101,7 @@ end
 ```
 
 However, the interesting behavior comes from event handling. Since `embryo` will be the
-"vector" for the differential equation or optimization problem, it will be the value
+“vector” for the differential equation or optimization problem, it will be the value
 passed to the event handling. MultiScaleArrays includes behavior for changing the
 structure. For example:
 

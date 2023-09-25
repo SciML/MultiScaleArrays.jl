@@ -1,9 +1,9 @@
 # MultiScaleArrays.jl: High-Performance Matrix Exponentiation and Products
 
-MultiScaleArrays.jl allows you to easily build multiple scale models which are
+MultiScaleArrays.jl allows you to easily build multiple-scale models that are
 fully compatible with native Julia scientific computing packages like
 DifferentialEquations.jl or Optim.jl. These models utilize
-a tree structure to describe phenomena of multiple scales, but the interface allows
+a tree structure to describe phenomena on multiple scales, but the interface allows
 you to describe equations on different levels, using aggregations from lower
 levels to describe complex systems. Their structure allows for complex and dynamic
 models to be developed with only a small performance difference. In the end, they present
@@ -48,7 +48,7 @@ struct Embryo{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleAr
 end
 ```
 
-This setup defines a type structure which is both a tree and an array. A picture of a possible
+This setup defines a type structure that is both a tree and an array. A picture of a possible
 version is the following:
 
 ![](https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG)
@@ -61,7 +61,7 @@ cell2 = Cell([4.0; 5.0])
 ```
 
 and build types higher up in the hierarchy by using the `constuct` method. The method
-is `construct(T::AbstractMultiScaleArray, nodes, values)`, though, if `values` is not given it's
+is `construct(T::AbstractMultiScaleArray, nodes, values)`, though, if `values` is not given, it's
 taken to be empty.
 
 ```julia
