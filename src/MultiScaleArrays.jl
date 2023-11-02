@@ -41,7 +41,7 @@ are its “intrinsic values”. There is an indexing scheme on `ln`, where:
   - `ln[i]` provides a linear index through all `.nodes` and `.values` values in every lower
     level and `ln.values` itself.
 
-Thus, `typeof(ln) <: AbstractVector{B}`, where `B` is the eltype of its leaves and
+Thus, `ln isa AbstractVector{B}`, where `B` is the eltype of its leaves and
 all `.values`'s.
 
 In addition, iterators are provided to make it easy to iterate through levels.

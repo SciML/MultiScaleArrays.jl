@@ -52,8 +52,8 @@ p = construct(Population, deepcopy([cell1, cell2]))
 sim_p = similar(p)
 sim_p_arr = similar(p, axes(p))
 
-@test typeof(sim_p) <: Population
-@test typeof(sim_p_arr) <: Vector{Float64}
+@test sim_p isa Population
+@test sim_p_arr isa Vector{Float64}
 @test length(sim_p) == length(p)
 @test length(sim_p.nodes[1]) == length(p.nodes[1])
 @test !(sim_p.nodes[1] === p.nodes[1])
@@ -135,7 +135,7 @@ g = (x, y) -> x * y
 
 cell3 = cell1 .+ 2
 
-@test typeof(cell3) <: AbstractMultiScaleArray
+@test cell3 isa AbstractMultiScaleArray
 
 cell3 = similar(cell1)
 cell3 .= [1, 2, 3]
@@ -242,12 +242,12 @@ end
 em2 = copy(em)
 
 for (pop1, pop2) in LevelIter(2, em, em2)
-    @test typeof(pop1) <: Population
+    @test pop1 isa Population
     @test pop1[:] == pop2[:]
 end
 
 for (cell1, cell2) in LevelIter(3, em, em2)
-    @test typeof(cell1) <: Cell
+    @test cell1 isa Cell
     @test cell1[:] == cell2[:]
 end
 
