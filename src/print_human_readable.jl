@@ -32,7 +32,7 @@ function toprint_AbstractMultiScaleArray!(toprint, X::AbstractMultiScaleArray, f
                                           n_char_per_name))
                     first_element = add_separator!(first_element, toprint, level)
                 else
-                    if !(typeof(x) <: AbstractMultiScaleArrayLeaf)
+                    if !(x isa AbstractMultiScaleArrayLeaf)
                         push!(toprint[level],
                               take_first_char(split(string(typeof(x)), "{")[1],
                                               n_char_per_name))
@@ -81,7 +81,7 @@ print_human_readable(embryo.nodes[1].nodes[1]; fields = [:values])
 """
 function print_human_readable(X::AbstractMultiScaleArray; n_char_per_name = 6,
                               fields = nothing, levelmax = Inf, n_item_max_per_levels = Inf) # fields = nothing OR [field1,field2,...]
-    #     if typeof(X) <: AbstractMultiScaleArrayLeaf
+    #     if X isa AbstractMultiScaleArrayLeaf
     #         println(X)
     #     else
     toprint = Vector{Vector{String}}([[]]) # one vector per row, one string per element
