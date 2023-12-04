@@ -185,10 +185,6 @@ include("level_iterations.jl")
 include("diffeq.jl")
 include("print_human_readable.jl")
 
-using TreeViews
-TreeViews.hastreeview(x::AbstractMultiScaleArray) = true
-Base.show(io::IO, ::MIME"application/prs.juno.inline", x::AbstractMultiScaleArray) = x
-
 # Types
 export AbstractMultiScaleArray, AbstractMultiScaleArrayLeaf,
        AbstractMultiScaleArrayHead
