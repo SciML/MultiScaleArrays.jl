@@ -11,7 +11,7 @@ function take_first_char(s::Union{String, SubString{String}}, N::Int64)
 end
 
 function toprint_AbstractMultiScaleArray!(toprint, X::AbstractMultiScaleArray, fields,
-                                          levelmax, n_char_per_name, level = 1)
+        levelmax, n_char_per_name, level = 1)
     if length(toprint) < level
         push!(toprint, Vector{String}())
     end
@@ -20,28 +20,30 @@ function toprint_AbstractMultiScaleArray!(toprint, X::AbstractMultiScaleArray, f
         for x in X.nodes
             if fieldname(typeof(x), 1) == :nodes
                 push!(toprint[level],
-                      "|" *
-                      take_first_char(split(string(typeof(x)), "{")[1], n_char_per_name))
+                    "|" *
+                    take_first_char(split(string(typeof(x)), "{")[1], n_char_per_name))
                 first_element = add_separator!(first_element, toprint, level)
                 toprint_AbstractMultiScaleArray!(toprint, x, fields, levelmax,
-                                                 n_char_per_name, level + 1)
+                    n_char_per_name, level + 1)
             else
                 if fields == nothing
                     push!(toprint[level],
-                          take_first_char(split(string(typeof(x)), "{")[1],
-                                          n_char_per_name))
+                        take_first_char(split(string(typeof(x)), "{")[1],
+                            n_char_per_name))
                     first_element = add_separator!(first_element, toprint, level)
                 else
                     if !(x isa AbstractMultiScaleArrayLeaf)
                         push!(toprint[level],
-                              take_first_char(split(string(typeof(x)), "{")[1],
-                                              n_char_per_name))
+                            take_first_char(split(string(typeof(x)), "{")[1],
+                                n_char_per_name))
                         first_element = add_separator!(first_element, toprint, level)
                     else
                         push!(toprint[level],
-                              join([take_first_char(string(field), n_char_per_name) * ": " *
-                                    string(getfield(x, Symbol(field)))
-                                    for field in collect(fields)], ", "))
+                            join(
+                                [take_first_char(string(field), n_char_per_name) * ": " *
+                                 string(getfield(x, Symbol(field)))
+                                 for field in collect(fields)],
+                                ", "))
                         first_element = add_separator!(first_element, toprint, level)
                     end
                 end
@@ -80,7 +82,7 @@ print_human_readable(embryo.nodes[1].nodes[1]; fields = [:values])
 ```
 """
 function print_human_readable(X::AbstractMultiScaleArray; n_char_per_name = 6,
-                              fields = nothing, levelmax = Inf, n_item_max_per_levels = Inf) # fields = nothing OR [field1,field2,...]
+        fields = nothing, levelmax = Inf, n_item_max_per_levels = Inf) # fields = nothing OR [field1,field2,...]
     #     if X isa AbstractMultiScaleArrayLeaf
     #         println(X)
     #     else
@@ -119,18 +121,18 @@ function print_human_readable(X::AbstractMultiScaleArray; n_char_per_name = 6,
             Move = findfirst("+ ", toprint[level])[1]
             To = findnext(" |", toprint[level], Move[end])[1]
             toprint[level] = join([
-                                      toprint[level][1:(Move - 1)],
-                                      toprint[level][(Move + 1):To],
-                                      toprint[level][Move],
-                                      toprint[level][(To + 1):end],
-                                  ])
+                toprint[level][1:(Move - 1)],
+                toprint[level][(Move + 1):To],
+                toprint[level][Move],
+                toprint[level][(To + 1):end]
+            ])
             for level_ in 1:(level - 1)
                 toprint[level_] = join([
-                                           toprint[level_][1:(Move - 1)],
-                                           toprint[level_][(To + 1):(To + To - Move)],
-                                           toprint[level_][Move:To],
-                                           toprint[level_][(To + To - Move + 1):end],
-                                       ])
+                    toprint[level_][1:(Move - 1)],
+                    toprint[level_][(To + 1):(To + To - Move)],
+                    toprint[level_][Move:To],
+                    toprint[level_][(To + To - Move + 1):end]
+                ])
             end
         end
     end
