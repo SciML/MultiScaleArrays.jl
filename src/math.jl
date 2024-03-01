@@ -41,7 +41,7 @@ end
 end
 
 @inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf,
-                              bc::Broadcast.Broadcasted{<:AMSAStyle})
+        bc::Broadcast.Broadcasted{<:AMSAStyle})
     copyto!(dest.values, unpack(bc, nothing))
     dest
 end

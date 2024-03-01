@@ -23,7 +23,7 @@ end
                    (sq = Meta.quot(s); :(deepcopy(getfield(m, $sq))))
                    for s in fieldnames(m)[4:end]] # 1:3 is nodes,values,end_idxs
     :(construct(parameterless_type(m), recursive_similar(m.nodes, T), similar(m.values, T),
-                $(assignments...)))
+        $(assignments...)))
 end
 
 Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A), 0)
