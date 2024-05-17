@@ -40,7 +40,7 @@ organ3 = Organ([1.2, 2.2, 3.2], :Shoot, OrganParams(true))
 organ4 = Organ([4.2, 5.2, 6.2], :Root, OrganParams(1 // 3))
 plant1 = construct(Plant, (deepcopy(organ1), deepcopy(organ2)), Float64[], PlantSettings(1))
 plant2 = construct(Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[],
-                   PlantSettings(1.0))
+    PlantSettings(1.0))
 community = construct(Community, (deepcopy(plant1), deepcopy(plant2)))
 scenario = construct(Scenario, (deepcopy(community),))
 

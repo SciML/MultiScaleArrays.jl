@@ -13,11 +13,11 @@ struct Host{T <: AbstractMultiScaleArray, B <: Float64} <: AbstractMultiScaleArr
 end
 
 host = construct(Host,
-                 [
-                     CellGenotype([Float64(1)],
-                                  :aSymbiontGenotype),
-                     CellGenotype([Float64(1)],
-                                  :aSymbiontGenotype)])
+    [
+        CellGenotype([Float64(1)],
+            :aSymbiontGenotype),
+        CellGenotype([Float64(1)],
+            :aSymbiontGenotype)])
 
 evolve = function (du, u::Host, p, t)
     for i in 1:length(u)
@@ -43,12 +43,12 @@ struct Host2{T <: AbstractMultiScaleArray, B <: Float64} <: AbstractMultiScaleAr
 end
 
 host2 = construct(Host2,
-                  [
-                      CellGenotype([Float64(1)],
-                                   :aSymbiontGenotype),
-                      CellGenotype([Float64(1)],
-                                   :aSymbiontGenotype)], Float64[],
-                  :my_cell_type)
+    [
+        CellGenotype([Float64(1)],
+            :aSymbiontGenotype),
+        CellGenotype([Float64(1)],
+            :aSymbiontGenotype)], Float64[],
+    :my_cell_type)
 
 evolve = function (du, u::Host2, p, t)
     for i in 1:length(u)
