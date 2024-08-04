@@ -91,9 +91,9 @@ end
 
 function getindices(m::AbstractMultiScaleArray, bot_idx, top_idx, i, I::Int...)
     getindices(m.nodes[i],
-               bot_idx + ((i > 1) ? m.end_idxs[i - 1] : 0),
-               top_idx + m.end_idxs[i] - length(m),
-               I...)
+        bot_idx + ((i > 1) ? m.end_idxs[i - 1] : 0),
+        top_idx + m.end_idxs[i] - length(m),
+        I...)
 end
 
 function getindices(m::AbstractMultiScaleArrayLeaf, bot_idx, top_idx, i::Int)
