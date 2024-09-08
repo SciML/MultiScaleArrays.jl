@@ -50,10 +50,10 @@ where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args.
 (construct(::Type{T}, nodes::AbstractVector{<:AbstractMultiScaleArray}, values, args...)
 where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
 
-(construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, args...)
+(construct(::Type{T}, nodes::Vararg{AbstractMultiScaleArray}, args...)
 where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, eltype(T)[], args...)
 
-(construct(::Type{T}, nodes::Tuple{Vararg{<:AbstractMultiScaleArray}}, values, args...)
+(construct(::Type{T}, nodes::Vararg{AbstractMultiScaleArray}, values, args...)
 where {T <: AbstractMultiScaleArray}) = __construct(T, nodes, values, args...)
 
 function vcat(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray)
