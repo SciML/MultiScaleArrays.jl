@@ -18,7 +18,7 @@ function __add_node!(m::AbstractMultiScaleArray, node::AbstractMultiScaleArray, 
 end
 
 function __add_node!(m::AbstractMultiScaleArray, node::AbstractMultiScaleArray, i,
-                     I::Int...)
+        I::Int...)
     __add_node!(m.nodes[i], node, I...)
     __update_lengths(m, i, length(node))
 end
@@ -32,7 +32,7 @@ function add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray
 end
 
 function add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray, i,
-                   I::Int...)
+        I::Int...)
     __add_node!(m, node, i, I...)
 end
 
