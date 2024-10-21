@@ -14,20 +14,20 @@ struct Organ{B <: Number, P} <: AbstractMultiScaleArrayLeaf{B}
     params::P
 end
 
-struct Plant{B, S, N <: Tuple{Vararg{<:Organ{<:Number}}}} <: AbstractMultiScaleArray{B}
+struct Plant{B, S, N <: Tuple{Vararg{Organ{<:Number}}}} <: AbstractMultiScaleArray{B}
     nodes::N
     values::Vector{B}
     end_idxs::Vector{Int}
     settings::S
 end
 
-struct Community{B, N <: Tuple{Vararg{<:Plant{<:Number}}}} <: AbstractMultiScaleArray{B}
+struct Community{B, N <: Tuple{Vararg{Plant{<:Number}}}} <: AbstractMultiScaleArray{B}
     nodes::N
     values::Vector{B}
     end_idxs::Vector{Int}
 end
 
-mutable struct Scenario{B, N <: Tuple{Vararg{<:Community{<:Number}}}} <:
+mutable struct Scenario{B, N <: Tuple{Vararg{Community{<:Number}}}} <:
                AbstractMultiScaleArrayHead{B}
     nodes::N
     values::Vector{B}
