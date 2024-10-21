@@ -1,7 +1,7 @@
 name = "MultiScaleArrays"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 authors = ["Chris Rackauckas <accounts@chrisrackauckas.com>"]
-version = "1.12.0"
+version = "1.13.0"
 
 [deps]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
