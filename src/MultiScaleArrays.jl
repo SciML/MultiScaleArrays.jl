@@ -141,7 +141,7 @@ struct Plant{B, S, N <: Tuple{Vararg{Organ{<:Number}}}} <: AbstractMultiScaleArr
     settings::S
 end
 
-struct Community{B, N <: Tuple{Vararg{<:Plant{<:Number}}}} <: AbstractMultiScaleArray{B}
+struct Community{B, N <: Tuple{Vararg{Plant{<:Number}}}} <: AbstractMultiScaleArray{B}
     nodes::N
     values::Vector{B}
     end_idxs::Vector{Int}
