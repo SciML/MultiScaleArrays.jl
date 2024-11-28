@@ -177,12 +177,12 @@ sol1 = solve(prob, Tsit5())
 Random.seed!(100)
 prob = SDEProblem(f, g, em, (0.0, 1000.0))
 @time sol1 = solve(prob, SRIW1(), progress = false, abstol = 1e-2, reltol = 1e-2,
-                   save_everystep = false)
+    save_everystep = false)
 
 Random.seed!(100)
 prob = SDEProblem(f, g, em[:], (0.0, 1000.0))
 @time sol2 = solve(prob, SRIW1(), progress = false, abstol = 1e-2, reltol = 1e-2,
-                   save_everystep = false)
+    save_everystep = false)
 sol1.t == sol2.t
 
 function test_loop(a)
