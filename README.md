@@ -60,11 +60,11 @@ version is the following:
 
 <img src="https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG">
 Let's build a version of this. Using the constructors we can directly construct leaf types:
-
 ```julia
 cell1 = Cell([1.0; 2.0; 3.0])
 cell2 = Cell([4.0; 5.0])
 ```
+
 and build types higher up in the hierarchy by using the `constuct` method. The method
 is `construct(T::AbstractMultiScaleArray, nodes, values)`, though if `values` is not given it's
 taken to be empty.
