@@ -19,7 +19,7 @@ struct Embryo{T &lt;: AbstractMultiScaleArray, B &lt;: Number} &lt;: AbstractMul
     values::Vector{B}
     end_idxs::Vector{Int}
 end</code></pre><p>This setup defines a type structure that is both a tree and an array. A picture of a possible version is the following:</p><p><img src="https://user-images.githubusercontent.com/1814174/27211626-79fe1b9a-520f-11e7-87f1-1cb33da91609.PNG" alt/></p><p>Let&#39;s build a version of this. Using the constructors, we can directly construct leaf types:</p><pre><code class="language-julia hljs">cell1 = Cell([1.0; 2.0; 3.0])
-cell2 = Cell([4.0; 5.0])</code></pre><p>and build types higher up in the hierarchy by using the <code>constuct</code> method. The method is <code>construct(T::AbstractMultiScaleArray, nodes, values)</code>, though, if <code>values</code> is not given, it&#39;s taken to be empty.</p><pre><code class="language-julia hljs">cell3 = Cell([3.0; 2.0; 5.0])
+cell2 = Cell([4.0; 5.0])</code></pre><p>and build types higher up in the hierarchy by using the <code>construct</code> method. The method is <code>construct(T::AbstractMultiScaleArray, nodes, values)</code>, though, if <code>values</code> is not given, it&#39;s taken to be empty.</p><pre><code class="language-julia hljs">cell3 = Cell([3.0; 2.0; 5.0])
 cell4 = Cell([4.0; 6.0])
 population = construct(Population, deepcopy([cell1, cell3, cell4]))
 population2 = construct(Population, deepcopy([cell1, cell3, cell4]))
@@ -56,7 +56,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [38540f10] CommonSolve v0.2.4
   [bbf7d656] CommonSubexpressions v0.3.1
   [f70d9fcc] CommonWorldInvalidations v1.0.0
-  [34da2185] Compat v4.17.0
+  [34da2185] Compat v4.18.0
   [a33af91c] CompositionsBase v0.1.2
   [2569d6c7] ConcreteStructs v0.2.3
   [187b0558] ConstructionBase v1.6.0
@@ -188,7 +188,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [79098fc4] Rmath v0.8.0
   [7e49a35a] RuntimeGeneratedFunctions v0.5.15
   [94e857df] SIMDTypes v0.1.0
-  [0bca4576] SciMLBase v2.105.0
+  [0bca4576] SciMLBase v2.106.0
   [19f34311] SciMLJacobianOperators v0.1.8
   [c0aeaf25] SciMLOperators v1.4.0
   [53ae85a6] SciMLStructures v1.7.0
@@ -276,4 +276,4 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [8e850b90] libblastrampoline_jll v5.11.0+0
   [8e850ede] nghttp2_jll v1.59.0+0
   [3f19e933] p7zip_jll v17.4.0+2
-Info Packages marked with ⌅ have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.14.0/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.14.0/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 29 July 2025 12:02">Tuesday 29 July 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Info Packages marked with ⌅ have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.14.0/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.14.0/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Wednesday 30 July 2025 08:10">Wednesday 30 July 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
