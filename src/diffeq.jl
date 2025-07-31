@@ -49,40 +49,40 @@ end
 reshape(m::AbstractMultiScaleArray, i::Int...) = m
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator, idxs,
-                                     node...)
+        node...)
     remove_node_non_user_cache!(integrator, integrator.cache, node...)
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                     cache::OrdinaryDiffEq.OrdinaryDiffEqCache, idxs,
-                                     node...)
+        cache::OrdinaryDiffEq.OrdinaryDiffEqCache, idxs,
+        node...)
     nothing
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator, idxs,
-                                  x::AbstractArray)
+        x::AbstractArray)
     add_node_non_user_cache!(integrator, integrator.cache, x)
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator, idxs,
-                                  x::AbstractArray, node...)
+        x::AbstractArray, node...)
     add_node_non_user_cache!(integrator, integrator.cache, x, node...)
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                  cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
-                                  x::AbstractArray)
+        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        x::AbstractArray)
     nothing
 end
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                  cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
-                                  x::AbstractArray, node...)
+        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        x::AbstractArray, node...)
     nothing
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                  cache::OrdinaryDiffEq.RosenbrockMutableCache,
-                                  x::AbstractArray)
+        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        x::AbstractArray)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
@@ -92,8 +92,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                  cache::OrdinaryDiffEq.RosenbrockMutableCache,
-                                  x::AbstractArray, node...)
+        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        x::AbstractArray, node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
@@ -103,8 +103,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-                                     cache::OrdinaryDiffEq.RosenbrockMutableCache,
-                                     node...)
+        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
@@ -153,40 +153,40 @@ function remove_node_grad_config!(cache, grad_config::ForwardDiff.DerivativeConf
 end
 
 function remove_node_grad_config!(cache, grad_config::ForwardDiff.DerivativeConfig, i, x,
-                                  I...)
+        I...)
     cache.grad_config = ForwardDiff.DerivativeConfig(cache.tf, cache.du1, cache.uf.t)
     nothing
 end
 
 function add_node_grad_config!(cache, grad_config::AbstractArray, i, x)
     cache.grad_config = ForwardDiff.Dual{
-                                         typeof(ForwardDiff.Tag(cache.tf,
-                                                                eltype(cache.du1)))
-                                         }.(cache.du1, cache.du1)
+        typeof(ForwardDiff.Tag(cache.tf,
+        eltype(cache.du1)))
+    }.(cache.du1, cache.du1)
     nothing
 end
 
 function add_node_grad_config!(cache, grad_config::AbstractArray, i, x, I...)
     cache.grad_config = ForwardDiff.Dual{
-                                         typeof(ForwardDiff.Tag(cache.tf,
-                                                                eltype(cache.du1)))
-                                         }.(cache.du1, cache.du1)
+        typeof(ForwardDiff.Tag(cache.tf,
+        eltype(cache.du1)))
+    }.(cache.du1, cache.du1)
     nothing
 end
 
 function remove_node_grad_config!(cache, grad_config::AbstractArray, i, x)
     cache.grad_config = ForwardDiff.Dual{
-                                         typeof(ForwardDiff.Tag(cache.tf,
-                                                                eltype(cache.du1)))
-                                         }.(cache.du1, cache.du1)
+        typeof(ForwardDiff.Tag(cache.tf,
+        eltype(cache.du1)))
+    }.(cache.du1, cache.du1)
     nothing
 end
 
 function remove_node_grad_config!(cache, grad_config::AbstractArray, i, x, I...)
     cache.grad_config = ForwardDiff.Dual{
-                                         typeof(ForwardDiff.Tag(cache.tf,
-                                                                eltype(cache.du1)))
-                                         }.(cache.du1, cache.du1)
+        typeof(ForwardDiff.Tag(cache.tf,
+        eltype(cache.du1)))
+    }.(cache.du1, cache.du1)
     nothing
 end
 
@@ -212,7 +212,7 @@ function remove_node_grad_config!(cache, grad_config::FiniteDiff.GradientCache, 
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator, idxs, x,
-                                  node...)
+        node...)
     #addat_non_user_cache!(integrator, idxs)
     if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
         add_node_noise!(integrator, idxs, x, node...)
@@ -233,7 +233,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator, 
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator, idxs,
-                                     node...)
+        node...)
     #deleteat_non_user_cache!(integrator, idxs)
     if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
         remove_node_noise!(integrator, node...)
