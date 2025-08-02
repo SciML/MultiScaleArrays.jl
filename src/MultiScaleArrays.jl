@@ -7,7 +7,7 @@ import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
              ==, *, +, /, -, show, vec, reshape
 
 import RecursiveArrayTools: recursivecopy, recursivecopy!
-
+import ArrayInterface
 import RecursiveArrayTools: chain
 
 """
