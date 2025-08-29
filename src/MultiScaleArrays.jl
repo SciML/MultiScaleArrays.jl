@@ -172,7 +172,7 @@ abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
 abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
 using DiffEqBase, Statistics, LinearAlgebra, FiniteDiff
-import OrdinaryDiffEq, StochasticDiffEq, ForwardDiff
+import OrdinaryDiffEq, OrdinaryDiffEqCore, OrdinaryDiffEqRosenbrock, StochasticDiffEq, ForwardDiff
 
 Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
 Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
