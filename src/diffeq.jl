@@ -54,7 +54,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache, idxs,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache, idxs,
         node...)
     nothing
 end
@@ -70,18 +70,18 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator, 
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache,
         x::AbstractArray)
     nothing
 end
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache,
         x::AbstractArray, node...)
     nothing
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         x::AbstractArray)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
@@ -92,7 +92,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         x::AbstractArray, node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
@@ -103,7 +103,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
