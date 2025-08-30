@@ -54,7 +54,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache, idxs,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache, idxs,
         node...)
     nothing
 end
@@ -70,18 +70,18 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator, 
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache,
         x::AbstractArray)
     nothing
 end
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.OrdinaryDiffEqCache,
+        cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache,
         x::AbstractArray, node...)
     nothing
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         x::AbstractArray)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
@@ -92,7 +92,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         x::AbstractArray, node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
@@ -103,7 +103,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
 end
 
 function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
-        cache::OrdinaryDiffEq.RosenbrockMutableCache,
+        cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache,
         node...)
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
@@ -113,6 +113,77 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     nothing
 end
 
+# Generic fallback for any jac_config type that iterates through cache fields
+function add_node_jac_config!(cache, config, i, x)
+    # Iterate through all fields of the config and apply add_node! to AbstractArrays
+    for fname in fieldnames(typeof(config))
+        field_val = getfield(config, fname)
+        if field_val isa AbstractArray && !(field_val isa AbstractString)
+            try
+                add_node!(field_val, recursivecopy(x))
+            catch
+                # Field might not support add_node!, skip it
+            end
+        end
+    end
+    # Update colorvec if it exists
+    if hasproperty(config, :colorvec)
+        try
+            setfield!(config, :colorvec, 1:i)
+        catch
+            # Field might be immutable, skip it
+        end
+    end
+    nothing
+end
+
+function add_node_jac_config!(cache, config, i, x, I...)
+    # Iterate through all fields of the config and apply add_node! to AbstractArrays
+    for fname in fieldnames(typeof(config))
+        field_val = getfield(config, fname)
+        if field_val isa AbstractArray && !(field_val isa AbstractString)
+            try
+                add_node!(field_val, recursivecopy(x), I...)
+            catch
+                # Field might not support add_node!, skip it
+            end
+        end
+    end
+    # Update colorvec if it exists
+    if hasproperty(config, :colorvec)
+        try
+            setfield!(config, :colorvec, 1:i)
+        catch
+            # Field might be immutable, skip it
+        end
+    end
+    nothing
+end
+
+function remove_node_jac_config!(cache, config, i, I...)
+    # Iterate through all fields of the config and apply remove_node! to AbstractArrays
+    for fname in fieldnames(typeof(config))
+        field_val = getfield(config, fname)
+        if field_val isa AbstractArray && !(field_val isa AbstractString)
+            try
+                remove_node!(field_val, I...)
+            catch
+                # Field might not support remove_node!, skip it
+            end
+        end
+    end
+    # Update colorvec if it exists
+    if hasproperty(config, :colorvec)
+        try
+            setfield!(config, :colorvec, 1:i)
+        catch
+            # Field might be immutable, skip it
+        end
+    end
+    nothing
+end
+
+# Specific implementation for FiniteDiff.JacobianCache (keeps backward compatibility)
 function add_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, x)
     #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0))
     add_node!(config.fx, recursivecopy(x))
@@ -137,6 +208,98 @@ function remove_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, I..
     nothing
 end
 
+# Generic fallback for any grad_config type that iterates through cache fields
+function add_node_grad_config!(cache, grad_config, i, x)
+    # For generic types, try to recreate the config with the new arrays
+    # or iterate through fields if possible
+    if grad_config isa AbstractArray
+        # Handle array-based configs
+        cache.grad_config = ForwardDiff.Dual{
+            typeof(ForwardDiff.Tag(cache.tf,
+            eltype(cache.du1)))
+        }.(cache.du1, cache.du1)
+    else
+        # For structured types, iterate through fields
+        for fname in fieldnames(typeof(grad_config))
+            field_val = getfield(grad_config, fname)
+            if field_val isa AbstractArray && !(field_val isa AbstractString)
+                try
+                    add_node!(field_val, recursivecopy(x))
+                catch
+                    # Field might not support add_node!, skip it
+                end
+            end
+        end
+    end
+    nothing
+end
+
+function add_node_grad_config!(cache, grad_config, i, x, I...)
+    # For generic types, try to recreate the config with the new arrays
+    # or iterate through fields if possible
+    if grad_config isa AbstractArray
+        # Handle array-based configs
+        cache.grad_config = ForwardDiff.Dual{
+            typeof(ForwardDiff.Tag(cache.tf,
+            eltype(cache.du1)))
+        }.(cache.du1, cache.du1)
+    else
+        # For structured types, iterate through fields
+        for fname in fieldnames(typeof(grad_config))
+            field_val = getfield(grad_config, fname)
+            if field_val isa AbstractArray && !(field_val isa AbstractString)
+                try
+                    add_node!(field_val, recursivecopy(x), I...)
+                catch
+                    # Field might not support add_node!, skip it
+                end
+            end
+        end
+    end
+    nothing
+end
+
+function remove_node_grad_config!(cache, grad_config, i, x)
+    # For generic types - note: no I... here since this is the variant without it
+    if grad_config isa AbstractArray
+        # Handle array-based configs
+        cache.grad_config = ForwardDiff.Dual{
+            typeof(ForwardDiff.Tag(cache.tf,
+            eltype(cache.du1)))
+        }.(cache.du1, cache.du1)
+    else
+        # For structured types, iterate through fields
+        # Since this version doesn't have I..., we need to handle it differently
+        # We can't remove specific nodes without indices, so we skip for now
+    end
+    nothing
+end
+
+function remove_node_grad_config!(cache, grad_config, i, x, I...)
+    # For generic types
+    if grad_config isa AbstractArray
+        # Handle array-based configs
+        cache.grad_config = ForwardDiff.Dual{
+            typeof(ForwardDiff.Tag(cache.tf,
+            eltype(cache.du1)))
+        }.(cache.du1, cache.du1)
+    else
+        # For structured types, iterate through fields
+        for fname in fieldnames(typeof(grad_config))
+            field_val = getfield(grad_config, fname)
+            if field_val isa AbstractArray && !(field_val isa AbstractString)
+                try
+                    remove_node!(field_val, I...)
+                catch
+                    # Field might not support remove_node!, skip it
+                end
+            end
+        end
+    end
+    nothing
+end
+
+# Specific implementation for ForwardDiff.DerivativeConfig (keeps backward compatibility)
 function add_node_grad_config!(cache, grad_config::ForwardDiff.DerivativeConfig, i, x)
     cache.grad_config = ForwardDiff.DerivativeConfig(cache.tf, cache.du1, cache.uf.t)
     nothing
