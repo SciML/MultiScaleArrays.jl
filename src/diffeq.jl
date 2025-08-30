@@ -113,46 +113,40 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     nothing
 end
 
-# Generic fallback for any jac_config type that iterates through cache fields
+# Generic fallback for any jac_config type - conservatively handle unknown types
 function add_node_jac_config!(cache, config, i, x)
-    # Iterate through all fields of the config and apply add_node! to AbstractArrays
-    for fname in fieldnames(typeof(config))
-        field_val = getfield(config, fname)
-        if field_val isa AbstractArray && !(field_val isa AbstractString)
-            try
-                add_node!(field_val, recursivecopy(x))
-            catch
-                # Field might not support add_node!, skip it
-            end
+    # For DifferentiationInterface and other unknown types, try to handle arrays conservatively
+    # Only touch fields that we know are safe to modify (like fx in Jacobian caches)
+    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
+        try
+            add_node!(getproperty(config, :fx), recursivecopy(x))
+        catch
+            # If it fails, that's ok - not all arrays support add_node!
         end
     end
-    # Update colorvec if it exists
+    # Update colorvec if it exists and is mutable
     if hasproperty(config, :colorvec)
         try
-            setfield!(config, :colorvec, 1:i)
+            setproperty!(config, :colorvec, 1:i)
         catch
-            # Field might be immutable, skip it
+            # Field might be immutable or not support this, skip it
         end
     end
     nothing
 end
 
 function add_node_jac_config!(cache, config, i, x, I...)
-    # Iterate through all fields of the config and apply add_node! to AbstractArrays
-    for fname in fieldnames(typeof(config))
-        field_val = getfield(config, fname)
-        if field_val isa AbstractArray && !(field_val isa AbstractString)
-            try
-                add_node!(field_val, recursivecopy(x), I...)
-            catch
-                # Field might not support add_node!, skip it
-            end
+    # For DifferentiationInterface and other unknown types
+    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
+        try
+            add_node!(getproperty(config, :fx), recursivecopy(x), I...)
+        catch
+            # If it fails, that's ok
         end
     end
-    # Update colorvec if it exists
     if hasproperty(config, :colorvec)
         try
-            setfield!(config, :colorvec, 1:i)
+            setproperty!(config, :colorvec, 1:i)
         catch
             # Field might be immutable, skip it
         end
@@ -161,21 +155,17 @@ function add_node_jac_config!(cache, config, i, x, I...)
 end
 
 function remove_node_jac_config!(cache, config, i, I...)
-    # Iterate through all fields of the config and apply remove_node! to AbstractArrays
-    for fname in fieldnames(typeof(config))
-        field_val = getfield(config, fname)
-        if field_val isa AbstractArray && !(field_val isa AbstractString)
-            try
-                remove_node!(field_val, I...)
-            catch
-                # Field might not support remove_node!, skip it
-            end
+    # For DifferentiationInterface and other unknown types
+    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
+        try
+            remove_node!(getproperty(config, :fx), I...)
+        catch
+            # If it fails, that's ok
         end
     end
-    # Update colorvec if it exists
     if hasproperty(config, :colorvec)
         try
-            setfield!(config, :colorvec, 1:i)
+            setproperty!(config, :colorvec, 1:i)
         catch
             # Field might be immutable, skip it
         end
@@ -208,94 +198,25 @@ function remove_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, I..
     nothing
 end
 
-# Generic fallback for any grad_config type that iterates through cache fields
+# Generic fallback for any grad_config type
 function add_node_grad_config!(cache, grad_config, i, x)
-    # For generic types, try to recreate the config with the new arrays
-    # or iterate through fields if possible
-    if grad_config isa AbstractArray
-        # Handle array-based configs
-        cache.grad_config = ForwardDiff.Dual{
-            typeof(ForwardDiff.Tag(cache.tf,
-            eltype(cache.du1)))
-        }.(cache.du1, cache.du1)
-    else
-        # For structured types, iterate through fields
-        for fname in fieldnames(typeof(grad_config))
-            field_val = getfield(grad_config, fname)
-            if field_val isa AbstractArray && !(field_val isa AbstractString)
-                try
-                    add_node!(field_val, recursivecopy(x))
-                catch
-                    # Field might not support add_node!, skip it
-                end
-            end
-        end
-    end
+    # Most grad configs don't have mutable arrays that need updating
+    # For DifferentiationInterface types, they typically handle resizing internally
     nothing
 end
 
 function add_node_grad_config!(cache, grad_config, i, x, I...)
-    # For generic types, try to recreate the config with the new arrays
-    # or iterate through fields if possible
-    if grad_config isa AbstractArray
-        # Handle array-based configs
-        cache.grad_config = ForwardDiff.Dual{
-            typeof(ForwardDiff.Tag(cache.tf,
-            eltype(cache.du1)))
-        }.(cache.du1, cache.du1)
-    else
-        # For structured types, iterate through fields
-        for fname in fieldnames(typeof(grad_config))
-            field_val = getfield(grad_config, fname)
-            if field_val isa AbstractArray && !(field_val isa AbstractString)
-                try
-                    add_node!(field_val, recursivecopy(x), I...)
-                catch
-                    # Field might not support add_node!, skip it
-                end
-            end
-        end
-    end
+    # Most grad configs don't have mutable arrays that need updating
     nothing
 end
 
 function remove_node_grad_config!(cache, grad_config, i, x)
-    # For generic types - note: no I... here since this is the variant without it
-    if grad_config isa AbstractArray
-        # Handle array-based configs
-        cache.grad_config = ForwardDiff.Dual{
-            typeof(ForwardDiff.Tag(cache.tf,
-            eltype(cache.du1)))
-        }.(cache.du1, cache.du1)
-    else
-        # For structured types, iterate through fields
-        # Since this version doesn't have I..., we need to handle it differently
-        # We can't remove specific nodes without indices, so we skip for now
-    end
+    # Most grad configs don't have mutable arrays that need updating
     nothing
 end
 
 function remove_node_grad_config!(cache, grad_config, i, x, I...)
-    # For generic types
-    if grad_config isa AbstractArray
-        # Handle array-based configs
-        cache.grad_config = ForwardDiff.Dual{
-            typeof(ForwardDiff.Tag(cache.tf,
-            eltype(cache.du1)))
-        }.(cache.du1, cache.du1)
-    else
-        # For structured types, iterate through fields
-        for fname in fieldnames(typeof(grad_config))
-            field_val = getfield(grad_config, fname)
-            if field_val isa AbstractArray && !(field_val isa AbstractString)
-                try
-                    remove_node!(field_val, I...)
-                catch
-                    # Field might not support remove_node!, skip it
-                end
-            end
-        end
-    end
+    # Most grad configs don't have mutable arrays that need updating
     nothing
 end
 
