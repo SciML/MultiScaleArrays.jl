@@ -86,7 +86,11 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    add_node_jac_config!(cache, cache.jac_config, i, x)
+    
+    # Handle jacobian config resizing
+    # Try to use the proper DI approach if possible, otherwise fall back to field-by-field
+    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    
     add_node_grad_config!(cache, cache.grad_config, i, x)
     nothing
 end
@@ -97,7 +101,10 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    add_node_jac_config!(cache, cache.jac_config, i, x, node...)
+    
+    # Handle jacobian config resizing
+    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    
     add_node_grad_config!(cache, cache.grad_config, i, x, node...)
     nothing
 end
@@ -108,15 +115,44 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    remove_node_jac_config!(cache, cache.jac_config, i, node...)
+    
+    # Handle jacobian config resizing
+    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    
     remove_node_grad_config!(cache, cache.grad_config, i, node...)
     nothing
 end
 
-# Generic fallback for any jac_config type - conservatively handle unknown types
+# High-level function to properly resize jacobian configurations
+function resize_jac_config!(f, jac_config, u, cache)
+    # For DifferentiationInterface types, use prepare!_jacobian when dimensions change
+    # This is the recommended approach as mentioned in the PR discussion
+    typename = string(typeof(jac_config))
+    if occursin("DifferentiationInterface", typename) && hasproperty(jac_config, :backend)
+        try
+            # Use the proper DI API to resize the configuration
+            backend = getfield(jac_config, :backend)
+            DI.prepare!_jacobian(f, jac_config, backend, u)
+            return
+        catch e
+            # If DI prepare!_jacobian fails, fall back to field-by-field handling
+            @debug "DI prepare!_jacobian failed, falling back to field-by-field approach" exception=e
+        end
+    end
+    
+    # Fallback approach for non-DI types or when DI approach fails
+    i = length(u)
+    add_node_jac_config!(cache, jac_config, i, similar(u, 0))
+    nothing
+end
+
+# Generic fallback for any jac_config type - handle DifferentiationInterface types properly
 function add_node_jac_config!(cache, config, i, x)
-    # For DifferentiationInterface and other unknown types, try to handle arrays conservatively
-    # Only touch fields that we know are safe to modify (like fx in Jacobian caches)
+    # The proper solution for DifferentiationInterface types is to use prepare!_jacobian
+    # when the input dimensions change. However, this requires context that we don't have here.
+    # For now, we implement a conservative approach that works for most cases.
+    
+    # Fallback: For all types, handle known-safe fields
     if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
         try
             add_node!(getproperty(config, :fx), recursivecopy(x))
@@ -124,6 +160,7 @@ function add_node_jac_config!(cache, config, i, x)
             # If it fails, that's ok - not all arrays support add_node!
         end
     end
+    
     # Update colorvec if it exists and is mutable
     if hasproperty(config, :colorvec)
         try
@@ -136,7 +173,7 @@ function add_node_jac_config!(cache, config, i, x)
 end
 
 function add_node_jac_config!(cache, config, i, x, I...)
-    # For DifferentiationInterface and other unknown types
+    # Fallback: For all types, handle known-safe fields
     if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
         try
             add_node!(getproperty(config, :fx), recursivecopy(x), I...)
@@ -155,7 +192,7 @@ function add_node_jac_config!(cache, config, i, x, I...)
 end
 
 function remove_node_jac_config!(cache, config, i, I...)
-    # For DifferentiationInterface and other unknown types
+    # Fallback: For all types, handle known-safe fields
     if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
         try
             remove_node!(getproperty(config, :fx), I...)
