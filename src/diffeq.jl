@@ -89,8 +89,6 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian config using DI.prepare!_jacobian
     DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
-    
-    add_node_grad_config!(cache, cache.grad_config, i, x)
     nothing
 end
 
@@ -103,8 +101,6 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian config using DI.prepare!_jacobian
     DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
-    
-    add_node_grad_config!(cache, cache.grad_config, i, x, node...)
     nothing
 end
 
@@ -117,8 +113,6 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     
     # Resize jacobian config using DI.prepare!_jacobian
     DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
-    
-    remove_node_grad_config!(cache, cache.grad_config, i, node...)
     nothing
 end
 
@@ -149,27 +143,6 @@ function remove_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, I..
     nothing
 end
 
-# Generic fallback for any grad_config type
-function add_node_grad_config!(cache, grad_config, i, x)
-    # Most grad configs don't have mutable arrays that need updating
-    # For DifferentiationInterface types, they typically handle resizing internally
-    nothing
-end
-
-function add_node_grad_config!(cache, grad_config, i, x, I...)
-    # Most grad configs don't have mutable arrays that need updating
-    nothing
-end
-
-function remove_node_grad_config!(cache, grad_config, i, x)
-    # Most grad configs don't have mutable arrays that need updating
-    nothing
-end
-
-function remove_node_grad_config!(cache, grad_config, i, x, I...)
-    # Most grad configs don't have mutable arrays that need updating
-    nothing
-end
 
 # Specific implementation for ForwardDiff.DerivativeConfig (keeps backward compatibility)
 function add_node_grad_config!(cache, grad_config::ForwardDiff.DerivativeConfig, i, x)
