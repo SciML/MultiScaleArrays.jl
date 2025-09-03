@@ -88,7 +88,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
+    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
     nothing
 end
 
@@ -100,7 +100,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
+    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
     nothing
 end
 
@@ -112,8 +112,21 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
+    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
     nothing
+end
+
+# Helper function to resize jacobian configs (handles tuples for default algorithms)
+function resize_jacobian_config!(f, jac_config, u)
+    if jac_config isa Tuple
+        # For tuples, prepare each element
+        for config in jac_config
+            DI.prepare!_jacobian(f, config, config.backend, u)
+        end
+    else
+        # For single configs
+        DI.prepare!_jacobian(f, jac_config, jac_config.backend, u)
+    end
 end
 
 
