@@ -87,9 +87,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
     
-    # Handle jacobian config resizing
-    # Try to use the proper DI approach if possible, otherwise fall back to field-by-field
-    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    # Resize jacobian config using DI.prepare!_jacobian
+    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
     
     add_node_grad_config!(cache, cache.grad_config, i, x)
     nothing
@@ -102,8 +101,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
     
-    # Handle jacobian config resizing
-    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    # Resize jacobian config using DI.prepare!_jacobian
+    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
     
     add_node_grad_config!(cache, cache.grad_config, i, x, node...)
     nothing
@@ -116,84 +115,14 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
     
-    # Handle jacobian config resizing
-    resize_jac_config!(integrator.f, cache.jac_config, integrator.u, cache)
+    # Resize jacobian config using DI.prepare!_jacobian
+    DI.prepare!_jacobian(integrator.f, cache.jac_config, cache.jac_config.backend, integrator.u)
     
     remove_node_grad_config!(cache, cache.grad_config, i, node...)
     nothing
 end
 
-# High-level function to properly resize jacobian configurations using DI.prepare!_jacobian
-function resize_jac_config!(f, jac_config, u, cache)
-    # Use DI.prepare!_jacobian to properly resize the configuration
-    backend = jac_config.backend
-    DI.prepare!_jacobian(f, jac_config, backend, u)
-    nothing
-end
 
-# Generic fallback for any jac_config type - handle DifferentiationInterface types properly
-function add_node_jac_config!(cache, config, i, x)
-    # The proper solution for DifferentiationInterface types is to use prepare!_jacobian
-    # when the input dimensions change. However, this requires context that we don't have here.
-    # For now, we implement a conservative approach that works for most cases.
-    
-    # Fallback: For all types, handle known-safe fields
-    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
-        try
-            add_node!(getproperty(config, :fx), recursivecopy(x))
-        catch
-            # If it fails, that's ok - not all arrays support add_node!
-        end
-    end
-    
-    # Update colorvec if it exists and is mutable
-    if hasproperty(config, :colorvec)
-        try
-            setproperty!(config, :colorvec, 1:i)
-        catch
-            # Field might be immutable or not support this, skip it
-        end
-    end
-    nothing
-end
-
-function add_node_jac_config!(cache, config, i, x, I...)
-    # Fallback: For all types, handle known-safe fields
-    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
-        try
-            add_node!(getproperty(config, :fx), recursivecopy(x), I...)
-        catch
-            # If it fails, that's ok
-        end
-    end
-    if hasproperty(config, :colorvec)
-        try
-            setproperty!(config, :colorvec, 1:i)
-        catch
-            # Field might be immutable, skip it
-        end
-    end
-    nothing
-end
-
-function remove_node_jac_config!(cache, config, i, I...)
-    # Fallback: For all types, handle known-safe fields
-    if hasproperty(config, :fx) && getproperty(config, :fx) isa AbstractArray
-        try
-            remove_node!(getproperty(config, :fx), I...)
-        catch
-            # If it fails, that's ok
-        end
-    end
-    if hasproperty(config, :colorvec)
-        try
-            setproperty!(config, :colorvec, 1:i)
-        catch
-            # Field might be immutable, skip it
-        end
-    end
-    nothing
-end
 
 # Specific implementation for FiniteDiff.JacobianCache (keeps backward compatibility)
 function add_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, x)
