@@ -123,26 +123,11 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     nothing
 end
 
-# High-level function to properly resize jacobian configurations
+# High-level function to properly resize jacobian configurations using DI.prepare!_jacobian
 function resize_jac_config!(f, jac_config, u, cache)
-    # For DifferentiationInterface types, use prepare!_jacobian when dimensions change
-    # This is the recommended approach as mentioned in the PR discussion
-    typename = string(typeof(jac_config))
-    if occursin("DifferentiationInterface", typename) && hasproperty(jac_config, :backend)
-        try
-            # Use the proper DI API to resize the configuration
-            backend = getfield(jac_config, :backend)
-            DI.prepare!_jacobian(f, jac_config, backend, u)
-            return
-        catch e
-            # If DI prepare!_jacobian fails, fall back to field-by-field handling
-            @debug "DI prepare!_jacobian failed, falling back to field-by-field approach" exception=e
-        end
-    end
-    
-    # Fallback approach for non-DI types or when DI approach fails
-    i = length(u)
-    add_node_jac_config!(cache, jac_config, i, similar(u, 0))
+    # Use DI.prepare!_jacobian to properly resize the configuration
+    backend = jac_config.backend
+    DI.prepare!_jacobian(f, jac_config, backend, u)
     nothing
 end
 
