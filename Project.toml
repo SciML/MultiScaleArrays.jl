@@ -25,6 +25,7 @@ MultiScaleArraysSparseDiffToolsExt = "SparseDiffTools"
 
 [compat]
 DiffEqBase = "6.5"
+DifferentiationInterface = "0.7.7"
 FiniteDiff = "2.3"
 ForwardDiff = "0.10"
 OrdinaryDiffEq = "5.33, 6"
