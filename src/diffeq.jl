@@ -88,7 +88,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
+    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
+    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
     nothing
 end
 
@@ -100,7 +101,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
+    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
+    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
     nothing
 end
 
@@ -112,24 +114,21 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     cache.W = similar(cache.W, i, i)
     
     # Resize jacobian config using DI.prepare!_jacobian
-    resize_jacobian_config!(integrator.f, cache.jac_config, integrator.u)
+    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
+    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
     nothing
 end
 
 # Helper function to resize jacobian configs (handles tuples for default algorithms)
-function resize_jacobian_config!(f, jac_config, u)
+function resize_jacobian_config!(f, jac_config, backend, u)
     if jac_config isa Tuple
         # For tuples, prepare each element
         for config in jac_config
-            if hasproperty(config, :backend)
-                DI.prepare!_jacobian(f, config, config.backend, u)
-            end
+            DI.prepare!_jacobian(f, config, backend, u)
         end
     else
         # For single configs
-        if hasproperty(jac_config, :backend)
-            DI.prepare!_jacobian(f, jac_config, jac_config.backend, u)
-        end
+        DI.prepare!_jacobian(f, jac_config, backend, u)
     end
 end
 
