@@ -149,7 +149,7 @@ end
 
 # Dispatch for DerivativePrep types 
 function resize_single_grad_config!(grad_wrapper, grad_config::DI.DerivativePrep, backend, u)
-    DI.prepare!_derivative(grad_wrapper, u, grad_config, backend, u)
+    DI.prepare!_derivative(grad_wrapper, u, grad_config, u)
 end
 
 # Dispatch for GradientPrep types
