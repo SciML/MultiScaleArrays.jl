@@ -92,7 +92,9 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    # Gradient configs may not need explicit resizing - DI handles them internally
+    # Resize gradient config using DI.prepare!_derivative
+    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
+    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -108,7 +110,9 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    # Gradient configs may not need explicit resizing - DI handles them internally
+    # Resize gradient config using DI.prepare!_derivative
+    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
+    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -124,7 +128,9 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    # Gradient configs may not need explicit resizing - DI handles them internally
+    # Resize gradient config using DI.prepare!_derivative
+    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
+    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -142,16 +148,16 @@ function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
 end
 
 # Helper function to resize gradient configs (handles tuples for default algorithms)
-function resize_gradient_config!(f, grad_config, backend, x)
+function resize_gradient_config!(grad_wrapper, grad_config, backend, x)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            # Try out-of-place version: prepare!_derivative(f, old_prep, backend, x)
-            DI.prepare!_derivative(f, config, backend, x)
+            # Use in-place version: prepare!_derivative(f!, y, old_prep, backend, x)
+            DI.prepare!_derivative(grad_wrapper, x, config, backend, x)
         end
     else
         # For single configs
-        DI.prepare!_derivative(f, grad_config, backend, x)
+        DI.prepare!_derivative(grad_wrapper, x, grad_config, backend, x)
     end
 end
 
