@@ -146,22 +146,14 @@ function resize_gradient_config!(f, grad_config, backend, u)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            # Only use DI.prepare!_gradient for actual DI types
-            if string(typeof(config)) |> x -> occursin("DifferentiationInterface", x)
-                # Unwrap DI.TwoArgWrapper cache if needed
-                actual_config = hasproperty(config, :cache) ? config.cache : config
-                DI.prepare!_gradient(f, actual_config, backend, u)
-            end
-            # For FiniteDiff and other types, do nothing (they handle resizing internally)
-        end
-    else
-        # For single configs - only use DI prep for DI types
-        if string(typeof(grad_config)) |> x -> occursin("DifferentiationInterface", x)
-            # Unwrap DI cache if needed
-            actual_config = hasproperty(grad_config, :cache) ? grad_config.cache : grad_config
+            # Unwrap DI.TwoArgWrapper - extract the actual prep
+            actual_config = hasproperty(config, :prep) ? config.prep : config
             DI.prepare!_gradient(f, actual_config, backend, u)
         end
-        # For FiniteDiff and other types, do nothing
+    else
+        # For single configs - unwrap DI TwoArgWrapper
+        actual_config = hasproperty(grad_config, :prep) ? grad_config.prep : grad_config
+        DI.prepare!_gradient(f, actual_config, backend, u)
     end
 end
 
