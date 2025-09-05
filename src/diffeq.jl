@@ -89,7 +89,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian config using DI.prepare!_jacobian
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
+    jac_wrapper = OrdinaryDiffEqDifferentiation.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
+    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     nothing
 end
 
@@ -102,7 +103,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian config using DI.prepare!_jacobian
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
+    jac_wrapper = OrdinaryDiffEqDifferentiation.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
+    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     nothing
 end
 
@@ -115,24 +117,21 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     
     # Resize jacobian config using DI.prepare!_jacobian
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    resize_jacobian_config!(integrator.f, cache.jac_config, backend, integrator.u)
+    jac_wrapper = OrdinaryDiffEqDifferentiation.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
+    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     nothing
 end
 
 # Helper function to resize jacobian configs (handles tuples for default algorithms)
-function resize_jacobian_config!(f, jac_config, backend, u)
+function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
     if jac_config isa Tuple
         # For tuples, prepare each element
         for config in jac_config
-            # Use the function from the existing config if available, otherwise fall back to f
-            config_f = hasproperty(config, :f) ? config.f : f
-            DI.prepare!_jacobian(config_f, config, backend, u)
+            DI.prepare!_jacobian(jac_wrapper, config, backend, u)
         end
     else
         # For single configs
-        # Use the function from the existing config if available, otherwise fall back to f
-        config_f = hasproperty(jac_config, :f) ? jac_config.f : f
-        DI.prepare!_jacobian(config_f, jac_config, backend, u)
+        DI.prepare!_jacobian(jac_wrapper, jac_config, backend, u)
     end
 end
 
