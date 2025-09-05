@@ -92,8 +92,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -109,8 +108,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -126,8 +124,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -145,15 +142,15 @@ function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
 end
 
 # Helper function to resize gradient configs (handles tuples for default algorithms)
-function resize_gradient_config!(grad_wrapper, grad_config, backend, u)
+function resize_gradient_config!(f, grad_config, backend, u)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            DI.prepare!_gradient(grad_wrapper, config, backend, u)
+            DI.prepare!_gradient(f, config, backend, u)
         end
     else
         # For single configs
-        DI.prepare!_gradient(grad_wrapper, grad_config, backend, u)
+        DI.prepare!_gradient(f, grad_config, backend, u)
     end
 end
 
