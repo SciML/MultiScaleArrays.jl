@@ -92,7 +92,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, integrator.t, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, similar(integrator.u), cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -108,7 +108,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, integrator.t, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, similar(integrator.u), cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -124,7 +124,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, integrator.t, cache.grad_config, backend, integrator.u)
+    resize_gradient_config!(integrator.f, similar(integrator.u), cache.grad_config, backend, integrator.u)
     nothing
 end
 
@@ -142,28 +142,16 @@ function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
 end
 
 # Helper function to resize gradient configs (handles tuples for default algorithms)
-function resize_gradient_config!(f, t, grad_config, backend, u)
+function resize_gradient_config!(f, y, grad_config, backend, x)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            # Handle both in-place and out-of-place function calls
-            if DiffEqBase.isinplace(f)
-                # In-place: prepare!_derivative(f!, y, old_prep, backend, x)
-                DI.prepare!_derivative(f, t, config, backend, u)
-            else
-                # Out-of-place: prepare!_derivative(f, old_prep, backend, x)
-                DI.prepare!_derivative(f, config, backend, u)
-            end
+            # Use in-place version: prepare!_derivative(f!, y, old_prep, backend, x)
+            DI.prepare!_derivative(f, y, config, backend, x)
         end
     else
         # For single configs
-        if DiffEqBase.isinplace(f)
-            # In-place: prepare!_derivative(f!, y, old_prep, backend, x)
-            DI.prepare!_derivative(f, t, grad_config, backend, u)
-        else
-            # Out-of-place: prepare!_derivative(f, old_prep, backend, x)
-            DI.prepare!_derivative(f, grad_config, backend, u)
-        end
+        DI.prepare!_derivative(f, y, grad_config, backend, x)
     end
 end
 
