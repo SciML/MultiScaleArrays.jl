@@ -146,11 +146,11 @@ function resize_gradient_config!(f, grad_config, backend, u)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            DI.prepare!_gradient(f, config, backend, u)
+            DI.prepare!_gradient(f, config, backend)
         end
     else
         # For single configs
-        DI.prepare!_gradient(f, grad_config, backend, u)
+        DI.prepare!_gradient(f, grad_config, backend)
     end
 end
 
