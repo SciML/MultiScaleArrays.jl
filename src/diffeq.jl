@@ -89,7 +89,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian and gradient configs using DI with proper wrappers
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t)
+    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
     resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
@@ -105,7 +105,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     
     # Resize jacobian and gradient configs using DI with proper wrappers
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t)
+    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
     resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
@@ -121,7 +121,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     
     # Resize jacobian and gradient configs using DI with proper wrappers
     backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t)
+    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
     resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
