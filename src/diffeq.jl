@@ -147,14 +147,18 @@ function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
     end
 end
 
-# Dispatch for DerivativePrep types
-function resize_single_grad_config!(grad_wrapper, grad_config::DI.DerivativePrep, backend, x)
-    DI.prepare!_derivative(grad_wrapper, grad_config, backend, x)
-end
-
-# Dispatch for GradientPrep types
-function resize_single_grad_config!(grad_wrapper, grad_config::DI.GradientPrep, backend, x)
-    DI.prepare!_gradient(grad_wrapper, grad_config, backend, x)
+# Dispatch for wrapped DerivativePrep types - unwrap and use prepare!_derivative
+function resize_single_grad_config!(grad_wrapper, grad_config, backend, x)
+    # For wrapped configs, extract the actual prep
+    if hasproperty(grad_config, :cache) && grad_config.cache isa DI.DerivativePrep
+        DI.prepare!_derivative(grad_wrapper, grad_config.cache, backend, x)
+    elseif hasproperty(grad_config, :cache) && grad_config.cache isa DI.GradientPrep
+        DI.prepare!_gradient(grad_wrapper, grad_config.cache, backend, x)
+    elseif grad_config isa DI.DerivativePrep
+        DI.prepare!_derivative(grad_wrapper, grad_config, backend, x)
+    elseif grad_config isa DI.GradientPrep
+        DI.prepare!_gradient(grad_wrapper, grad_config, backend, x)
+    end
 end
 
 # Helper function to resize gradient configs (handles tuples for default algorithms)  
