@@ -92,7 +92,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
+    # Gradient configs may not need explicit resizing - DI handles them internally
     nothing
 end
 
@@ -108,7 +108,7 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
+    # Gradient configs may not need explicit resizing - DI handles them internally
     nothing
 end
 
@@ -124,7 +124,7 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
     resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
     
-    resize_gradient_config!(integrator.f, cache.grad_config, backend, integrator.u)
+    # Gradient configs may not need explicit resizing - DI handles them internally
     nothing
 end
 
