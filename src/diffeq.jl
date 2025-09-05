@@ -152,12 +152,12 @@ function resize_gradient_config!(grad_wrapper, grad_config, backend, x)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            # Use out-of-place version: prepare!_derivative(f, old_prep, backend, x)
-            DI.prepare!_derivative(grad_wrapper, config, backend, x)
+            # Use prepare!_gradient for GradientPrep types
+            DI.prepare!_gradient(grad_wrapper, config, backend, x)
         end
     else
         # For single configs
-        DI.prepare!_derivative(grad_wrapper, grad_config, backend, x)
+        DI.prepare!_gradient(grad_wrapper, grad_config, backend, x)
     end
 end
 
