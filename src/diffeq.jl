@@ -146,11 +146,14 @@ function resize_gradient_config!(f, grad_config, backend, u)
     if grad_config isa Tuple
         # For tuples, prepare each element
         for config in grad_config
-            DI.prepare!_gradient(f, config, backend)
+            # If config is a TwoArgWrapper, unwrap it
+            actual_config = hasproperty(config, :f) ? config.f : config
+            DI.prepare!_gradient(f, actual_config, backend, u)
         end
     else
-        # For single configs
-        DI.prepare!_gradient(f, grad_config, backend)
+        # For single configs - unwrap if it's a TwoArgWrapper
+        actual_config = hasproperty(grad_config, :f) ? grad_config.f : grad_config
+        DI.prepare!_gradient(f, actual_config, backend, u)
     end
 end
 
