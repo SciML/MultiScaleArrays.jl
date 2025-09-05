@@ -124,11 +124,15 @@ function resize_jacobian_config!(f, jac_config, backend, u)
     if jac_config isa Tuple
         # For tuples, prepare each element
         for config in jac_config
-            DI.prepare!_jacobian(f, config, backend, u)
+            # Use the function from the existing config if available, otherwise fall back to f
+            config_f = hasproperty(config, :f) ? config.f : f
+            DI.prepare!_jacobian(config_f, config, backend, u)
         end
     else
         # For single configs
-        DI.prepare!_jacobian(f, jac_config, backend, u)
+        # Use the function from the existing config if available, otherwise fall back to f
+        config_f = hasproperty(jac_config, :f) ? jac_config.f : f
+        DI.prepare!_jacobian(config_f, jac_config, backend, u)
     end
 end
 
