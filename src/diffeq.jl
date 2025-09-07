@@ -86,15 +86,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    
-    # Resize jacobian and gradient configs using DI with proper wrappers
-    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
-    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
-    
-    # Resize gradient config using DI.prepare!_derivative
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
 
@@ -104,15 +97,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    
-    # Resize jacobian and gradient configs using DI with proper wrappers
-    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
-    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
-    
-    # Resize gradient config using DI.prepare!_derivative
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
 
@@ -122,55 +108,10 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    
-    # Resize jacobian and gradient configs using DI with proper wrappers
-    backend = OrdinaryDiffEqCore.alg_autodiff(integrator.alg)
-    jac_wrapper = SciMLBase.UJacobianWrapper(integrator.f, integrator.t, integrator.p)
-    resize_jacobian_config!(jac_wrapper, cache.jac_config, backend, integrator.u)
-    
-    # Resize gradient config using DI.prepare!_derivative
-    grad_wrapper = SciMLBase.TimeGradientWrapper(integrator.f, integrator.uprev, integrator.p)
-    resize_gradient_config!(grad_wrapper, cache.grad_config, backend, integrator.u)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
-
-# Helper function to resize jacobian configs (handles tuples for default algorithms)
-function resize_jacobian_config!(jac_wrapper, jac_config, backend, u)
-    if jac_config isa Tuple
-        # For tuples, prepare each element
-        for config in jac_config
-            DI.prepare!_jacobian(jac_wrapper, config, backend, u)
-        end
-    else
-        # For single configs
-        DI.prepare!_jacobian(jac_wrapper, jac_config, backend, u)
-    end
-end
-
-# Dispatch for DerivativePrep types 
-function resize_single_grad_config!(grad_wrapper, grad_config::DI.DerivativePrep, backend, u)
-    DI.prepare!_derivative(grad_wrapper, u, grad_config, backend, u)
-end
-
-# Dispatch for GradientPrep types
-function resize_single_grad_config!(grad_wrapper, grad_config::DI.GradientPrep, backend, u)
-    DI.prepare!_gradient(grad_wrapper, grad_config, backend, u)
-end
-
-# Helper function to resize gradient configs (handles tuples for default algorithms)  
-function resize_gradient_config!(grad_wrapper, grad_config, backend, u)
-    if grad_config isa Tuple
-        # For tuples, prepare each element
-        for config in grad_config
-            resize_single_grad_config!(grad_wrapper, config, backend, u)
-        end
-    else
-        # For single configs
-        resize_single_grad_config!(grad_wrapper, grad_config, backend, u)
-    end
-end
-
-
 
 # Specific implementation for FiniteDiff.JacobianCache (keeps backward compatibility)
 function add_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, x)

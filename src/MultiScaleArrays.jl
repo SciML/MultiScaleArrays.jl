@@ -173,6 +173,7 @@ abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
 using DiffEqBase, Statistics, LinearAlgebra, FiniteDiff
 import OrdinaryDiffEq, OrdinaryDiffEqCore, OrdinaryDiffEqRosenbrock, StochasticDiffEq, ForwardDiff
+import OrdinaryDiffEqDifferentiation
 import SciMLBase
 import DifferentiationInterface as DI
 
