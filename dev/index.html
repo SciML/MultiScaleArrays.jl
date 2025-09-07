@@ -28,7 +28,7 @@ tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # 
 tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues</code></pre><h2 id="Idea"><a class="docs-heading-anchor" href="#Idea">Idea</a><a id="Idea-1"></a><a class="docs-heading-anchor-permalink" href="#Idea" title="Permalink"></a></h2><p>The idea behind MultiScaleArrays is simple. The <code>*DiffEq</code> solvers (OrdinaryDiffEq.jl, StochasticDiffEq.jl, DelayDiffEq.jl, etc.) and native optimization packages like Optim.jl in their efficient in-place form all work with any Julia-defined <code>AbstractArray</code> which has a linear index. Thus, to define our multiscale model, we develop a type which has an efficient linear index. One can think of representing cells with proteins as each being an array with values for each protein. The linear index of the multiscale model would be indexing through each protein of each cell. With proper index overloads, one can define a type such that <code>a[i]</code> does just that, and thus it will work in the differential equation solvers. MultiScaleArrays.jl takes that further by allowing one to recursively define an arbitrary <code>n</code>-level hierarchical model which has efficient indexing structures. The result is a type which models complex behavior, but the standard differential equation solvers will work directly and efficiently on this type, making it easy to develop novel models without having to re-develop advanced adaptive/stiff/stochastic/etc. solving techniques for each new model.</p><h2 id="Contributing"><a class="docs-heading-anchor" href="#Contributing">Contributing</a><a id="Contributing-1"></a><a class="docs-heading-anchor-permalink" href="#Contributing" title="Permalink"></a></h2><ul><li><p>Please refer to the <a href="https://github.com/SciML/ColPrac/blob/master/README.md">SciML ColPrac: Contributor&#39;s Guide on Collaborative Practices for Community Packages</a> for guidance on PRs, issues, and other matters relating to contributing to SciML.</p></li><li><p>See the <a href="https://github.com/SciML/SciMLStyle">SciML Style Guide</a> for common coding practices and other style decisions.</p></li><li><p>There are a few community forums:</p><ul><li>The #diffeq-bridged and #sciml-bridged channels in the <a href="https://julialang.org/slack/">Julia Slack</a></li><li>The #diffeq-bridged and #sciml-bridged channels in the <a href="https://julialang.zulipchat.com/#narrow/stream/279055-sciml-bridged">Julia Zulip</a></li><li>On the <a href="https://discourse.julialang.org">Julia Discourse forums</a></li><li>See also <a href="https://sciml.ai/community/">SciML Community page</a></li></ul></li></ul><h2 id="Reproducibility"><a class="docs-heading-anchor" href="#Reproducibility">Reproducibility</a><a id="Reproducibility-1"></a><a class="docs-heading-anchor-permalink" href="#Reproducibility" title="Permalink"></a></h2><details><summary>The documentation of this SciML package was built using these direct dependencies,</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Status `~/work/MultiScaleArrays.jl/MultiScaleArrays.jl/docs/Project.toml`
   [e30172f5] Documenter v1.14.1
-  [f9640e96] MultiScaleArrays v1.15.0 `~/work/MultiScaleArrays.jl/MultiScaleArrays.jl`</code></pre></details><details><summary>and using this machine and Julia version.</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.11.6
+  [f9640e96] MultiScaleArrays v1.16.0 `~/work/MultiScaleArrays.jl/MultiScaleArrays.jl`</code></pre></details><details><summary>and using this machine and Julia version.</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.11.6
 Commit 9615af0f269 (2025-07-09 12:58 UTC)
 Build Info:
   Official https://julialang.org/ release
@@ -45,7 +45,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [79e6a3ab] Adapt v4.3.0
   [66dad0bd] AliasTables v1.1.3
   [ec485272] ArnoldiMethod v0.4.0
-  [4fba245c] ArrayInterface v7.19.0
+  [4fba245c] ArrayInterface v7.20.0
   [4c555306] ArrayLayouts v1.11.2
   [62783981] BitTwiddlingConvenienceFunctions v0.1.6
   [70df07ce] BracketingNonlinearSolve v1.3.0
@@ -63,7 +63,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [adafc99b] CpuId v0.3.1
   [9a962f9c] DataAPI v1.16.0
 ⌅ [864edb3b] DataStructures v0.18.22
-  [2b5f629d] DiffEqBase v6.185.0
+  [2b5f629d] DiffEqBase v6.188.0
   [459566f4] DiffEqCallbacks v4.9.0
   [77a26b50] DiffEqNoiseProcess v5.24.1
   [163ba53b] DiffResults v1.1.0
@@ -74,7 +74,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [ffbed154] DocStringExtensions v0.9.5
   [e30172f5] Documenter v1.14.1
   [4e289a0a] EnumX v1.0.5
-  [f151be2c] EnzymeCore v0.8.12
+  [f151be2c] EnzymeCore v0.8.13
   [7d51a73a] ExplicitImports v1.13.2
   [d4d017d3] ExponentialUtilities v1.27.0
   [e2ba6199] ExprTools v0.1.10
@@ -111,7 +111,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [2d8b4e74] LevyArea v1.0.0
   [87fe0de2] LineSearch v0.1.4
   [d3d80556] LineSearches v7.4.0
-  [7ed4a6bd] LinearSolve v3.37.0
+  [7ed4a6bd] LinearSolve v3.39.2
   [2ab3a3ac] LogExpFunctions v0.3.29
   [1914dd2f] MacroTools v0.5.16
   [d125e4d3] ManualMemory v0.1.8
@@ -120,7 +120,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [e1d29d7a] Missings v1.2.0
   [2e0e35c7] Moshi v0.3.7
   [46d2c3a1] MuladdMacro v0.2.4
-  [f9640e96] MultiScaleArrays v1.15.0 `~/work/MultiScaleArrays.jl/MultiScaleArrays.jl`
+  [f9640e96] MultiScaleArrays v1.16.0 `~/work/MultiScaleArrays.jl/MultiScaleArrays.jl`
   [d41bc354] NLSolversBase v7.10.0
   [2774e3e8] NLsolve v4.5.1
   [77ba4419] NaNMath v1.1.3
@@ -134,12 +134,12 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [1dea7af3] OrdinaryDiffEq v6.102.0
   [89bda076] OrdinaryDiffEqAdamsBashforthMoulton v1.5.0
   [6ad6398a] OrdinaryDiffEqBDF v1.10.1
-  [bbf590c4] OrdinaryDiffEqCore v1.30.0
+  [bbf590c4] OrdinaryDiffEqCore v1.33.0
   [50262376] OrdinaryDiffEqDefault v1.8.0
-  [4302a76b] OrdinaryDiffEqDifferentiation v1.14.0
+  [4302a76b] OrdinaryDiffEqDifferentiation v1.16.0
   [9286f039] OrdinaryDiffEqExplicitRK v1.4.0
   [e0540318] OrdinaryDiffEqExponentialRK v1.8.0
-  [becaefa8] OrdinaryDiffEqExtrapolation v1.8.0
+  [becaefa8] OrdinaryDiffEqExtrapolation v1.9.0
   [5960d6e9] OrdinaryDiffEqFIRK v1.16.0
   [101fe9f7] OrdinaryDiffEqFeagin v1.4.0
   [d3585ca7] OrdinaryDiffEqFunctionMap v1.5.0
@@ -147,7 +147,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [9f002381] OrdinaryDiffEqIMEXMultistep v1.7.0
   [521117fe] OrdinaryDiffEqLinear v1.6.0
   [1344f307] OrdinaryDiffEqLowOrderRK v1.6.0
-  [b0944070] OrdinaryDiffEqLowStorageRK v1.6.0
+  [b0944070] OrdinaryDiffEqLowStorageRK v1.7.0
   [127b3ac7] OrdinaryDiffEqNonlinearSolve v1.14.1
   [c9986a66] OrdinaryDiffEqNordsieck v1.4.0
   [5dd0a6cf] OrdinaryDiffEqPDIRK v1.6.0
@@ -156,7 +156,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [af6ede74] OrdinaryDiffEqRKN v1.5.0
   [43230ef6] OrdinaryDiffEqRosenbrock v1.17.0
   [2d112036] OrdinaryDiffEqSDIRK v1.7.0
-  [669c94d9] OrdinaryDiffEqSSPRK v1.6.0
+  [669c94d9] OrdinaryDiffEqSSPRK v1.7.0
   [e3e12d00] OrdinaryDiffEqStabilizedIRK v1.6.0
   [358294b1] OrdinaryDiffEqStabilizedRK v1.4.0
   [fa646aed] OrdinaryDiffEqSymplecticRK v1.7.0
@@ -169,7 +169,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [f517fe37] Polyester v0.7.18
   [1d0040c9] PolyesterWeave v0.2.2
   [85a6dd25] PositiveFactorizations v0.2.4
-  [d236fae5] PreallocationTools v0.4.33
+  [d236fae5] PreallocationTools v0.4.34
 ⌅ [aea7be01] PrecompileTools v1.2.1
   [21216c6a] Preferences v1.5.0
   [43287f4e] PtrArrays v1.3.0
@@ -185,9 +185,9 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [79098fc4] Rmath v0.8.0
   [7e49a35a] RuntimeGeneratedFunctions v0.5.15
   [94e857df] SIMDTypes v0.1.0
-  [0bca4576] SciMLBase v2.114.0
-  [19f34311] SciMLJacobianOperators v0.1.8
-  [c0aeaf25] SciMLOperators v1.6.0
+  [0bca4576] SciMLBase v2.116.3
+  [19f34311] SciMLJacobianOperators v0.1.11
+  [c0aeaf25] SciMLOperators v1.7.1
   [53ae85a6] SciMLStructures v1.7.0
   [efcf1570] Setfield v1.1.2
   [727e6d20] SimpleNonlinearSolve v2.7.0
@@ -214,7 +214,7 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [3a884ed6] UnPack v1.0.2
   [2e619515] Expat_jll v2.7.1+0
   [020c3dae] Git_LFS_jll v3.7.0+0
-  [f8c6e375] Git_jll v2.51.0+0
+  [f8c6e375] Git_jll v2.51.1+0
   [1d5cc7b8] IntelOpenMP_jll v2025.2.0+0
   [94ce4f54] Libiconv_jll v1.18.0+0
   [856f044c] MKL_jll v2025.2.0+0
@@ -271,4 +271,4 @@ Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)</code></pre></detai
   [8e850b90] libblastrampoline_jll v5.11.0+0
   [8e850ede] nghttp2_jll v1.59.0+0
   [3f19e933] p7zip_jll v17.4.0+2
-Info Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.15.0/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.15.0/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Friday 29 August 2025 22:15">Friday 29 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Info Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.16.0/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.16.0/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Sunday 7 September 2025 12:04">Sunday 7 September 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
