@@ -86,8 +86,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    add_node_jac_config!(cache, cache.jac_config, i, x)
-    add_node_grad_config!(cache, cache.grad_config, i, x)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
 
@@ -97,8 +97,8 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrator,
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    add_node_jac_config!(cache, cache.jac_config, i, x, node...)
-    add_node_grad_config!(cache, cache.grad_config, i, x, node...)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
 
@@ -108,11 +108,12 @@ function remove_node_non_user_cache!(integrator::DiffEqBase.AbstractODEIntegrato
     i = length(integrator.u)
     cache.J = similar(cache.J, i, i)
     cache.W = similar(cache.W, i, i)
-    remove_node_jac_config!(cache, cache.jac_config, i, node...)
-    remove_node_grad_config!(cache, cache.grad_config, i, node...)
+    OrdinaryDiffEqDifferentiation.resize_jac_config!(cache, integrator)
+    OrdinaryDiffEqDifferentiation.resize_grad_config!(cache, integrator)
     nothing
 end
 
+# Specific implementation for FiniteDiff.JacobianCache (keeps backward compatibility)
 function add_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, x)
     #add_node!(cache.x1, fill!(similar(x, eltype(cache.x1)),0))
     add_node!(config.fx, recursivecopy(x))
@@ -137,6 +138,8 @@ function remove_node_jac_config!(cache, config::FiniteDiff.JacobianCache, i, I..
     nothing
 end
 
+
+# Specific implementation for ForwardDiff.DerivativeConfig (keeps backward compatibility)
 function add_node_grad_config!(cache, grad_config::ForwardDiff.DerivativeConfig, i, x)
     cache.grad_config = ForwardDiff.DerivativeConfig(cache.tf, cache.du1, cache.uf.t)
     nothing

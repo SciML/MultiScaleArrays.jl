@@ -48,7 +48,7 @@ add_node!(pop, pop.nodes[1])
 
 sol = solve(prob, Tsit5(), callback = growing_cb, tstops = tstop)
 
-sol = solve(prob, Rosenbrock23(), callback = growing_cb, tstops = tstop)
+sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = growing_cb, tstops = tstop)
 
 @test length(sol[end]) == 13
 
@@ -62,7 +62,7 @@ prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
 sol = solve(prob, Tsit5(), callback = shrinking_cb, tstops = tstop)
 
 prob = ODEProblem(f4, deepcopy(pop), (0.0, 1.0))
-sol = solve(prob, Rosenbrock23(), callback = shrinking_cb, tstops = tstop)
+sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = shrinking_cb, tstops = tstop)
 @test length(sol[end]) == 10
 
 println("Do the SDE Part")

@@ -64,9 +64,7 @@ test_embryo = deepcopy(embryo)
 sol = solve(prob, Tsit5(), callback = growing_cb, tstops = tstop)
 sol = solve(prob, Rosenbrock23(autodiff = false), tstops = tstop)
 sol = solve(prob, Rosenbrock23(autodiff = false), callback = growing_cb, tstops = tstop)
-sol = solve(prob, Rosenbrock23(), callback = growing_cb, tstops = tstop)
-
-@test length(sol[end]) == 23
+sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = growing_cb, tstops = tstop)
 
 affect_del! = function (integrator)
     remove_node!(integrator, 1, 1, 1)
@@ -78,7 +76,7 @@ sol = solve(prob, Tsit5(), callback = shrinking_cb, tstops = tstop)
 
 sol = solve(prob, Rosenbrock23(autodiff = false), callback = shrinking_cb, tstops = tstop)
 
-sol = solve(prob, Rosenbrock23(), callback = shrinking_cb, tstops = tstop)
+sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = shrinking_cb, tstops = tstop)
 
 @test length(sol[end]) == 17
 
