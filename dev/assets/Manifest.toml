@@ -27,9 +27,9 @@ version = "0.4.5"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
-git-tree-sha1 = "3b86719127f50670efe356bc11073d84b4ed7a5d"
+git-tree-sha1 = "856ecd7cebb68e5fc87abecd2326ad59f0f911f3"
 uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
-version = "0.1.42"
+version = "0.1.43"
 
     [deps.Accessors.extensions]
     AxisKeysExt = "AxisKeys"
@@ -544,9 +544,9 @@ version = "2.29.0"
 
 [[deps.ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
-git-tree-sha1 = "afb7c51ac63e40708a3071f80f5e84a752299d4f"
+git-tree-sha1 = "cd33c7538e68650bd0ddbb3f5bd50a4a0fa95b50"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "0.10.39"
+version = "1.3.0"
 weakdeps = ["StaticArrays"]
 
     [deps.ForwardDiff.extensions]
@@ -950,7 +950,7 @@ version = "0.2.4"
 
 [[deps.MultiScaleArrays]]
 deps = ["DiffEqBase", "DifferentiationInterface", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "OrdinaryDiffEq", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqRosenbrock", "Random", "RecursiveArrayTools", "SciMLBase", "Statistics", "StochasticDiffEq"]
-path = "/home/chrisrackauckas/github-runners/demeter4-20/_work/MultiScaleArrays.jl/MultiScaleArrays.jl"
+path = "/home/runner/work/MultiScaleArrays.jl/MultiScaleArrays.jl"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 version = "1.16.0"
 

@@ -3,7 +3,7 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 MultiScaleArrays = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 
 [sources]
-MultiScaleArrays = {path = "/home/chrisrackauckas/github-runners/demeter4-20/_work/MultiScaleArrays.jl/MultiScaleArrays.jl"}
+MultiScaleArrays = {path = "/home/runner/work/MultiScaleArrays.jl/MultiScaleArrays.jl"}
 
 [compat]
 Documenter = "1"
