@@ -79,3 +79,4 @@ tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # 
 tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues
 ```
+
