@@ -1,6 +1,9 @@
 using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq, SafeTestsets
 using Test
 
+@time @testset "JET Static Analysis" begin
+    include("jet_tests.jl")
+end
 @time @testset "Tuple Nodes" begin
     include("tuple_nodes.jl")
 end

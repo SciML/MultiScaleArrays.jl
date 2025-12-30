@@ -15,7 +15,7 @@ end
 Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
 @inline function Base.copy(bc::Broadcast.Broadcasted{<:AMSAStyle})
-    first_amsa = find_amsa(bc)
+    first_amsa = find_amsa(bc)::AMSA  # Type assertion: AMSAStyle guarantees an AMSA exists
 
     out = similar(first_amsa, Base.Broadcast._broadcast_getindex_eltype(bc))
 
@@ -71,12 +71,16 @@ _nnodes(args::Tuple{}) = 0
 
 """
 `A = find_amsa(As)` returns the first AMSA among the arguments.
+
+Returns the first `AbstractMultiScaleArray` found in the arguments, or `nothing` if none found.
 """
 find_amsa(bc::Base.Broadcast.Broadcasted) = find_amsa(bc.args)
-find_amsa(args::Tuple) = !isempty(args) && find_amsa(find_amsa(args[1]), Base.tail(args))
-find_amsa(x) = x
+find_amsa(args::Tuple) = isempty(args) ? nothing : find_amsa(find_amsa(args[1]), Base.tail(args))
+find_amsa(x) = nothing
+find_amsa(x::AMSA) = x
 find_amsa(a::AMSA, rest) = a
 find_amsa(::Any, rest) = find_amsa(rest)
+find_amsa(::Nothing, rest) = find_amsa(rest)
 
 any_non_amsa(bc::Base.Broadcast.Broadcasted) = any_non_amsa(bc.args)
 any_non_amsa(args::Tuple) = any_non_amsa(any_non_amsa(args[1]), Base.tail(args))

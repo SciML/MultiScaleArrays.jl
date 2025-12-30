@@ -118,8 +118,12 @@ function print_human_readable(X::AbstractMultiScaleArray; n_char_per_name = 6,
     #              ^^^^^^^^^^^
     for level in length(toprint):-1:1
         while occursin("+ ", toprint[level])
-            Move = findfirst("+ ", toprint[level])[1]
-            To = findnext(" |", toprint[level], Move[end])[1]
+            move_range = findfirst("+ ", toprint[level])
+            move_range === nothing && break
+            Move = first(move_range)
+            to_range = findnext(" |", toprint[level], last(move_range))
+            to_range === nothing && break
+            To = first(to_range)
             toprint[level] = join([
                 toprint[level][1:(Move - 1)],
                 toprint[level][(Move + 1):To],
