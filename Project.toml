@@ -4,6 +4,7 @@ authors = ["Chris Rackauckas <accounts@chrisrackauckas.com>"]
 version = "1.17.0"
 
 [deps]
+ArrayInterface = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 DifferentiationInterface = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
 FiniteDiff = "6a86dc24-6348-571c-b903-95158fe2bd41"
@@ -26,6 +27,7 @@ SparseDiffTools = "47a9eef4-7e08-11e9-0b38-333d64bd3804"
 MultiScaleArraysSparseDiffToolsExt = "SparseDiffTools"
 
 [compat]
+ArrayInterface = "7"
 DiffEqBase = "6.5"
 DifferentiationInterface = "0.7.7"
 FiniteDiff = "2.3"

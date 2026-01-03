@@ -98,6 +98,16 @@ function common_number(a, b)
       throw(DimensionMismatch("number of nodes must be equal"))))
 end
 
+## ArrayInterface
+
+function ArrayInterface.zeromatrix(b::AMSA)
+    zero(eltype(b), length(b), length(b))
+end
+
+function ArrayInterface.undefmatrix(b::AMSA)
+    Array{eltype(b)}(undef, length(b), length(b))
+end
+
 ## Linear Algebra
 
 function LinearAlgebra.ldiv!(A::LinearAlgebra.LU, b::AMSA)
