@@ -1,5 +1,5 @@
 using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Test,
-      Random
+    Random
 
 ### Setup a hierarchy
 
@@ -154,11 +154,13 @@ f = function (du, u, p, t)
     for i in eachindex(u)
         du[i] = 0.42 * u[i]
     end
+    return
 end
 g = function (du, u, p, t)
     for i in eachindex(u)
         du[i] = 0.42 * u[i]
     end
+    return
 end
 
 vem = @view [em, em][1:2]
@@ -176,19 +178,24 @@ sol1 = solve(prob, Tsit5())
 # Check stepping behavior matches array
 Random.seed!(100)
 prob = SDEProblem(f, g, em, (0.0, 1000.0))
-@time sol1 = solve(prob, SRIW1(), progress = false, abstol = 1e-2, reltol = 1e-2,
-    save_everystep = false)
+@time sol1 = solve(
+    prob, SRIW1(), progress = false, abstol = 1.0e-2, reltol = 1.0e-2,
+    save_everystep = false
+)
 
 Random.seed!(100)
 prob = SDEProblem(f, g, em[:], (0.0, 1000.0))
-@time sol2 = solve(prob, SRIW1(), progress = false, abstol = 1e-2, reltol = 1e-2,
-    save_everystep = false)
+@time sol2 = solve(
+    prob, SRIW1(), progress = false, abstol = 1.0e-2, reltol = 1.0e-2,
+    save_everystep = false
+)
 sol1.t == sol2.t
 
 function test_loop(a)
     for i in eachindex(a)
         a[i] = a[i] + 1
     end
+    return
 end
 @time test_loop(em)
 @time test_loop(em[:])

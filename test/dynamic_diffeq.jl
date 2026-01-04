@@ -36,22 +36,24 @@ cell_ode = function (dcell, cell, p, t)
     for i in eachindex(cell)
         dcell[i] = -m * cell[i]
     end
+    return
 end
 
 f = function (dembryo, embryo, p, t)
     for (cell, dcell) in LevelIter(3, embryo, dembryo)
         cell_ode(dcell, cell, p, t)
     end
+    return
 end
 
 tstop = [0.5]
 
 condition = function (u, t, integrator)
-    t ∈ tstop
+    return t ∈ tstop
 end
 
 affect! = function (integrator)
-    add_node!(integrator, integrator.u[1, 1, 1], 1, 1)
+    return add_node!(integrator, integrator.u[1, 1, 1], 1, 1)
 end
 
 growing_cb = DiscreteCallback(condition, affect!)
@@ -67,7 +69,7 @@ sol = solve(prob, Rosenbrock23(autodiff = false), callback = growing_cb, tstops 
 sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = growing_cb, tstops = tstop)
 
 affect_del! = function (integrator)
-    remove_node!(integrator, 1, 1, 1)
+    return remove_node!(integrator, 1, 1, 1)
 end
 
 shrinking_cb = DiscreteCallback(condition, affect_del!)
@@ -86,6 +88,7 @@ g = function (du, u, p, t)
     for i in eachindex(u)
         du[i] = 0.1u[i]
     end
+    return
 end
 prob = SDEProblem(f, g, embryo, (0.0, 1.0))
 
