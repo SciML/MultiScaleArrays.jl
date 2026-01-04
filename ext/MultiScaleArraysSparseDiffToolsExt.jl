@@ -4,34 +4,44 @@ using MultiScaleArrays, SparseDiffTools
 
 function MultiScaleArrays.add_node_jac_config!(
         cache, config::SparseDiffTools.ForwardColorJacCache, i, x,
-        node...)
+        node...
+    )
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf, cache.uprev,
-        config.chunksize)
-    nothing
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(
+        cache.uf, cache.uprev,
+        config.chunksize
+    )
+    return nothing
 end
 
 function MultiScaleArrays.add_node_jac_config!(cache, config::SparseDiffTools.ForwardColorJacCache, i, x)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf, cache.uprev,
-        config.chunksize)
-    nothing
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(
+        cache.uf, cache.uprev,
+        config.chunksize
+    )
+    return nothing
 end
 
 function MultiScaleArrays.remove_node_jac_config!(
         cache, config::SparseDiffTools.ForwardColorJacCache, i, x,
-        node...)
+        node...
+    )
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf, cache.uprev,
-        config.chunksize)
-    nothing
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(
+        cache.uf, cache.uprev,
+        config.chunksize
+    )
+    return nothing
 end
 
 function MultiScaleArrays.remove_node_jac_config!(cache, config::SparseDiffTools.ForwardColorJacCache, i, x)
     @assert cache.jac_config.colorvec isa UnitRange
-    cache.jac_config = SparseDiffTools.ForwardColorJacCache(cache.uf, cache.uprev,
-        config.chunksize)
-    nothing
+    cache.jac_config = SparseDiffTools.ForwardColorJacCache(
+        cache.uf, cache.uprev,
+        config.chunksize
+    )
+    return nothing
 end
 
 end
