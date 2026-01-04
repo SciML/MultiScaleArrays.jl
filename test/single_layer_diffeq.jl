@@ -5,7 +5,7 @@ struct Cell2{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
 struct Population2{T <: AbstractMultiScaleArray, B <: Number} <:
-       AbstractMultiScaleArrayHead{B}
+    AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
@@ -22,22 +22,24 @@ function cell_ode4(dcell, cell, p, t)
     for i in eachindex(cell)
         dcell[i] = -m * cell[i]
     end
+    return
 end
 
 function f4(dembryo, embryo, p, t)
     for (cell, dcell) in LevelIter(1, embryo, dembryo)
         cell_ode4(dcell, cell, p, t)
     end
+    return
 end
 
 tstop = [0.5]
 
 condition = function (u, t, integrator)
-    t ∈ tstop
+    return t ∈ tstop
 end
 
 affect! = function (integrator)
-    add_node!(integrator, integrator.u.nodes[1])
+    return add_node!(integrator, integrator.u.nodes[1])
 end
 
 growing_cb = DiscreteCallback(condition, affect!)
@@ -53,7 +55,7 @@ sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = growing_cb, tstops = 
 @test length(sol[end]) == 13
 
 affect_del! = function (integrator)
-    remove_node!(integrator, 1)
+    return remove_node!(integrator, 1)
 end
 
 shrinking_cb = DiscreteCallback(condition, affect_del!)
@@ -71,6 +73,7 @@ function g4(du, u, p, t)
     for i in eachindex(u)
         du[i] = 0.1u[i]
     end
+    return
 end
 
 prob = SDEProblem(f4, g4, deepcopy(pop), (0.0, 1.0))

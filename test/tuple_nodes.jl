@@ -28,7 +28,7 @@ struct Community{B, N <: Tuple{Vararg{Plant{<:Number}}}} <: AbstractMultiScaleAr
 end
 
 mutable struct Scenario{B, N <: Tuple{Vararg{Community{<:Number}}}} <:
-               AbstractMultiScaleArrayHead{B}
+    AbstractMultiScaleArrayHead{B}
     nodes::N
     values::Vector{B}
     end_idxs::Vector{Int}
@@ -39,8 +39,10 @@ organ2 = Organ([4.1, 5.1, 6.1], :Root, OrganParams("grows down"))
 organ3 = Organ([1.2, 2.2, 3.2], :Shoot, OrganParams(true))
 organ4 = Organ([4.2, 5.2, 6.2], :Root, OrganParams(1 // 3))
 plant1 = construct(Plant, (deepcopy(organ1), deepcopy(organ2)), Float64[], PlantSettings(1))
-plant2 = construct(Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[],
-    PlantSettings(1.0))
+plant2 = construct(
+    Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[],
+    PlantSettings(1.0)
+)
 community = construct(Community, (deepcopy(plant1), deepcopy(plant2)))
 scenario = construct(Scenario, (deepcopy(community),))
 
@@ -75,14 +77,16 @@ organ_ode = function (dorgan, organ, p, t)
     for i in eachindex(organ)
         dorgan[i] = -m * organ[i]
     end
+    return
 end
 f = function (dscenario, scenario, p, t)
     for (organ, y, z) in LevelIterIdx(scenario, 2)
         organ_ode(@view(dscenario[y:z]), organ, p, t)
     end
+    return
 end
 affect! = function (integrator)
-    add_node!(integrator, integrator.u[1, 1, 1], 1, 1)
+    return add_node!(integrator, integrator.u[1, 1, 1], 1, 1)
 end
 
 println("ODE with tuple nodes")

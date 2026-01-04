@@ -1,5 +1,5 @@
 function level_iter(S, n::Int)
-    n == 1 ? S.nodes : chain((level_iter(node, n - 1) for node in S.nodes)...)
+    return n == 1 ? S.nodes : chain((level_iter(node, n - 1) for node in S.nodes)...)
 end
 
 struct LevelIterIdx{T}
@@ -12,7 +12,7 @@ function Base.iterate(l::LevelIterIdx)
     x == nothing && return nothing
     val, new_state = x
     end_idx = 1 + length(val) - 1
-    ((val, 1, end_idx), (new_state, end_idx + 1))
+    return ((val, 1, end_idx), (new_state, end_idx + 1))
 end
 
 function Base.iterate(l::LevelIterIdx, state)
@@ -20,7 +20,7 @@ function Base.iterate(l::LevelIterIdx, state)
     x == nothing && return nothing
     val, new_state = x
     end_idx = state[2] + length(val) - 1
-    ((val, state[2], end_idx), (new_state, end_idx + 1))
+    return ((val, state[2], end_idx), (new_state, end_idx + 1))
 end
 
 LevelIter(n::Int, S::AbstractMultiScaleArray...) = zip((level_iter(s, n) for s in S)...)
