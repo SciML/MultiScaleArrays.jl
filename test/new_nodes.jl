@@ -6,7 +6,7 @@ struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
 end
 
 struct Population{T <: AbstractMultiScaleArray, B <: Number} <:
-       AbstractMultiScaleArrayHead{B}
+    AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
@@ -20,6 +20,7 @@ function StateModel(dpop, pop, p, t) #This is arbitrary
     for (cell, dcell) in LevelIter(1, pop, dpop)
         dcell = 1.0
     end
+    return
 end
 
 prob = ODEProblem(StateModel, cellPop, (0.0, 1.0))

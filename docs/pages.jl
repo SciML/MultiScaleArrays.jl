@@ -2,5 +2,5 @@
 
 pages = [
     "Home" => "index.md",
-    "multiscalearray.md"
+    "multiscalearray.md",
 ]

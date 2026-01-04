@@ -2,7 +2,7 @@
 const AMSA = AbstractMultiScaleArray
 
 function Base.map!(f::F, m::AMSA, A0::AbstractArray, As::AbstractArray...) where {F}
-    broadcast!(f, m, A0, As...)
+    return broadcast!(f, m, A0, As...)
 end
 Base.map!(f::F, m::AMSA, A0, As...) where {F} = broadcast!(f, m, A0, As...)
 
@@ -10,7 +10,7 @@ struct AMSAStyle <: Broadcast.AbstractArrayStyle{Any} end
 Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{0}) = AMSAStyle()
 Broadcast.BroadcastStyle(::Broadcast.DefaultArrayStyle{0}, ::AMSAStyle) = AMSAStyle()
 function Broadcast.BroadcastStyle(::AMSAStyle, ::Broadcast.DefaultArrayStyle{N}) where {N}
-    Broadcast.DefaultArrayStyle{N}()
+    return Broadcast.DefaultArrayStyle{N}()
 end
 Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
 
@@ -28,7 +28,7 @@ Broadcast.BroadcastStyle(::Type{<:AMSA}) = AMSAStyle()
     =#
 
     copyto!(out, bc)
-    out
+    return out
 end
 
 @inline function Base.copyto!(dest::AMSA, bc::Broadcast.Broadcasted{<:AMSAStyle})
@@ -37,25 +37,27 @@ end
         copyto!(dest.nodes[i], unpack(bc, i))
     end
     copyto!(dest.values, unpack(bc, nothing))
-    dest
+    return dest
 end
 
-@inline function Base.copyto!(dest::AbstractMultiScaleArrayLeaf,
-        bc::Broadcast.Broadcasted{<:AMSAStyle})
+@inline function Base.copyto!(
+        dest::AbstractMultiScaleArrayLeaf,
+        bc::Broadcast.Broadcasted{<:AMSAStyle}
+    )
     copyto!(dest.values, unpack(bc, nothing))
-    dest
+    return dest
 end
 
 # drop axes because it is easier to recompute
 @inline function unpack(bc::Broadcast.Broadcasted, i)
-    Broadcast.Broadcasted(bc.f, unpack_args(i, bc.args))
+    return Broadcast.Broadcasted(bc.f, unpack_args(i, bc.args))
 end
 unpack(x, ::Any) = x
 unpack(x::AMSA, i) = x.nodes[i]
 unpack(x::AMSA, ::Nothing) = x.values
 
 @inline function unpack_args(i, args::Tuple)
-    (unpack(args[1], i), unpack_args(i, Base.tail(args))...)
+    return (unpack(args[1], i), unpack_args(i, Base.tail(args))...)
 end
 unpack_args(i, args::Tuple{Any}) = (unpack(args[1], i),)
 unpack_args(::Any, args::Tuple{}) = ()
@@ -92,10 +94,14 @@ any_non_amsa(x::Bool, rest) = isempty(rest) ? x : x || any_non_amsa(rest)
 
 ## utils
 function common_number(a, b)
-    a == 0 ? b :
-    (b == 0 ? a :
-     (a == b ? a :
-      throw(DimensionMismatch("number of nodes must be equal"))))
+    return a == 0 ? b :
+        (
+            b == 0 ? a :
+            (
+                a == b ? a :
+                throw(DimensionMismatch("number of nodes must be equal"))
+            )
+        )
 end
 
 ## Linear Algebra
@@ -103,15 +109,15 @@ end
 function LinearAlgebra.ldiv!(A::LinearAlgebra.LU, b::AMSA)
     x = Array(b)
     ldiv!(A, x)
-    b .= x
+    return b .= x
 end
 function LinearAlgebra.ldiv!(A::LinearAlgebra.QR, b::AMSA)
     x = Array(b)
     ldiv!(A, x)
-    b .= x
+    return b .= x
 end
 function LinearAlgebra.ldiv!(A::LinearAlgebra.SVD, b::AMSA)
     x = Array(b)
     ldiv!(A, x)
-    b .= x
+    return b .= x
 end
