@@ -1,5 +1,6 @@
 using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq, Statistics
+using ADTypes
 
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
@@ -64,9 +65,12 @@ prob = ODEProblem(f, embryo, (0.0, 1.0))
 test_embryo = deepcopy(embryo)
 
 sol = solve(prob, Tsit5(), callback = growing_cb, tstops = tstop)
-sol = solve(prob, Rosenbrock23(autodiff = false), tstops = tstop)
-sol = solve(prob, Rosenbrock23(autodiff = false), callback = growing_cb, tstops = tstop)
-sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = growing_cb, tstops = tstop)
+sol = solve(prob, Rosenbrock23(autodiff = AutoFiniteDiff()), tstops = tstop)
+sol = solve(prob, Rosenbrock23(autodiff = AutoFiniteDiff()), callback = growing_cb, tstops = tstop)
+sol = solve(
+    prob, Rosenbrock23(autodiff = AutoForwardDiff(chunksize = 1)), callback = growing_cb,
+    tstops = tstop
+)
 
 affect_del! = function (integrator)
     return remove_node!(integrator, 1, 1, 1)
@@ -76,9 +80,12 @@ shrinking_cb = DiscreteCallback(condition, affect_del!)
 
 sol = solve(prob, Tsit5(), callback = shrinking_cb, tstops = tstop)
 
-sol = solve(prob, Rosenbrock23(autodiff = false), callback = shrinking_cb, tstops = tstop)
+sol = solve(prob, Rosenbrock23(autodiff = AutoFiniteDiff()), callback = shrinking_cb, tstops = tstop)
 
-sol = solve(prob, Rosenbrock23(chunk_size = 1), callback = shrinking_cb, tstops = tstop)
+sol = solve(
+    prob, Rosenbrock23(autodiff = AutoForwardDiff(chunksize = 1)), callback = shrinking_cb,
+    tstops = tstop
+)
 
 @test length(sol[end]) == 17
 
