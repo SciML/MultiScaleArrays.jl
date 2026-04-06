@@ -1,7 +1,7 @@
 name = "MultiScaleArrays"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 authors = ["Chris Rackauckas <accounts@chrisrackauckas.com>"]
-version = "1.19.0"
+version = "1.20.0"
 
 [deps]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
@@ -36,7 +36,7 @@ OrdinaryDiffEq = "6"
 OrdinaryDiffEqCore = "1.30.0, 2.0, 3.1"
 OrdinaryDiffEqDifferentiation = "1.16, 2.0"
 OrdinaryDiffEqRosenbrock = "1.17.0"
-RecursiveArrayTools = "1,2,3"
+RecursiveArrayTools = "1, 2, 3, 4"
 SciMLBase = "2.116"
 SparseDiffTools = "1.6, 2"
 Statistics = "1"
