@@ -87,7 +87,7 @@ sol = solve(
     tstops = tstop
 )
 
-@test length(sol[end]) == 17
+@test length(sol.u[end]) == 17
 
 println("Do the SDE Part")
 
@@ -115,7 +115,7 @@ sol = solve(prob, RKMil(), callback = growing_cb, dt = 1 / 10, tstops = tstop)
 
 sol = solve(prob, EM(), dt = 1 / 20, callback = growing_cb, tstops = tstop)
 
-@test length(sol[end]) == 23
+@test length(sol.u[end]) == 23
 
 @show SRIW1
 
@@ -133,4 +133,4 @@ sol = solve(prob, RKMil(), dt = 1 / 10, callback = shrinking_cb, tstops = tstop)
 
 sol = solve(prob, EM(), dt = 1 / 10, callback = shrinking_cb, tstops = tstop)
 
-@test length(sol[end]) == 17
+@test length(sol.u[end]) == 17
