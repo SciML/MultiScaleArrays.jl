@@ -1,0 +1,7 @@
+[deps]
+MultiScaleArrays = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+
+[compat]
+Documenter = "1"        
+MultiScaleArrays = "1.10"
