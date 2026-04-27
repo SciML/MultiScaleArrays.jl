@@ -946,7 +946,7 @@ version = "0.2.4"
 
 [[deps.MultiScaleArrays]]
 deps = ["DiffEqBase", "DifferentiationInterface", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "OrdinaryDiffEq", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqRosenbrock", "Random", "RecursiveArrayTools", "SciMLBase", "Statistics", "StochasticDiffEq"]
-path = "/home/runner/work/MultiScaleArrays.jl/MultiScaleArrays.jl"
+path = "/home/chrisrackauckas/github-runners/arctic1-12/_work/MultiScaleArrays.jl/MultiScaleArrays.jl"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 version = "1.23.0"
 
