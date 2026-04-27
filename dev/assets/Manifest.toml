@@ -861,7 +861,7 @@ version = "0.2.4"
 
 [[deps.MultiScaleArrays]]
 deps = ["DiffEqBase", "DifferentiationInterface", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "OrdinaryDiffEq", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqRosenbrock", "Random", "RecursiveArrayTools", "SciMLBase", "Statistics", "StochasticDiffEq"]
-path = "/home/chrisrackauckas/github-runners/demeter3-22/_work/MultiScaleArrays.jl/MultiScaleArrays.jl"
+path = "/home/runner/work/MultiScaleArrays.jl/MultiScaleArrays.jl"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
 version = "1.24.0"
 
@@ -1098,9 +1098,9 @@ weakdeps = ["StatsBase"]
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
+git-tree-sha1 = "5d5e0a78e971354b1c7bff0655d11fdc1b0e12c8"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.8.3"
+version = "2.8.4"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
