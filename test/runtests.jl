@@ -1,10 +1,10 @@
 using SafeTestsets, Test
+using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
 
 const GROUP = get(ENV, "GROUP", "All")
 
 @time begin
     if GROUP == "All" || GROUP == "Core"
-        using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
         @time @testset "Tuple Nodes" begin
             include("tuple_nodes.jl")
         end
