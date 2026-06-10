@@ -1,30 +1,56 @@
-using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq, SafeTestsets
-using Test
+using Pkg
+using SafeTestsets, Test
 
-@time @testset "Tuple Nodes" begin
-    include("tuple_nodes.jl")
+const GROUP = get(ENV, "GROUP", "All")
+
+# The QA group (Aqua/JET) lives in an isolated environment under test/qa so its
+# tooling compat bounds don't constrain the base test resolve. Activate it before
+# running the QA tests. On Julia < 1.11 the [sources] table is ignored, so the
+# in-repo root path is developed explicitly.
+function activate_qa_env()
+    Pkg.activate(joinpath(@__DIR__, "qa"))
+    if VERSION < v"1.11.0-DEV.0"
+        Pkg.develop(PackageSpec(path = dirname(@__DIR__)))
+    end
+    return Pkg.instantiate()
 end
-@time @testset "Bisect Search Tests" begin
-    include("bisect_search_tests.jl")
-end
-@time @testset "Indexing and Creation Tests" begin
-    include("indexing_and_creation_tests.jl")
-end
-@time @testset "Values Indexing" begin
-    include("values_indexing.jl")
-end
-@time @testset "Get Indices Tests" begin
-    include("get_indices.jl")
-end
-@time @testset "Additional Fields Test" begin
-    include("additional_fields_test.jl")
-end
-@time @testset "Dynamic DiffEq Tests" begin
-    include("dynamic_diffeq.jl")
-end
-@time @testset "Single Layer DiffEq Tests" begin
-    include("single_layer_diffeq.jl")
-end
-@time @safetestset "New Nodes Tests" begin
-    include("new_nodes.jl")
+
+@time begin
+    if GROUP == "All" || GROUP == "Core"
+        @eval using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
+        @time @testset "Tuple Nodes" begin
+            include("tuple_nodes.jl")
+        end
+        @time @testset "Bisect Search Tests" begin
+            include("bisect_search_tests.jl")
+        end
+        @time @testset "Indexing and Creation Tests" begin
+            include("indexing_and_creation_tests.jl")
+        end
+        @time @testset "Values Indexing" begin
+            include("values_indexing.jl")
+        end
+        @time @testset "Get Indices Tests" begin
+            include("get_indices.jl")
+        end
+        @time @testset "Additional Fields Test" begin
+            include("additional_fields_test.jl")
+        end
+        @time @testset "Dynamic DiffEq Tests" begin
+            include("dynamic_diffeq.jl")
+        end
+        @time @testset "Single Layer DiffEq Tests" begin
+            include("single_layer_diffeq.jl")
+        end
+        @time @safetestset "New Nodes Tests" begin
+            include("new_nodes.jl")
+        end
+    end
+
+    if GROUP == "QA"
+        activate_qa_env()
+        @time @safetestset "Quality Assurance" begin
+            include("qa/qa.jl")
+        end
+    end
 end
