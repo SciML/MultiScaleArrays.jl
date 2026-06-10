@@ -1,10 +1,23 @@
+using Pkg
 using SafeTestsets, Test
-using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
 
 const GROUP = get(ENV, "GROUP", "All")
 
+# The QA group (Aqua/JET) lives in an isolated environment under test/qa so its
+# tooling compat bounds don't constrain the base test resolve. Activate it before
+# running the QA tests. On Julia < 1.11 the [sources] table is ignored, so the
+# in-repo root path is developed explicitly.
+function activate_qa_env()
+    Pkg.activate(joinpath(@__DIR__, "qa"))
+    if VERSION < v"1.11.0-DEV.0"
+        Pkg.develop(PackageSpec(path = dirname(@__DIR__)))
+    end
+    return Pkg.instantiate()
+end
+
 @time begin
     if GROUP == "All" || GROUP == "Core"
+        @eval using MultiScaleArrays, OrdinaryDiffEq, DiffEqBase, StochasticDiffEq
         @time @testset "Tuple Nodes" begin
             include("tuple_nodes.jl")
         end
@@ -35,6 +48,7 @@ const GROUP = get(ENV, "GROUP", "All")
     end
 
     if GROUP == "QA"
+        activate_qa_env()
         @time @safetestset "Quality Assurance" begin
             include("qa/qa.jl")
         end
