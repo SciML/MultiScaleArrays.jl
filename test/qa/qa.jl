@@ -2,7 +2,7 @@ using MultiScaleArrays, Aqua, JET
 using Test
 
 # Findings tracked in https://github.com/SciML/MultiScaleArrays.jl/issues/142.
-# The failing Aqua/JET checks are marked @test_broken so the QA group is green;
+# The failing Aqua checks are marked @test_broken so the QA group is green;
 # remove the markers (and re-enable the disabled Aqua.test_all checks) once fixed.
 @testset "Aqua" begin
     Aqua.test_all(MultiScaleArrays; ambiguities = false, deps_compat = false)
@@ -10,6 +10,10 @@ using Test
     @test_broken false  # Aqua deps_compat: LinearAlgebra and Random lack [compat] entries — see https://github.com/SciML/MultiScaleArrays.jl/issues/142
 end
 
+# This is the JET check that ran (and passed) under the old standalone QA.yml
+# before CI was centralized; centralization dropped it. Restored verbatim and
+# enforced. The target_modules filter scopes reports to MultiScaleArrays itself.
 @testset "JET" begin
-    @test_broken false  # JET: DiffEqBase.alg_needs_extra_process not defined (src/diffeq.jl:427) — see https://github.com/SciML/MultiScaleArrays.jl/issues/142
+    report = JET.report_package(MultiScaleArrays; target_modules = (MultiScaleArrays,))
+    @test length(JET.get_reports(report)) == 0
 end
