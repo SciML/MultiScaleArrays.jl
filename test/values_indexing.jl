@@ -1,26 +1,24 @@
 using MultiScaleArrays
 using OrdinaryDiffEq, DiffEqBase, Test, StochasticDiffEq
 
-#=
 struct Cell{B} <: AbstractMultiScaleArrayLeaf{B}
     values::Vector{B}
 end
-struct Population{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Population{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Tissue{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArray{B}
+struct Tissue{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArray{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-struct Embryo{T<:AbstractMultiScaleArray,B<:Number} <: AbstractMultiScaleArrayHead{B}
+struct Embryo{T <: AbstractMultiScaleArray, B <: Number} <: AbstractMultiScaleArrayHead{B}
     nodes::Vector{T}
     values::Vector{B}
     end_idxs::Vector{Int}
 end
-=#
 
 cell1 = Cell([1.0; 2.0; 3.0])
 cell2 = Cell([4.0; 5])
