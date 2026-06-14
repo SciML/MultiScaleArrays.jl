@@ -1,3 +1,5 @@
+using MultiScaleArrays, Test
+
 a = collect(3:3:30)
 @test MultiScaleArrays.bisect_search(a, 20) == 7
 @test MultiScaleArrays.bisect_search(a, 13) == 5
