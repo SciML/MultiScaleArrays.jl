@@ -1,19 +1,53 @@
-using MultiScaleArrays, Aqua, JET
+using SciMLTesting, MultiScaleArrays, JET
 using Test
 
-# Findings tracked in https://github.com/SciML/MultiScaleArrays.jl/issues/142.
-# The failing Aqua checks are marked @test_broken so the QA group is green;
-# remove the markers (and re-enable the disabled Aqua.test_all checks) once fixed.
-@testset "Aqua" begin
-    Aqua.test_all(MultiScaleArrays; ambiguities = false, deps_compat = false)
-    @test_broken false  # Aqua ambiguities: 5 (construct/shape_construction.jl, ldiv!/math.jl) — see https://github.com/SciML/MultiScaleArrays.jl/issues/142
-    @test_broken false  # Aqua deps_compat: LinearAlgebra and Random lack [compat] entries — see https://github.com/SciML/MultiScaleArrays.jl/issues/142
-end
-
-# This is the JET check that ran (and passed) under the old standalone QA.yml
-# before CI was centralized; centralization dropped it. Restored verbatim and
-# enforced. The target_modules filter scopes reports to MultiScaleArrays itself.
-@testset "JET" begin
-    report = JET.report_package(MultiScaleArrays; target_modules = (MultiScaleArrays,))
-    @test length(JET.get_reports(report)) == 0
-end
+# Aqua `ambiguities` and `deps_compat` are tracked-broken in
+# https://github.com/SciML/MultiScaleArrays.jl/issues/142 (5 `construct`/`ldiv!`
+# ambiguities; LinearAlgebra and Random lack `[compat]` entries). They are disabled
+# in `Aqua.test_all` and recorded as `@test_broken` placeholders via `aqua_broken`;
+# remove them from `aqua_broken` once the issue is resolved.
+#
+# JET runs as a hard check (the previous `alg_needs_extra_process` finding no longer
+# fires). The ExplicitImports `ignore` lists cover non-owner / non-public accesses to
+# other packages' names (re-exports and internals that become public as those base
+# libraries declare `public`); each ignored name is grouped by its source package.
+run_qa(
+    MultiScaleArrays;
+    explicit_imports = true,
+    aqua_broken = (:ambiguities, :deps_compat),
+    ei_kwargs = (;
+        all_qualified_accesses_via_owners = (;
+            ignore = (
+                # owner SciMLBase, accessed via DiffEqBase's re-export
+                :AbstractODEIntegrator, :AbstractSDEIntegrator, :DEIntegrator,
+                :is_diagonal_noise,
+            ),
+        ),
+        all_qualified_accesses_are_public = (;
+            ignore = (
+                # Base.Broadcast internals
+                :AbstractArrayStyle, :Broadcasted, :DefaultArrayStyle,
+                :_broadcast_getindex_eltype,
+                # DiffEqBase re-exports of non-public SciMLBase names
+                :AbstractODEIntegrator, :AbstractSDEIntegrator, :DEIntegrator,
+                :is_diagonal_noise,
+                # ForwardDiff internals
+                :DerivativeConfig, :Dual, :Tag,
+                # FiniteDiff internals
+                :GradientCache, :JacobianCache,
+                # OrdinaryDiffEqCore / OrdinaryDiffEqRosenbrock cache types
+                :OrdinaryDiffEqCache, :RosenbrockMutableCache,
+                # OrdinaryDiffEqDifferentiation internals
+                :resize_grad_config!, :resize_jac_config!,
+                # Base internals
+                :tail, :typename,
+            ),
+        ),
+        all_explicit_imports_are_public = (;
+            ignore = (
+                # non-public RecursiveArrayTools name used in level_iterations.jl
+                :chain,
+            ),
+        ),
+    ),
+)
