@@ -8,21 +8,15 @@ using Test
 # remove them from `aqua_broken` once the issue is resolved.
 #
 # JET runs as a hard check (the previous `alg_needs_extra_process` finding no longer
-# fires). The ExplicitImports `ignore` lists cover non-owner / non-public accesses to
-# other packages' names (re-exports and internals that become public as those base
-# libraries declare `public`); each ignored name is grouped by its source package.
+# fires). The ExplicitImports `ignore` lists cover non-public accesses to other
+# packages' names (internals that become public as those base libraries declare
+# `public`); each ignored name is grouped by its source package. Every entry below
+# was verified to still flag with the lists emptied.
 run_qa(
     MultiScaleArrays;
     explicit_imports = true,
     aqua_broken = (:ambiguities, :deps_compat),
     ei_kwargs = (;
-        all_qualified_accesses_via_owners = (;
-            ignore = (
-                # owner SciMLBase, accessed via DiffEqBase's re-export
-                :AbstractODEIntegrator, :AbstractSDEIntegrator, :DEIntegrator,
-                :is_diagonal_noise,
-            ),
-        ),
         all_qualified_accesses_are_public = (;
             ignore = (
                 # Base.Broadcast internals
