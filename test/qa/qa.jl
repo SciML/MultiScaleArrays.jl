@@ -28,9 +28,6 @@ run_qa(
                 # Base.Broadcast internals
                 :AbstractArrayStyle, :Broadcasted, :DefaultArrayStyle,
                 :_broadcast_getindex_eltype,
-                # DiffEqBase re-exports of non-public SciMLBase names
-                :AbstractODEIntegrator, :AbstractSDEIntegrator, :DEIntegrator,
-                :is_diagonal_noise,
                 # ForwardDiff internals
                 :DerivativeConfig, :Dual, :Tag,
                 # FiniteDiff internals

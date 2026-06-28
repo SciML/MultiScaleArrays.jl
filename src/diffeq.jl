@@ -1,9 +1,9 @@
-function remove_node!(integrator::DiffEqBase.DEIntegrator, I...)
+function remove_node!(integrator::SciMLBase.DEIntegrator, I...)
     idxs = getindices(integrator.u, I...)
     for c in full_cache(integrator)
         remove_node!(c, I...)
     end
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         for c in DiffEqBase.ratenoise_cache(integrator)
             remove_node!(c, I...)
         end
@@ -11,7 +11,7 @@ function remove_node!(integrator::DiffEqBase.DEIntegrator, I...)
     return remove_node_non_user_cache!(integrator, idxs, I...) # required to do noise correctly
 end
 
-function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
+function add_node!(integrator::SciMLBase.DEIntegrator, x, I...)
     cur_len = length(integrator.u)
     add_len = length(x)
     last_idx = length(integrator.u[I...].nodes)
@@ -20,7 +20,7 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
     for c in full_cache(integrator)
         add_node!(c, recursivecopy(x), I...)
     end
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         for c in DiffEqBase.ratenoise_cache(integrator)
             add_node!(c, recursivecopy(x), I...)
         end
@@ -29,7 +29,7 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x, I...)
     return add_node_non_user_cache!(integrator, idxs, x, I...) # required to do noise correctly
 end
 
-function add_node!(integrator::DiffEqBase.DEIntegrator, x)
+function add_node!(integrator::SciMLBase.DEIntegrator, x)
     cur_len = length(integrator.u)
     add_len = length(x)
     last_idx = length(integrator.u.nodes)
@@ -38,7 +38,7 @@ function add_node!(integrator::DiffEqBase.DEIntegrator, x)
     for c in full_cache(integrator)
         add_node!(c, recursivecopy(x))
     end
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         for c in DiffEqBase.ratenoise_cache(integrator)
             add_node!(c, recursivecopy(x))
         end
@@ -49,14 +49,14 @@ end
 reshape(m::AbstractMultiScaleArray, i::Int...) = m
 
 function remove_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
+        integrator::SciMLBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
         node...
     )
     return remove_node_non_user_cache!(integrator, integrator.cache, idxs, node...)
 end
 
 function remove_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache, idxs::AbstractUnitRange,
         node...
     )
@@ -64,28 +64,28 @@ function remove_node_non_user_cache!(
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
+        integrator::SciMLBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
         x::AbstractArray
     )
     return add_node_non_user_cache!(integrator, integrator.cache, idxs, x)
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
+        integrator::SciMLBase.AbstractODEIntegrator, idxs::AbstractUnitRange,
         x::AbstractArray, node...
     )
     return add_node_non_user_cache!(integrator, integrator.cache, idxs, x, node...)
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache, idxs::AbstractUnitRange,
         x::AbstractArray
     )
     return nothing
 end
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqCore.OrdinaryDiffEqCache, idxs::AbstractUnitRange,
         x::AbstractArray, node...
     )
@@ -93,7 +93,7 @@ function add_node_non_user_cache!(
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache, idxs::AbstractUnitRange,
         x::AbstractArray
     )
@@ -106,7 +106,7 @@ function add_node_non_user_cache!(
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache, idxs::AbstractUnitRange,
         x::AbstractArray, node...
     )
@@ -119,7 +119,7 @@ function add_node_non_user_cache!(
 end
 
 function remove_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::OrdinaryDiffEqRosenbrock.RosenbrockMutableCache, idxs::AbstractUnitRange,
         node...
     )
@@ -251,11 +251,11 @@ function remove_node_grad_config!(cache, grad_config::FiniteDiff.GradientCache, 
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractSDEIntegrator, idxs, x,
+        integrator::SciMLBase.AbstractSDEIntegrator, idxs, x,
         node...
     )
     #addat_non_user_cache!(integrator, idxs)
-    return if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    return if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         add_node_noise!(integrator, idxs, x, node...)
         for c in rand_cache(integrator)
             add_node!(c, copy(x), node...)
@@ -263,9 +263,9 @@ function add_node_non_user_cache!(
     end
 end
 
-function add_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator, idxs, x)
+function add_node_non_user_cache!(integrator::SciMLBase.AbstractSDEIntegrator, idxs, x)
     #addat_non_user_cache!(integrator, idxs)
-    return if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    return if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         add_node_noise!(integrator, idxs, x)
         for c in rand_cache(integrator)
             add_node!(c, copy(x))
@@ -274,11 +274,11 @@ function add_node_non_user_cache!(integrator::DiffEqBase.AbstractSDEIntegrator, 
 end
 
 function remove_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractSDEIntegrator, idxs,
+        integrator::SciMLBase.AbstractSDEIntegrator, idxs,
         node...
     )
     #deleteat_non_user_cache!(integrator, idxs)
-    return if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    return if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         remove_node_noise!(integrator, node...)
         for c in rand_cache(integrator)
             remove_node!(c, node...)
@@ -291,12 +291,12 @@ end
 # the integrator-typed methods above no longer dispatch. Route through the cache
 # type instead — the SDE-side caches still subtype `StochasticDiffEqMutableCache`.
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::StochasticDiffEq.StochasticDiffEqMutableCache,
         idxs::AbstractUnitRange,
         x::AbstractArray, node...
     )
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         add_node_noise!(integrator, idxs, x, node...)
         for c in rand_cache(integrator)
             add_node!(c, copy(x), node...)
@@ -306,12 +306,12 @@ function add_node_non_user_cache!(
 end
 
 function add_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::StochasticDiffEq.StochasticDiffEqMutableCache,
         idxs::AbstractUnitRange,
         x::AbstractArray
     )
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         add_node_noise!(integrator, idxs, x)
         for c in rand_cache(integrator)
             add_node!(c, copy(x))
@@ -321,12 +321,12 @@ function add_node_non_user_cache!(
 end
 
 function remove_node_non_user_cache!(
-        integrator::DiffEqBase.AbstractODEIntegrator,
+        integrator::SciMLBase.AbstractODEIntegrator,
         cache::StochasticDiffEq.StochasticDiffEqMutableCache,
         idxs::AbstractUnitRange,
         node...
     )
-    if DiffEqBase.is_diagonal_noise(integrator.sol.prob)
+    if SciMLBase.is_diagonal_noise(integrator.sol.prob)
         remove_node_noise!(integrator, node...)
         for c in rand_cache(integrator)
             remove_node!(c, node...)
