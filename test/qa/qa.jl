@@ -40,7 +40,7 @@ run_qa(
                 # OrdinaryDiffEqDifferentiation internals
                 :resize_grad_config!, :resize_jac_config!,
                 # Base internals
-                :tail, :typename,
+                :typename,
             ),
         ),
         all_explicit_imports_are_public = (;
