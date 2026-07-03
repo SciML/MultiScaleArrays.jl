@@ -3,8 +3,8 @@ __precompile__()
 module MultiScaleArrays
 
     import Base: length, push!, deleteat!, getindex, setindex!, eachindex, ndims,
-        size, print_matrix, similar, hcat, vcat,
-        ==, *, +, /, -, show, vec, reshape
+        size, similar, hcat, vcat,
+        ==, *, +, -, show, reshape
 
     import RecursiveArrayTools: recursivecopy, recursivecopy!
 
@@ -171,10 +171,14 @@ module MultiScaleArrays
     abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
     abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
-    using DiffEqBase, Statistics, LinearAlgebra, FiniteDiff
+    using DiffEqBase: DiffEqBase
+    using Statistics: Statistics
+    using LinearAlgebra: LinearAlgebra, ldiv!
+    using FiniteDiff: FiniteDiff
     import OrdinaryDiffEq, OrdinaryDiffEqCore, OrdinaryDiffEqRosenbrock, StochasticDiffEq, ForwardDiff
     import OrdinaryDiffEqDifferentiation
     import SciMLBase
+    using SciMLBase: full_cache, rand_cache
     import DifferentiationInterface as DI
 
     Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
