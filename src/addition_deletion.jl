@@ -25,6 +25,11 @@ function __add_node!(
     return __update_lengths(m, i, length(node))
 end
 
+"""
+    add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray, I...)
+
+Insert `node` at the location identified by `I` and update cached linear indices.
+"""
 function add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray)
     return __add_node!(m, node)
 end
@@ -56,6 +61,11 @@ function __remove_node!(m::AbstractMultiScaleArrayLeaf, i::Int)
     return 1
 end
 
+"""
+    remove_node!(m::AbstractMultiScaleArrayHead, I...)
+
+Remove the node at the location identified by `I` and update cached linear indices.
+"""
 function remove_node!(m::AbstractMultiScaleArrayHead, i, I::Int...)
     del_length = __remove_node!(m.nodes[i], I...)
     for j in i:num_nodes(m)
