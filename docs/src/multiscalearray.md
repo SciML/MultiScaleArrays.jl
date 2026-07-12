@@ -5,7 +5,6 @@ AbstractMultiScaleArray
 AbstractMultiScaleArrayLeaf
 AbstractMultiScaleArrayHead
 construct
-recursivecopy!
 add_node!
 remove_node!
 num_nodes

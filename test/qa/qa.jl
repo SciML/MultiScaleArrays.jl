@@ -15,7 +15,10 @@ using Test
 run_qa(
     MultiScaleArrays;
     explicit_imports = true,
-    api_docs_kwargs = (; rendered = true),
+    # `recursivecopy!` is re-exported from RecursiveArrayTools, which owns and
+    # documents it; MultiScaleArrays should not render (and pirate a docstring for)
+    # another package's function, so it is excluded from the rendered-docs check.
+    api_docs_kwargs = (; rendered = true, rendered_ignore = (:recursivecopy!,)),
     aqua_broken = (:ambiguities, :deps_compat),
     ei_kwargs = (;
         all_qualified_accesses_are_public = (;
