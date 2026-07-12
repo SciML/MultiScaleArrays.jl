@@ -107,6 +107,11 @@ end
 
 ==(m1::AbstractMultiScaleArray, m2::AbstractMultiScaleArray) = (m1 === m2)
 
+"""
+    recursivecopy!(dest::AbstractMultiScaleArray, src::AbstractMultiScaleArray)
+
+Recursively copy values from `src` into the matching nodes and values of `dest`.
+"""
 function recursivecopy!(b::AbstractMultiScaleArrayLeaf, a::AbstractMultiScaleArrayLeaf)
     return @inbounds copyto!(b, a)
 end
