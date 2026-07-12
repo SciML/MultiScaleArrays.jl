@@ -209,7 +209,7 @@ module MultiScaleArrays
         AbstractMultiScaleArrayHead
 
     # Constructors
-    export construct, recursivecopy!
+    export construct
 
     # Addition Deletion
     export add_node!, remove_node!

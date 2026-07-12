@@ -1,5 +1,5 @@
 using MultiScaleArrays, DiffEqBase, OrdinaryDiffEq, StochasticDiffEq, Test,
-    Random
+    Random, RecursiveArrayTools
 
 ### Setup a hierarchy
 
