@@ -1,7 +1,17 @@
+"""
+    level_iter(S::AbstractMultiScaleArray, n::Int)
+
+Iterate over nodes `n` levels below the top of `S`.
+"""
 function level_iter(S, n::Int)
     return n == 1 ? S.nodes : chain((level_iter(node, n - 1) for node in S.nodes)...)
 end
 
+"""
+    LevelIterIdx(S::AbstractMultiScaleArray, n::Int)
+
+Iterator over nodes `n` levels below `S`, yielding each node and its linear index range.
+"""
 struct LevelIterIdx{T}
     iter::T
 end
@@ -23,4 +33,9 @@ function Base.iterate(l::LevelIterIdx, state)
     return ((val, state[2], end_idx), (new_state, end_idx + 1))
 end
 
+"""
+    LevelIter(n::Int, S::AbstractMultiScaleArray...)
+
+Zip `level_iter(s, n)` across one or more multiscale arrays.
+"""
 LevelIter(n::Int, S::AbstractMultiScaleArray...) = zip((level_iter(s, n) for s in S)...)

@@ -2,6 +2,16 @@
 
 ```@docs
 AbstractMultiScaleArray
+AbstractMultiScaleArrayLeaf
+AbstractMultiScaleArrayHead
+construct
+add_node!
+remove_node!
+num_nodes
+getindices
+level_iter
+LevelIter
+LevelIterIdx
 print_human_readable
 ```
 

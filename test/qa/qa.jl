@@ -15,6 +15,7 @@ using Test
 run_qa(
     MultiScaleArrays;
     explicit_imports = true,
+    api_docs_kwargs = (; rendered = true),
     aqua_broken = (:ambiguities, :deps_compat),
     ei_kwargs = (;
         all_qualified_accesses_are_public = (;

@@ -75,6 +75,11 @@ Base.eltype(::T) where {T <: AbstractMultiScaleArray} = eltype(T)
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int)    =  (println("here");m[i])
 #broadcast_getindex(m::AbstractMultiScaleArray, i::Int...) = m[i]
 
+"""
+    getindices(m::AbstractMultiScaleArrayHead, I...)
+
+Return the linear index range corresponding to the node selected by `I`.
+"""
 getindices(m::AbstractMultiScaleArrayHead) = 1:length(m)
 
 function getindices(m::AbstractMultiScaleArrayHead, i::Int)

@@ -168,7 +168,19 @@ module MultiScaleArrays
     (of course at the cost of mutability).
     """
     abstract type AbstractMultiScaleArray{B} <: AbstractVector{B} end
+
+    """
+        AbstractMultiScaleArrayLeaf{B}
+
+    Abstract supertype for leaf nodes in a multiscale array hierarchy.
+    """
     abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
+
+    """
+        AbstractMultiScaleArrayHead{B}
+
+    Abstract supertype for the top node of a multiscale array hierarchy.
+    """
     abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 
     using DiffEqBase: DiffEqBase
@@ -197,7 +209,7 @@ module MultiScaleArrays
         AbstractMultiScaleArrayHead
 
     # Constructors
-    export construct, recursivecopy!
+    export construct
 
     # Addition Deletion
     export add_node!, remove_node!

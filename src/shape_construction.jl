@@ -2,6 +2,12 @@ length(m::AbstractMultiScaleArrayLeaf) = length(m.values)
 length(m::AbstractMultiScaleArray) = m.end_idxs[end]
 Base.isempty(m::AbstractMultiScaleArray) = isempty(m.nodes) && isempty(m.values)
 Base.isempty(m::AbstractMultiScaleArrayLeaf) = isempty(m.values)
+
+"""
+    num_nodes(m::AbstractMultiScaleArray)
+
+Return the number of immediate child nodes in `m`.
+"""
 num_nodes(m::AbstractMultiScaleArrayLeaf) = 0
 num_nodes(m::AbstractMultiScaleArray) = size(m.nodes, 1)
 ndims(m::AbstractMultiScaleArray) = 1
@@ -39,6 +45,11 @@ Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A), 0)
 recursive_similar(x, T) = [similar(y, T) for y in x]
 recursive_similar(x::Tuple, T) = tuple((similar(y, T) for y in x)...)
 
+"""
+    construct(::Type{T}, args...) where {T <: AbstractMultiScaleArray}
+
+Construct a multiscale array node of type `T` and populate its cached end indices.
+"""
 construct(::Type{T}, args...) where {T <: AbstractMultiScaleArrayLeaf} = T(args...)
 
 function __construct(T, nodes, values, args...)
