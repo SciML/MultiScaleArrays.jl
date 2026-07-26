@@ -9,8 +9,8 @@ makedocs(
     sitename = "MultiScaleArrays.jl",
     authors = "Chris Rackauckas",
     modules = [MultiScaleArrays],
-    clean = true, doctest = false, linkcheck = true,
-    warnonly = [:missing_docs],
+    clean = true, doctest = true, linkcheck = true,
+    checkdocs = :exports,
     format = Documenter.HTML(
         assets = ["assets/favicon.ico"],
         canonical = "https://docs.sciml.ai/MultiScaleArrays/stable/"

@@ -11,6 +11,37 @@ module MultiScaleArrays
     import RecursiveArrayTools: chain
 
     """
+    AbstractMultiScaleArray{B}
+
+    AbstractMultiScaleArray{B} <: AbstractVector{B}
+
+    Abstract supertype for the nodes of a hierarchical array. A concrete leaf subtype stores a
+    `values` field, while non-leaf subtypes store `nodes`, `values`, and `end_idxs` fields in that
+    order. The head node should additionally subtype [`AbstractMultiScaleArrayHead`](@ref), so it
+    can be passed to [`add_node!`](@ref), [`remove_node!`](@ref), and `getindices`.
+
+    # Interface
+
+    - A leaf subtype must have `values::AbstractVector` as its first field.
+    - A non-leaf subtype must have `nodes`, `values`, and `end_idxs::AbstractVector{Int}` as its
+      first three fields. `end_idxs` stores the cumulative linear lengths of `nodes`, followed by
+      the length including `values` when `values` is nonempty.
+    - Extra fields may follow the required fields and may be mutable or immutable.
+
+    # Examples
+
+    ```julia
+    struct Cell <: AbstractMultiScaleArrayLeaf{Float64}
+        values::Vector{Float64}
+    end
+
+    struct Tissue <: AbstractMultiScaleArray{Float64}
+        nodes::Vector{Cell}
+        values::Vector{Float64}
+        end_idxs::Vector{Int}
+    end
+    ```
+
     # Defining A MultiScaleModel: The Interface
 
     The required interface is as follows. Leaf types must extend AbstractMultiScaleArrayLeaf, the
@@ -148,7 +179,7 @@ module MultiScaleArrays
     end
 
     mutable struct Scenario{B, N <: Tuple{Vararg{Community{<:Number}}}} <:
-                   AbstractMultiScaleArrayHead{B}
+        AbstractMultiScaleArrayHead{B}
         nodes::N
         values::Vector{B}
         end_idxs::Vector{Int}
@@ -159,8 +190,10 @@ module MultiScaleArrays
     organ3 = Organ([1.2, 2.2, 3.2], :Shoot, OrganParams(true))
     organ4 = Organ([4.2, 5.2, 6.2], :Root, OrganParams(1 // 3))
     plant1 = construct(Plant, (deepcopy(organ1), deepcopy(organ2)), Float64[], PlantSettings(1))
-    plant2 = construct(Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[],
-                       PlantSettings(1.0))
+    plant2 = construct(
+        Plant, (deepcopy(organ3), deepcopy(organ4)), Float64[],
+        PlantSettings(1.0)
+    )
     community = construct(Community, (deepcopy(plant1), deepcopy(plant2)))
     scenario = construct(Scenario, (deepcopy(community),))
     ```
@@ -173,6 +206,22 @@ module MultiScaleArrays
         AbstractMultiScaleArrayLeaf{B}
 
     Abstract supertype for leaf nodes in a multiscale array hierarchy.
+
+    # Interface
+
+    A concrete leaf must define `values` as its first field. Its elements provide the leaf's
+    linear array entries. Use [`construct`](@ref) directly for a leaf only when its ordinary
+    constructor accepts the same arguments.
+
+    # Examples
+
+    ```julia
+    struct Cell <: AbstractMultiScaleArrayLeaf{Float64}
+        values::Vector{Float64}
+    end
+
+    Cell([1.0, 2.0])
+    ```
     """
     abstract type AbstractMultiScaleArrayLeaf{B} <: AbstractMultiScaleArray{B} end
 
@@ -180,6 +229,22 @@ module MultiScaleArrays
         AbstractMultiScaleArrayHead{B}
 
     Abstract supertype for the top node of a multiscale array hierarchy.
+
+    # Interface
+
+    A head has the same required fields as [`AbstractMultiScaleArray`](@ref). It is the entry
+    point for structural changes: [`add_node!`](@ref), [`remove_node!`](@ref), and
+    [`getindices`](@ref) accept a head and update or inspect the whole hierarchy.
+
+    # Examples
+
+    ```julia
+    mutable struct ModelHead <: AbstractMultiScaleArrayHead{Float64}
+        nodes::Vector{Tissue}
+        values::Vector{Float64}
+        end_idxs::Vector{Int}
+    end
+    ```
     """
     abstract type AbstractMultiScaleArrayHead{B} <: AbstractMultiScaleArray{B} end
 

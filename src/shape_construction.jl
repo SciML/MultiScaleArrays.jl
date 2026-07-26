@@ -7,6 +7,18 @@ Base.isempty(m::AbstractMultiScaleArrayLeaf) = isempty(m.values)
     num_nodes(m::AbstractMultiScaleArray)
 
 Return the number of immediate child nodes in `m`.
+
+# Arguments
+
+- `m`: A multiscale array node.
+
+# Examples
+
+```julia
+num_nodes(tissue)
+```
+
+Leaf nodes have no children and return `0`.
 """
 num_nodes(m::AbstractMultiScaleArrayLeaf) = 0
 num_nodes(m::AbstractMultiScaleArray) = size(m.nodes, 1)
@@ -49,6 +61,24 @@ recursive_similar(x::Tuple, T) = tuple((similar(y, T) for y in x)...)
     construct(::Type{T}, args...) where {T <: AbstractMultiScaleArray}
 
 Construct a multiscale array node of type `T` and populate its cached end indices.
+
+# Arguments
+
+- `T`: Concrete subtype of [`AbstractMultiScaleArray`](@ref) to construct.
+- `nodes`: Child nodes for a non-leaf node. It may be a vector or tuple of compatible multiscale
+  arrays.
+- `values`: Optional intrinsic values stored at the current node. It defaults to an empty vector
+  with element type `eltype(T)`.
+- `args...`: Extra fields of `T`, in declaration order after the required fields.
+
+# Examples
+
+```julia
+cell = Cell([1.0, 2.0])
+tissue = construct(Tissue, [cell])
+```
+
+For a leaf subtype, `construct(T, args...)` calls the ordinary constructor `T(args...)`.
 """
 construct(::Type{T}, args...) where {T <: AbstractMultiScaleArrayLeaf} = T(args...)
 

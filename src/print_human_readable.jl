@@ -72,13 +72,30 @@ function toprint_AbstractMultiScaleArray!(
 end
 
 """
+    print_human_readable(X::AbstractMultiScaleArray; kwargs...)
+
+Print a compact tree view of a multiscale array hierarchy.
+
+# Arguments
+
+- `X`: The multiscale array hierarchy to display.
+
+# Keywords
+
+- `n_char_per_name = 6`: Maximum number of characters shown for a node type name.
+- `fields = nothing`: Optional iterable of leaf-field names to print instead of the leaf type.
+- `levelmax = Inf`: Maximum hierarchy depth to display.
+- `n_item_max_per_levels = Inf`: Maximum number of entries shown at each level.
+
+# Examples
+
 ```julia
 print_human_readable(embryo)
 # +|Tissue;                                                 |Tissue
 #  +|Popula;           |Popula;           |Popula;          +|Popula;           |Popula;           |Popula
 #   +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell; +Cell; Cell; Cell
 
-print_human_readable(embryo; NcharPerName = 2)
+print_human_readable(embryo; n_char_per_name = 2)
 # +|Ti;                                   |Ti
 #  +|Po;         |Po;         |Po;        +|Po;         |Po;         |Po
 #   +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce; +Ce; Ce; Ce
@@ -87,7 +104,7 @@ print_human_readable(embryo; NcharPerName = 2)
 Here, if the 'AbstractMultiScaleArrayLeaf's contain several fields, you can specify them with fields = [field1,field2,...]
 
 ```julia
-print_human_readable(embryo; NcharPerName = 2, fields = [:values])
+print_human_readable(embryo; n_char_per_name = 2, fields = [:values])
 # +|Ti;                                                                                                                                                                             |Ti
 #  +|Po;                                                       |Po;                                                       |Po;                                                      +|Po;                                                       |Po;                                                       |Po
 #   +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]; +va: [1.0, 2.0, 3.0]; va: [3.0, 2.0, 5.0]; va: [4.0, 6.0]

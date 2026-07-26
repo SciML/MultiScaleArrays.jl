@@ -29,6 +29,20 @@ end
     add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray, I...)
 
 Insert `node` at the location identified by `I` and update cached linear indices.
+
+# Arguments
+
+- `m`: An [`AbstractMultiScaleArrayHead`](@ref) to mutate.
+- `node`: The multiscale array node to append or insert.
+- `I...`: Optional indices that select the parent node. With no indices, `node` is appended to
+  `m`; with one or more indices, it is inserted into the selected descendant.
+
+# Examples
+
+```julia
+add_node!(model, Cell([0.0]))
+add_node!(model, Cell([0.0]), 2)
+```
 """
 function add_node!(m::AbstractMultiScaleArrayHead, node::AbstractMultiScaleArray)
     return __add_node!(m, node)
@@ -65,6 +79,19 @@ end
     remove_node!(m::AbstractMultiScaleArrayHead, I...)
 
 Remove the node at the location identified by `I` and update cached linear indices.
+
+# Arguments
+
+- `m`: An [`AbstractMultiScaleArrayHead`](@ref) to mutate.
+- `I...`: Indices selecting the node to remove. A single index removes a direct child; additional
+  indices descend through the hierarchy.
+
+# Examples
+
+```julia
+remove_node!(model, 2)
+remove_node!(model, 2, 1)
+```
 """
 function remove_node!(m::AbstractMultiScaleArrayHead, i, I::Int...)
     del_length = __remove_node!(m.nodes[i], I...)
