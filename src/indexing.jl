@@ -79,6 +79,20 @@ Base.eltype(::T) where {T <: AbstractMultiScaleArray} = eltype(T)
     getindices(m::AbstractMultiScaleArrayHead, I...)
 
 Return the linear index range corresponding to the node selected by `I`.
+
+# Arguments
+
+- `m`: An [`AbstractMultiScaleArrayHead`](@ref).
+- `I...`: Optional child indices. With no indices, the returned range covers the whole hierarchy.
+
+# Examples
+
+```julia
+getindices(model)
+getindices(model, 2, 1)
+```
+
+The result is a `UnitRange` suitable for indexing the head's linear representation.
 """
 getindices(m::AbstractMultiScaleArrayHead) = 1:length(m)
 
