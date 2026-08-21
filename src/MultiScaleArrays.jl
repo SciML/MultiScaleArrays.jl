@@ -257,6 +257,7 @@ module MultiScaleArrays
     import SciMLBase
     using SciMLBase: full_cache, rand_cache
     import DifferentiationInterface as DI
+    using PrecompileTools: @compile_workload, @setup_workload
 
     Base.show(io::IO, x::AbstractMultiScaleArray) = invoke(show, Tuple{IO, Any}, io, x)
     Base.show(io::IO, ::MIME"text/plain", x::AbstractMultiScaleArray) = show(io, x)
@@ -287,5 +288,29 @@ module MultiScaleArrays
 
     # print_human_readable
     export print_human_readable
+
+    struct _PrecompileCell <: AbstractMultiScaleArrayLeaf{Float64}
+        values::Vector{Float64}
+    end
+
+    mutable struct _PrecompileHead{T <: AbstractMultiScaleArray} <:
+        AbstractMultiScaleArrayHead{Float64}
+        nodes::Vector{T}
+        values::Vector{Float64}
+        end_idxs::Vector{Int}
+    end
+
+    @setup_workload begin
+        @compile_workload begin
+            cell = _PrecompileCell([1.0, 2.0])
+            head = construct(_PrecompileHead, [cell])
+            head[1]
+            head[2] = 3.0
+            num_nodes(head)
+            collect(level_iter(head, 1))
+            add_node!(head, _PrecompileCell([4.0]))
+            remove_node!(head, 2)
+        end
+    end
 
 end # module
