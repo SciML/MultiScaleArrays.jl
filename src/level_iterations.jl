@@ -17,7 +17,7 @@ end
 ```
 """
 function level_iter(S, n::Int)
-    return n == 1 ? S.nodes : chain((level_iter(node, n - 1) for node in S.nodes)...)
+    return n == 1 ? S.nodes : RecursiveArrayTools.chain((level_iter(node, n - 1) for node in S.nodes)...)
 end
 
 """
