@@ -57,6 +57,26 @@ Base.zero(A::AbstractMultiScaleArray) = fill!(similar(A), 0)
 recursive_similar(x, T) = [similar(y, T) for y in x]
 recursive_similar(x::Tuple, T) = tuple((similar(y, T) for y in x)...)
 
+function _leaf_construct_from_nodes(::Type{T}, kind::String) where {T <: AbstractMultiScaleArrayLeaf}
+    throw(ArgumentError("leaf type $T cannot be constructed from $kind child nodes"))
+end
+
+construct(
+    ::Type{T}, ::AbstractVector{<:AbstractMultiScaleArray}, ::Vararg{Any}
+) where {T <: AbstractMultiScaleArrayLeaf} = _leaf_construct_from_nodes(T, "vector")
+
+construct(
+    ::Type{T}, ::AbstractVector{<:AbstractMultiScaleArray}, ::Any, ::Vararg{Any}
+) where {T <: AbstractMultiScaleArrayLeaf} = _leaf_construct_from_nodes(T, "vector")
+
+construct(
+    ::Type{T}, ::Tuple{Vararg{AbstractMultiScaleArray}}, ::Vararg{Any}
+) where {T <: AbstractMultiScaleArrayLeaf} = _leaf_construct_from_nodes(T, "tuple")
+
+construct(
+    ::Type{T}, ::Tuple{Vararg{AbstractMultiScaleArray}}, ::Any, ::Vararg{Any}
+) where {T <: AbstractMultiScaleArrayLeaf} = _leaf_construct_from_nodes(T, "tuple")
+
 """
     construct(::Type{T}, args...) where {T <: AbstractMultiScaleArray}
 
