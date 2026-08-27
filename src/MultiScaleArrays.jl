@@ -8,8 +8,6 @@ module MultiScaleArrays
 
     import RecursiveArrayTools: recursivecopy, recursivecopy!
 
-    import RecursiveArrayTools: chain
-
     """
     AbstractMultiScaleArray{B}
 

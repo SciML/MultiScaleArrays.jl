@@ -111,6 +111,13 @@ function LinearAlgebra.ldiv!(A::LinearAlgebra.LU, b::AMSA)
     ldiv!(A, x)
     return b .= x
 end
+function LinearAlgebra.ldiv!(
+        A::LinearAlgebra.LU{T, LinearAlgebra.Tridiagonal{T, V}}, b::AMSA
+    ) where {T, V}
+    x = Array(b)
+    ldiv!(A, x)
+    return b .= x
+end
 function LinearAlgebra.ldiv!(A::LinearAlgebra.QR, b::AMSA)
     x = Array(b)
     ldiv!(A, x)
