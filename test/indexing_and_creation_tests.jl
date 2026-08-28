@@ -213,7 +213,7 @@ recursivecopy!(em2, em)
 ## Level iterators
 
 em = em_save
-level_iter(em, 1) == em.nodes
+@test level_iter(em, 1) == em.nodes
 for (i, p) in enumerate(level_iter(em, 2))
     if i == 1
         @test p == em.nodes[1].nodes[1]
