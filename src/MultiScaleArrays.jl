@@ -7,6 +7,7 @@ module MultiScaleArrays
         ==, *, +, -, show, reshape
 
     import RecursiveArrayTools: recursivecopy, recursivecopy!
+    using Base.Iterators: flatten
 
     """
     AbstractMultiScaleArray{B}
