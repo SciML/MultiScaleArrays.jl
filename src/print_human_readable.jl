@@ -6,7 +6,7 @@ function add_separator!(first_element, toprint, level)
     return false
 end
 
-function take_first_char(s::Union{String, SubString{String}}, N::Int64)
+function take_first_char(s::Union{String, SubString{String}}, N::Integer)
     return s[1:min(length(s), N)]
 end
 
