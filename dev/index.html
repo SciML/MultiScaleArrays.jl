@@ -28,15 +28,15 @@ tissue1 = construct(Tissue, deepcopy([population, population2, population3])) # 
 tissue2 = construct(Tissue, deepcopy([population2, population, population3]))
 embryo = construct(Embryo, deepcopy([tissue1, tissue2])) # Make an embryo from Tissues</code></pre><h2 id="Idea"><a class="docs-heading-anchor" href="#Idea">Idea</a><a id="Idea-1"></a><a class="docs-heading-anchor-permalink" href="#Idea" title="Permalink"></a></h2><p>The idea behind MultiScaleArrays is simple. The <code>*DiffEq</code> solvers (OrdinaryDiffEq.jl, StochasticDiffEq.jl, DelayDiffEq.jl, etc.) and native optimization packages like Optim.jl in their efficient in-place form all work with any Julia-defined <code>AbstractArray</code> which has a linear index. Thus, to define our multiscale model, we develop a type which has an efficient linear index. One can think of representing cells with proteins as each being an array with values for each protein. The linear index of the multiscale model would be indexing through each protein of each cell. With proper index overloads, one can define a type such that <code>a[i]</code> does just that, and thus it will work in the differential equation solvers. MultiScaleArrays.jl takes that further by allowing one to recursively define an arbitrary <code>n</code>-level hierarchical model which has efficient indexing structures. The result is a type which models complex behavior, but the standard differential equation solvers will work directly and efficiently on this type, making it easy to develop novel models without having to re-develop advanced adaptive/stiff/stochastic/etc. solving techniques for each new model.</p><h2 id="Contributing"><a class="docs-heading-anchor" href="#Contributing">Contributing</a><a id="Contributing-1"></a><a class="docs-heading-anchor-permalink" href="#Contributing" title="Permalink"></a></h2><ul><li><p>Please refer to the <a href="https://github.com/SciML/ColPrac/blob/master/README.md">SciML ColPrac: Contributor&#39;s Guide on Collaborative Practices for Community Packages</a> for guidance on PRs, issues, and other matters relating to contributing to SciML.</p></li><li><p>See the <a href="https://github.com/SciML/SciMLStyle">SciML Style Guide</a> for common coding practices and other style decisions.</p></li><li><p>There are a few community forums:</p><ul><li>The #diffeq-bridged and #sciml-bridged channels in the <a href="https://julialang.org/slack/">Julia Slack</a></li><li>The #diffeq-bridged and #sciml-bridged channels in the <a href="https://julialang.zulipchat.com/#narrow/stream/279055-sciml-bridged">Julia Zulip</a></li><li>On the <a href="https://discourse.julialang.org">Julia Discourse forums</a></li><li>See also <a href="https://sciml.ai/community/">SciML Community page</a></li></ul></li></ul><h2 id="Reproducibility"><a class="docs-heading-anchor" href="#Reproducibility">Reproducibility</a><a id="Reproducibility-1"></a><a class="docs-heading-anchor-permalink" href="#Reproducibility" title="Permalink"></a></h2><details><summary>The documentation of this SciML package was built using these direct dependencies,</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr32"><span class="sgr1">Status</span></span> `~/_work/MultiScaleArrays.jl/MultiScaleArrays.jl/docs/Project.toml`
   <span class="sgr90">[e30172f5] </span>Documenter v1.19.0
-  <span class="sgr90">[f9640e96] </span>MultiScaleArrays v1.27.1 `~/_work/MultiScaleArrays.jl/MultiScaleArrays.jl`</code></pre></details><details><summary>and using this machine and Julia version.</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.7
-Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+  <span class="sgr90">[f9640e96] </span>MultiScaleArrays v1.27.2 `~/_work/MultiScaleArrays.jl/MultiScaleArrays.jl`</code></pre></details><details><summary>and using this machine and Julia version.</summary><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.13.0
+Commit d1c37793dd2 (2026-09-09 19:00 UTC)
 Build Info:
   Official https://julialang.org release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
   CPU: 128 × AMD EPYC 7513 32-Core Processor
   WORD_SIZE: 64
-  LLVM: libLLVM-18.1.7 (ORCJIT, znver3)
+  LLVM: libLLVM-20.1.8 (ORCJIT, znver3)
   GC: Built with stock GC
 Threads: 1 default, 1 interactive, 1 GC (on 4 virtual cores)
 Environment:
@@ -64,7 +64,7 @@ Environment:
   <span class="sgr90">[9a962f9c] </span>DataAPI v1.16.0
   <span class="sgr90">[864edb3b] </span>DataStructures v0.19.6
   <span class="sgr90">[e2d170a0] </span>DataValueInterfaces v1.0.0
-  <span class="sgr90">[2b5f629d] </span>DiffEqBase v7.20.1
+  <span class="sgr90">[2b5f629d] </span>DiffEqBase v7.21.0
   <span class="sgr90">[459566f4] </span>DiffEqCallbacks v4.19.3
   <span class="sgr90">[77a26b50] </span>DiffEqNoiseProcess v5.36.2
   <span class="sgr90">[163ba53b] </span>DiffResults v1.1.0
@@ -111,7 +111,7 @@ Environment:
   <span class="sgr90">[bb5d69b7] </span>MaybeInplace v0.1.8
   <span class="sgr90">[e1d29d7a] </span>Missings v1.2.0
   <span class="sgr90">[46d2c3a1] </span>MuladdMacro v0.2.7
-  <span class="sgr90">[f9640e96] </span>MultiScaleArrays v1.27.1 `~/_work/MultiScaleArrays.jl/MultiScaleArrays.jl`
+  <span class="sgr90">[f9640e96] </span>MultiScaleArrays v1.27.2 `~/_work/MultiScaleArrays.jl/MultiScaleArrays.jl`
   <span class="sgr90">[77ba4419] </span>NaNMath v1.1.4
   <span class="sgr90">[8913a72c] </span>NonlinearSolve v4.29.2
   <span class="sgr90">[be0214bd] </span>NonlinearSolveBase v2.49.4
@@ -209,21 +209,21 @@ Environment:
   <span class="sgr90">[b77e0a4c] </span>InteractiveUtils v1.11.0
   <span class="sgr90">[ac6e5ff7] </span>JuliaSyntaxHighlighting v1.12.0
   <span class="sgr90">[4af54fe1] </span>LazyArtifacts v1.11.0
-  <span class="sgr90">[b27032c2] </span>LibCURL v0.6.4
+  <span class="sgr90">[b27032c2] </span>LibCURL v1.0.0
   <span class="sgr90">[76f85450] </span>LibGit2 v1.11.0
   <span class="sgr90">[8f399da3] </span>Libdl v1.11.0
-  <span class="sgr90">[37e2e46d] </span>LinearAlgebra v1.12.0
+  <span class="sgr90">[37e2e46d] </span>LinearAlgebra v1.13.0
   <span class="sgr90">[56ddb016] </span>Logging v1.11.0
   <span class="sgr90">[d6f4376e] </span>Markdown v1.11.0
   <span class="sgr90">[ca575930] </span>NetworkOptions v1.3.0
-  <span class="sgr90">[44cfe95a] </span>Pkg v1.12.1
+  <span class="sgr90">[44cfe95a] </span>Pkg v1.13.0
   <span class="sgr90">[de0858da] </span>Printf v1.11.0
   <span class="sgr90">[3fa0cd96] </span>REPL v1.11.0
   <span class="sgr90">[9a3f8284] </span>Random v1.11.0
-  <span class="sgr90">[ea8e919c] </span>SHA v0.7.0
+  <span class="sgr90">[ea8e919c] </span>SHA v1.0.0
   <span class="sgr90">[9e88b42a] </span>Serialization v1.11.0
   <span class="sgr90">[6462fe0b] </span>Sockets v1.11.0
-  <span class="sgr90">[2f01184e] </span>SparseArrays v1.12.0
+  <span class="sgr90">[2f01184e] </span>SparseArrays v1.13.0
   <span class="sgr90">[f489334b] </span>StyledStrings v1.11.0
   <span class="sgr90">[4607b0f0] </span>SuiteSparse
   <span class="sgr90">[fa267f1f] </span>TOML v1.0.3
@@ -231,18 +231,19 @@ Environment:
   <span class="sgr90">[8dfed614] </span>Test v1.11.0
   <span class="sgr90">[cf7118a7] </span>UUIDs v1.11.0
   <span class="sgr90">[4ec0a83e] </span>Unicode v1.11.0
-  <span class="sgr90">[e66e0078] </span>CompilerSupportLibraries_jll v1.3.1+2
-  <span class="sgr90">[deac9b47] </span>LibCURL_jll v8.15.0+0
-  <span class="sgr90">[e37daf67] </span>LibGit2_jll v1.9.0+0
-  <span class="sgr90">[29816b5a] </span>LibSSH2_jll v1.11.3+1
-  <span class="sgr90">[14a3606d] </span>MozillaCACerts_jll v2025.11.4
-  <span class="sgr90">[4536629a] </span>OpenBLAS_jll v0.3.29+0
+  <span class="sgr90">[e66e0078] </span>CompilerSupportLibraries_jll v1.5.5+2
+  <span class="sgr90">[deac9b47] </span>LibCURL_jll v8.18.0+1
+  <span class="sgr90">[e37daf67] </span>LibGit2_jll v1.9.1+0
+  <span class="sgr90">[29816b5a] </span>LibSSH2_jll v1.11.103+0
+  <span class="sgr90">[14a3606d] </span>MozillaCACerts_jll v2026.8.13
+  <span class="sgr90">[4536629a] </span>OpenBLAS_jll v0.3.30+0
   <span class="sgr90">[05823500] </span>OpenLibm_jll v0.8.7+0
   <span class="sgr90">[458c3c95] </span>OpenSSL_jll v3.5.6+0
-  <span class="sgr90">[efcefdf7] </span>PCRE2_jll v10.44.0+1
-  <span class="sgr90">[bea87d4a] </span>SuiteSparse_jll v7.8.3+2
+  <span class="sgr90">[efcefdf7] </span>PCRE2_jll v10.46.0+0
+  <span class="sgr90">[bea87d4a] </span>SuiteSparse_jll v7.10.1+0
   <span class="sgr90">[83775a58] </span>Zlib_jll v1.3.1+2
+  <span class="sgr90">[3161d3a3] </span>Zstd_jll v1.5.7+1
   <span class="sgr90">[8e850b90] </span>libblastrampoline_jll v5.15.0+0
-  <span class="sgr90">[8e850ede] </span>nghttp2_jll v1.64.0+1
-  <span class="sgr90">[3f19e933] </span>p7zip_jll v17.7.0+0
-<span class="sgr36"><span class="sgr1">Info</span></span> Packages marked with <span class="sgr33">⌅</span> have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.27.1/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.27.1/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Wednesday 9 September 2026 09:59">Wednesday 9 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  <span class="sgr90">[8e850ede] </span>nghttp2_jll v1.67.1+0
+  <span class="sgr90">[3f19e933] </span>p7zip_jll v17.8.2+0
+<span class="sgr36"><span class="sgr1">Info</span></span> Packages marked with <span class="sgr33">⌅</span> have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`</code></pre></details><p>You can also download the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.27.2/assets/Manifest.toml">manifest</a> file and the <a href="https://github.com/SciML/MultiScaleArrays.jl/tree/gh-pages/v1.27.2/assets/Project.toml">project</a> file.</p></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="multiscalearray/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Thursday 10 September 2026 11:09">Thursday 10 September 2026</span>. Using Julia version 1.13.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
