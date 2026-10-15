@@ -1,4 +1,6 @@
 nodeselect(ns, i, I...) = ns[i][I...]
+nodeselect(ns::Tuple, i, I...) = i == 1 ? first(ns)[I...] : nodeselect(Base.tail(ns), i - 1, I...)
+nodeselect(ns::Tuple{}, i, I...) = throw(BoundsError(ns, i))
 nodechild(ns, i, j) = ns[i].nodes[j]
 
 function bisect_search(a, i)
