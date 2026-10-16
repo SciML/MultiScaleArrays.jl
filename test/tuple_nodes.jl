@@ -51,6 +51,10 @@ scenario = construct(Scenario, (deepcopy(community),))
 @inferred getindex(community, 4)
 @inferred getindex(scenario, 8)
 
+@test isempty(plant1.values) && isempty(scenario.values)
+@test plant1[CartesianIndex(2), 1, 1] == plant1[2, 1, 1] == 4.1
+@test scenario[CartesianIndex(1), 1, 1] === scenario[1, 1, 1]
+
 @test scenario[1] == 1.1
 @test scenario[2] == 2.1
 @test scenario[3] == 3.1
