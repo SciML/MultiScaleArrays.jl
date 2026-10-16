@@ -2,7 +2,7 @@
 
 julia_version = "1.13.2"
 manifest_format = "2.1"
-project_hash = "79dded71816e9ef59f463bee61adcddf8abb2ca2"
+project_hash = "aedcdddda0788612fc95f0a3ac146b3492c655e6"
 
 [[deps.ADTypes]]
 deps = ["PrecompileTools"]
@@ -1054,9 +1054,9 @@ version = "0.2.7"
 
 [[deps.MultiScaleArrays]]
 deps = ["DiffEqBase", "DifferentiationInterface", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "OrdinaryDiffEq", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqRosenbrock", "PrecompileTools", "Random", "RecursiveArrayTools", "SciMLBase", "Statistics", "StochasticDiffEq"]
-path = "/home/runner/_work/MultiScaleArrays.jl/MultiScaleArrays.jl"
+path = "/home/runner/work/MultiScaleArrays.jl/MultiScaleArrays.jl"
 uuid = "f9640e96-87f6-5992-9c3b-0743c6a49ffa"
-version = "1.27.2"
+version = "1.27.3"
 
     [deps.MultiScaleArrays.extensions]
     MultiScaleArraysSparseDiffToolsExt = "SparseDiffTools"
